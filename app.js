@@ -134,6 +134,12 @@ class SeminarPlanningApp {
         // 참석자 행 추가
         document.getElementById('addAttendeeRow').addEventListener('click', () => this.addAttendeeRow());
         
+        // 참석자 전체 삭제
+        const deleteAllBtn = document.getElementById('deleteAllAttendees');
+        if (deleteAllBtn) {
+            deleteAllBtn.addEventListener('click', () => this.deleteAllAttendees());
+        }
+        
         // 참석전체 Y 처리 버튼
         document.getElementById('selectAllAttendees').addEventListener('click', () => this.selectAllAttendees());
         
@@ -745,6 +751,20 @@ class SeminarPlanningApp {
             this.currentData.attendeeList.splice(index, 1);
             this.reorderAttendeeRows();
         }
+    }
+
+    // 참석자 전체 삭제 후 1행 초기화
+    deleteAllAttendees() {
+        const tbody = document.getElementById('attendeeTableBody');
+        // 테이블 비우기
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+        // 데이터도 초기화
+        this.currentData.attendeeList = [];
+        // 1행 추가 (초기값, 참석여부 기본 N)
+        this.addAttendeeRow();
+        this.showSuccessToast('참석자 명단을 초기화했습니다.');
     }
 
     reorderTimeRows() {
