@@ -2432,33 +2432,36 @@ class SeminarPlanningApp {
         }
     }
 
-    // HTML to PDF 방식 (대체 방법)
+    // HTML to PDF 방식 (새 탭 열어 인쇄 대화상자)
     exportToPDFWithHTML() {
         try {
-            console.log('🔄 HTML to PDF 방식으로 PDF 생성 (새 탭 미사용)');
+            console.log('🔄 HTML to PDF 방식으로 실행계획 PDF 생성 (새 탭)');
             
             // HTML 콘텐츠 생성
             const htmlContent = this.generatePDFHTML();
             
-            // 파일명 생성 (HTML로 다운로드)
+            // 새 창에서 HTML 열기
+            const newWindow = window.open('', '_blank');
+            if (!newWindow) {
+                this.showErrorToast('팝업이 차단되었습니다. 브라우저에서 팝업을 허용해주세요.');
+                this.showLoading(false);
+                return;
+            }
+            newWindow.document.write(htmlContent);
+            newWindow.document.close();
+            
+            // 문서 제목 설정(저장 시 기본 파일명으로 사용)
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
-            const fileName = `${year}${month}${day} 전사 신기술 세미나 실행계획.html`;
+            newWindow.document.title = `${year}${month}${day} 전사 신기술 세미나 실행계획.pdf`;
             
-            // Blob 생성 후 직접 다운로드
-            const blob = new Blob([htmlContent], { type: 'text/html; charset=UTF-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
-            this.showSuccessToast('PDF 생성에 실패하여 HTML로 내보냈습니다.');
+            // 인쇄 대화상자 호출
+            setTimeout(() => {
+                newWindow.print();
+                this.showSuccessToast('인쇄 대화상자가 열렸습니다. "PDF로 저장"을 선택하세요.');
+            }, 500);
         } catch (error) {
             console.error('HTML to PDF 오류:', error);
             this.showErrorToast(`PDF 내보내기 실패: ${error.message}`);
@@ -2470,28 +2473,28 @@ class SeminarPlanningApp {
     // 대체 PDF 내보내기 방법 (HTML to PDF)
     exportToPDFAlternative() {
         try {
-            console.log('🔄 대체 PDF 내보내기 (새 탭 미사용, HTML 다운로드)');
+            console.log('🔄 대체 실행계획 내보내기 (새 탭)');
             
-            // HTML 콘텐츠 생성
             const htmlContent = this.generatePDFHTML();
+            const newWindow = window.open('', '_blank');
+            if (!newWindow) {
+                this.showErrorToast('팝업이 차단되었습니다. 브라우저에서 팝업을 허용해주세요.');
+                this.showLoading(false);
+                return;
+            }
+            newWindow.document.write(htmlContent);
+            newWindow.document.close();
             
-            // 파일명 생성
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
-            const fileName = `${year}${month}${day} 전사 신기술 세미나 실행계획.html`;
+            newWindow.document.title = `${year}${month}${day} 전사 신기술 세미나 실행계획.pdf`;
             
-            const blob = new Blob([htmlContent], { type: 'text/html; charset=UTF-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            this.showSuccessToast('HTML 파일로 내보냈습니다.');
+            setTimeout(() => {
+                newWindow.print();
+                this.showSuccessToast('인쇄 대화상자가 열렸습니다. "PDF로 저장"을 선택하세요.');
+            }, 500);
         } catch (error) {
             console.error('대체 PDF 내보내기 오류:', error);
             this.showErrorToast(`PDF 내보내기 실패: ${error.message}`);
@@ -4139,31 +4142,37 @@ class SeminarPlanningApp {
         }
     }
 
-    // HTML to PDF 방식으로 실시결과 내보내기
+    // HTML to PDF 방식으로 실시결과 내보내기 (새 탭 열어 인쇄 대화상자)
     exportResultToPDFWithHTML(resultData) {
         try {
-            console.log('🔄 HTML to PDF 방식으로 실시결과 내보내기 (새 탭 미사용)');
+            console.log('🔄 HTML to PDF 방식으로 실시결과 PDF 생성 (새 탭)');
             
             // HTML 콘텐츠 생성
             const htmlContent = this.generateResultPDFHTML(resultData);
             
-            // 파일명 생성 (HTML로 다운로드)
+            // 새 창에서 HTML 열기
+            const newWindow = window.open('', '_blank');
+            if (!newWindow) {
+                this.showErrorToast('팝업이 차단되었습니다. 브라우저에서 팝업을 허용해주세요.');
+                this.showLoading(false);
+                return;
+            }
+            
+            newWindow.document.write(htmlContent);
+            newWindow.document.close();
+            
+            // 문서 제목 설정(저장 시 기본 파일명으로 사용)
             const currentDate = new Date();
             const dateString = currentDate.getFullYear().toString() + 
                               (currentDate.getMonth() + 1).toString().padStart(2, '0') + 
                               currentDate.getDate().toString().padStart(2, '0');
-            const fileName = `${dateString} 전사 신기술 세미나 실시결과.html`;
+            newWindow.document.title = `${dateString} 전사 신기술 세미나 실시결과.pdf`;
             
-            const blob = new Blob([htmlContent], { type: 'text/html; charset=UTF-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            this.showSuccessToast('PDF 생성에 실패하여 HTML로 내보냈습니다.');
+            // 인쇄 대화상자 호출(사용자는 PDF로 저장 선택)
+            setTimeout(() => {
+                newWindow.print();
+                this.showSuccessToast('인쇄 대화상자가 열렸습니다. "PDF로 저장"을 선택하세요.');
+            }, 500);
         } catch (error) {
             console.error('HTML to PDF 실시결과 내보내기 오류:', error);
             this.showErrorToast('PDF 실시결과 내보내기 중 오류가 발생했습니다.');
