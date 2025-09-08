@@ -269,25 +269,25 @@
             </div>
             
             <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                         <colgroup>
-                            <col style="width:60px;">
-                            <col style="width:96px;"> <!-- 성명: 한글 약 6글자 정도 -->
-                            <col style="width:64px;">  <!-- 직급: 한글 약 4글자 -->
-                            <col style="width:96px;">  <!-- 소속: 한글 약 6글자 -->
-                            <col style="width:auto;"> <!-- 업무: 넓게 -->
-                            <col style="width:110px;">
-                            <col style="width:80px;">
+                            <col style="width:60px;">   <!-- No -->
+                            <col style="width:120px;">  <!-- 성명: 10byte -->
+                            <col style="width:96px;">   <!-- 직급: 8byte -->
+                            <col style="width:144px;">  <!-- 소속: 12byte -->
+                            <col style="width:auto;">   <!-- 업무: auto -->
+                            <col style="width:48px;">   <!-- 참석여부: 3byte -->
+                            <col style="width:80px;">   <!-- 작업: 유지 -->
                         </colgroup>
-                        <thead class="bg-gray-50">
+                        <thead class="bg-gradient-to-r from-gray-50 via-blue-50 to-indigo-50">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">No</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">성명</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">직급</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">소속</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">업무</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">참석여부</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">작업</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 tracking-wider border-b border-gray-200">No</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 tracking-wider border-b border-gray-200">성명</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 tracking-wider border-b border-gray-200">직급</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 tracking-wider border-b border-gray-200">소속</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 tracking-wider border-b border-gray-200">업무</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 tracking-wider border-b border-gray-200">참석여부</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 tracking-wider border-b border-gray-200">작업</th>
                             </tr>
                         </thead>
                     <tbody id="attendeeTableBody">
