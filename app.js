@@ -522,65 +522,25 @@ class SeminarPlanningApp {
                            data-index="0" data-field="name">
                 </td>
                 <td class="px-4 py-3 border-b">
-                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                            data-index="0" data-field="position">
-                        <option value="">선택하세요</option>
-                        <option value="상무">상무</option>
-                        <option value="전무">전무</option>
-                        <option value="이사">이사</option>
-                        <option value="팀장">팀장</option>
-                        <option value="부장">부장</option>
-                        <option value="차장">차장</option>
-                        <option value="책임">책임</option>
-                        <option value="선임">선임</option> 
-                        <option value="직접입력">직접입력</option>
-                    </select>
-                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1 hidden" 
-                           placeholder="직급을 직접 입력하세요" 
-                           data-index="0" data-field="position-custom">
+                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                           placeholder="직급을 입력하세요" 
+                           data-index="0" data-field="position">
                 </td>
                 <td class="px-4 py-3 border-b">
-                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                            data-index="0" data-field="department">
-                        <option value="">선택하세요</option>
-                        <option value="SI사업본부">SI사업본부</option>
-                        <option value="AI사업본부">AI사업본부</option>
-                        <option value="경영관리본부">경영관리본부</option>
-                        <option value="전략사업본부">전략사업본부</option>
-                        <option value="직접입력">직접입력</option>
-                    </select>
-                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1 hidden" 
-                           placeholder="소속을 직접 입력하세요" 
-                           data-index="0" data-field="department"
-                           id="departmentInput_0">
+                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                           placeholder="소속을 입력하세요" 
+                           data-index="0" data-field="department">
                 </td>
                 <td class="px-4 py-3 border-b">
-                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                            data-index="0" data-field="work">
-                        <option value="">선택하세요</option>
-                        option value="본부장">본부장</option>
-                        <option value="담당임원">담당임원</option>
-                        <option value="담당간부">담당간부</option>
-                        <option value="담당자">담당자</option>
-                        <option value="기술지원팀장">기술지원팀장</option>
-                        <option value="영업대표">영업대표</option>
-                        <option value="프레임워크사업팀">프레임워크사업팀</option>
-                        <option value="SK증권 SM">SK증권 SM</option>
-                        <option value="라이나 생명 SM">라이나 생명 SM</option>
-                        <option value="산업은행 SM">산업은행 SM</option>
-                        <option value="삼성카드 SM">삼성카드 SM</option>
-                        <option value="PM">PM</option>
-                        <option value="직접입력">직접입력</option>
-                    </select>
-                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1 hidden" 
-                           placeholder="업무를 직접 입력하세요" 
-                           data-index="0" data-field="work-custom">
+                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                           placeholder="업무를 입력하세요" 
+                           data-index="0" data-field="work">
                 </td>
                 <td class="px-4 py-3 border-b">
                     <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                             data-index="0" data-field="attendance">
-                        <option value="Y" selected>Y</option>
-                        <option value="N">N</option>
+                        <option value="Y">Y</option>
+                        <option value="N" selected>N</option>
                     </select>
                 </td>
                 <td class="px-4 py-3 border-b">
@@ -673,64 +633,25 @@ class SeminarPlanningApp {
                        data-field="name">
             </td>
             <td class="px-4 py-3 border-b">
-                <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                        data-field="position">
-                    <option value="">선택하세요</option>
-                        <option value="상무">상무</option>
-                        <option value="전무">전무</option>
-                        <option value="이사">이사</option>
-                        <option value="팀장">팀장</option>
-                        <option value="부장">부장</option>
-                        <option value="차장">차장</option>
-                        <option value="책임">책임</option>
-                        <option value="선임">선임</option> 
-                    <option value="직접입력">직접입력</option>
-                </select>
-                <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1 hidden" 
-                       placeholder="직급을 직접 입력하세요" 
-                       data-field="position-custom">
+                <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                       placeholder="직급을 입력하세요" 
+                       data-field="position">
             </td>
             <td class="px-4 py-3 border-b">
-                <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                        data-field="department">
-                    <option value="">선택하세요</option>
-                    <option value="SI사업본부">SI사업본부</option>
-                    <option value="AI사업본부">AI사업본부</option>
-                    <option value="전략사업본부">전략사업본부</option>
-                    <option value="경영관리본부">경영관리본부</option>
-                    <option value="직접입력">직접입력</option>
-                </select>
-                <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1 hidden" 
-                       placeholder="소속을 직접 입력하세요" 
-                       data-field="department-custom">
+                <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                       placeholder="소속을 입력하세요" 
+                       data-field="department">
             </td>
             <td class="px-4 py-3 border-b">
-                <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                        data-field="work">
-                    <option value="">선택하세요</option>
-                    <option value="본부장">본부장</option>
-                    <option value="담당임원">담당임원</option>
-                    <option value="담당간부">담당간부</option>
-                    <option value="담당자">담당자</option>
-                    <option value="기술지원팀장">기술지원팀장</option>
-                    <option value="영업대표">영업대표</option>
-                    <option value="프레임워크사업팀">프레임워크사업팀</option>
-                    <option value="SK증권 SM">SK증권 SM</option>
-                    <option value="라이나 생명 SM">라이나 생명 SM</option>
-                    <option value="산업은행 SM">산업은행 SM</option>
-                    <option value="삼성카드 SM">삼성카드 SM</option>
-                    <option value="PM">PM</option>
-                    <option value="직접입력">직접입력</option>
-                </select>
-                <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1 hidden" 
-                       placeholder="업무를 직접 입력하세요" 
-                       data-field="work-custom">
+                <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                       placeholder="업무를 입력하세요" 
+                       data-field="work">
             </td>
             <td class="px-4 py-3 border-b">
                 <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                         data-field="attendance">
-                    <option value="Y" selected>Y</option>
-                    <option value="N">N</option>
+                    <option value="Y">Y</option>
+                    <option value="N" selected>N</option>
                 </select>
             </td>
             <td class="px-4 py-3 border-b">
@@ -804,124 +725,9 @@ class SeminarPlanningApp {
             if (field === 'attendance') {
                 this.saveDataQuietly();
             }
-            
-            // 직접입력 토글은 bindAttendeeRowEvents의 change 이벤트에서 처리됨
-            // (중복 실행 방지)
         }
     }
     
-    // 직접입력 필드 토글 (직급용)
-    toggleCustomPositionInput(index, value) {
-        const row = document.querySelector(`#attendeeTableBody tr:nth-child(${index + 1})`);
-        if (row) {
-            const selectElement = row.querySelector('select[data-field="position"]');
-            const customInput = row.querySelector('input[data-field="position-custom"]');
-            
-            if (value === '직접입력') {
-                if (customInput) {
-                    customInput.classList.remove('hidden');
-                    customInput.focus();
-                }
-            } else {
-                if (customInput) {
-                    customInput.classList.add('hidden');
-                    customInput.value = '';
-                }
-            }
-            
-            // 직접입력 텍스트박스에 입력할 때 드롭다운을 "직접입력"으로 설정
-            if (customInput) {
-                customInput.addEventListener('input', (e) => {
-                    if (selectElement && selectElement.value !== '직접입력') {
-                        selectElement.value = '직접입력';
-                    }
-                    // 실제 입력한 값을 저장
-                    this.updateAttendeeList(index, 'position', e.target.value);
-                });
-                
-                customInput.addEventListener('blur', (e) => {
-                    // 포커스를 잃을 때도 값 저장
-                    this.updateAttendeeList(index, 'position', e.target.value);
-                });
-            }
-        }
-    }
-    
-    // 직접입력 필드 토글 (업무용)
-    toggleCustomWorkInput(index, value) {
-        const row = document.querySelector(`#attendeeTableBody tr:nth-child(${index + 1})`);
-        if (row) {
-            const selectElement = row.querySelector('select[data-field="work"]');
-            const customInput = row.querySelector('input[data-field="work-custom"]');
-            
-            if (value === '직접입력') {
-                if (customInput) {
-                    customInput.classList.remove('hidden');
-                    customInput.focus();
-                }
-            } else {
-                if (customInput) {
-                    customInput.classList.add('hidden');
-                    customInput.value = '';
-                }
-            }
-            
-            // 직접입력 텍스트박스에 입력할 때 드롭다운을 "직접입력"으로 설정
-            if (customInput) {
-                customInput.addEventListener('input', (e) => {
-                    if (selectElement && selectElement.value !== '직접입력') {
-                        selectElement.value = '직접입력';
-                    }
-                    // 실제 입력한 값을 저장
-                    this.updateAttendeeList(index, 'work', e.target.value);
-                });
-                
-                customInput.addEventListener('blur', (e) => {
-                    // 포커스를 잃을 때도 값 저장
-                    this.updateAttendeeList(index, 'work', e.target.value);
-                });
-            }
-        }
-    }
-    
-    // 직접입력 필드 토글 (소속용)
-    toggleCustomDepartmentInput(index, value) {
-        const row = document.querySelector(`#attendeeTableBody tr:nth-child(${index + 1})`);
-        if (row) {
-            const selectElement = row.querySelector('select[data-field="department"]');
-            const inputElement = document.getElementById(`departmentInput_${index}`);
-            
-            if (value === '직접입력') {
-                if (selectElement) selectElement.style.display = 'none';
-                if (inputElement) {
-                    inputElement.classList.remove('hidden');
-                    inputElement.focus();
-                }
-            } else {
-                if (selectElement) selectElement.style.display = 'block';
-                if (inputElement) {
-                    inputElement.classList.add('hidden');
-                    inputElement.value = '';
-                }
-            }
-            
-            // 직접입력 텍스트박스에 입력할 때 드롭다운을 "직접입력"으로 설정
-            if (inputElement) {
-                inputElement.addEventListener('input', (e) => {
-                    if (selectElement && selectElement.value !== '직접입력') {
-                        selectElement.value = '직접입력';
-                    }
-                    // 실제 입력한 값을 저장
-                    this.updateAttendeeList(index, 'department', e.target.value);
-                });
-                
-                inputElement.addEventListener('blur', (e) => {
-                    // 포커스를 잃을 때도 값 저장
-                    this.updateAttendeeList(index, 'department', e.target.value);
-                });
-            }
-        }
-    }
 
     removeTimeRow(index) {
         const tbody = document.getElementById('timeTableBody');
@@ -1123,34 +929,17 @@ class SeminarPlanningApp {
     bindAttendeeRowEvents(row, index) {
         const inputs = row.querySelectorAll('input, select');
         inputs.forEach(input => {
-            // 필드명 정규화 (직접입력 필드의 경우 -custom 제거)
-            let fieldName = input.dataset.field;
-            if (fieldName && fieldName.endsWith('-custom')) {
-                fieldName = fieldName.replace('-custom', '');
-            }
-            
-            // 직접입력 텍스트박스가 아닌 경우에만 이벤트 리스너 추가
-            if (!fieldName.endsWith('-custom')) {
-                // 모바일에서 input 이벤트가 제대로 작동하도록 여러 이벤트 리스너 추가
-                input.addEventListener('input', (e) => {
-                    this.updateAttendeeList(index, fieldName, e.target.value);
-                });
-                input.addEventListener('change', (e) => {
-                    this.updateAttendeeList(index, fieldName, e.target.value);
-                    
-                    // 직접입력 토글 처리
-                    if (fieldName === 'position') {
-                        this.toggleCustomPositionInput(index, e.target.value);
-                    } else if (fieldName === 'work') {
-                        this.toggleCustomWorkInput(index, e.target.value);
-                    } else if (fieldName === 'department') {
-                        this.toggleCustomDepartmentInput(index, e.target.value);
-                    }
-                });
-                input.addEventListener('blur', (e) => {
-                    this.updateAttendeeList(index, fieldName, e.target.value);
-                });
-            }
+            const fieldName = input.dataset.field;
+            // 모바일에서 input 이벤트가 제대로 작동하도록 여러 이벤트 리스너 추가
+            input.addEventListener('input', (e) => {
+                this.updateAttendeeList(index, fieldName, e.target.value);
+            });
+            input.addEventListener('change', (e) => {
+                this.updateAttendeeList(index, fieldName, e.target.value);
+            });
+            input.addEventListener('blur', (e) => {
+                this.updateAttendeeList(index, fieldName, e.target.value);
+            });
         });
     }
 
@@ -1239,59 +1028,20 @@ class SeminarPlanningApp {
                            onchange="app.updateAttendeeList(${index}, 'name', this.value)">
                 </td>
                 <td class="px-4 py-3 border-b">
-                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                            data-field="position">
-                        <option value="">선택하세요</option>
-                        <option value="상무">상무</option>
-                        <option value="전무">전무</option>
-                        <option value="이사">이사</option>
-                        <option value="팀장">팀장</option>
-                        <option value="부장">부장</option>
-                        <option value="차장">차장</option>
-                        <option value="책임">책임</option>
-                        <option value="선임">선임</option>
-                        <option value="직접입력">직접입력</option>
-                    </select>
-                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1 hidden" 
-                           placeholder="직급을 직접 입력하세요" 
-                           data-field="position-custom">
+                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                           placeholder="직급을 입력하세요" 
+                           data-field="position">
                 </td>
                 <td class="px-4 py-3 border-b">
-                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                            data-field="department"
-                            onchange="app.updateAttendeeList(${index}, 'department', this.value)">
-                        <option value="">선택하세요</option>
-                        <option value="SI사업본부">SI사업본부</option>
-                        <option value="AI사업본부">AI사업본부</option>
-                        <option value="경영관리본부">경영관리본부</option>
-                        <option value="전략사업본부">전략사업본부</option>
-                        <option value="직접입력">직접입력</option>
-                    </select>
-                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1 hidden" 
-                           placeholder="소속을 직접 입력하세요" 
-                           data-field="department-custom">
+                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                           placeholder="소속을 입력하세요" 
+                           data-field="department"
+                           onchange="app.updateAttendeeList(${index}, 'department', this.value)">
                 </td>
                 <td class="px-4 py-3 border-b">
-                    <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                            data-field="work">
-                        <option value="">선택하세요</option>
-                        <option value="본부장">본부장</option>
-                        <option value="담당임원">담당임원</option>
-                        <option value="담당간부">담당간부</option>
-                        <option value="담당자">담당자</option>
-                        <option value="기술지원팀장">기술지원팀장</option>
-                        <option value="영업대표">영업대표</option>
-                        <option value="프레임워크사업팀">프레임워크사업팀</option>
-                        <option value="SK증권 SM">SK증권 SM</option>
-                        <option value="라이나 생명 SM">라이나 생명 SM</option>
-                        <option value="산업은행 SM">산업은행 SM</option>
-                        <option value="삼성카드 SM">삼성카드 SM</option>
-                        <option value="PM">PM</option>
-                        <option value="직접입력">직접입력</option>
-                    </select>
-                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1 hidden" 
-                           placeholder="업무를 직접 입력하세요" 
-                           data-field="work-custom">
+                    <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                           placeholder="업무를 입력하세요" 
+                           data-field="work">
                 </td>
                 <td class="px-4 py-3 border-b">
                     <select class="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
@@ -1319,112 +1069,25 @@ class SeminarPlanningApp {
                 console.log(`참석자 name 값 설정: ${item.name}`);
             }
             
-            // 직급 필드 처리
-            if (item.position !== undefined && item.position !== null) {
-                const positionOptions = ['상무', '전무', '이사', '팀장','부장','차장','책임','선임'];
-                const positionSelect = row.querySelector('select[data-field="position"]');
-                const positionCustomInput = row.querySelector('input[data-field="position-custom"]');
-                
-                if (positionOptions.includes(item.position)) {
-                    // 미리 정의된 옵션인 경우
-                    if (positionSelect) {
-                        positionSelect.value = item.position;
-                        console.log(`참석자 position 값 설정: ${item.position}`);
-                    }
-                } else if (item.position && item.position.trim() !== '') {
-                    // 직접입력인 경우 (값이 있고 비어있지 않은 경우)
-                    if (positionSelect) {
-                        positionSelect.value = '직접입력';
-                    }
-                    if (positionCustomInput) {
-                        positionCustomInput.value = item.position;
-                        positionCustomInput.classList.remove('hidden');
-                        console.log(`참석자 position 직접입력 값 설정: ${item.position}`);
-                    }
-                } else {
-                    // 값이 없는 경우
-                    if (positionSelect) {
-                        positionSelect.value = '';
-                    }
-                    if (positionCustomInput) {
-                        positionCustomInput.classList.add('hidden');
-                        positionCustomInput.value = '';
-                    }
-                }
+            // 직급 필드 처리 (텍스트 입력)
+            const positionInput = row.querySelector('[data-field="position"]');
+            if (positionInput) {
+                positionInput.value = item.position || '';
+                positionInput.setAttribute('value', item.position || '');
             }
             
-            // 소속 필드 처리
-            if (item.department !== undefined && item.department !== null) {
-                const departmentOptions = ['SI사업본부', 'AI사업본부', '경영관리본부', '전략사업본부'];
-                const departmentSelect = row.querySelector('select[data-field="department"]');
-                const departmentCustomInput = row.querySelector('input[data-field="department-custom"]');
-                
-                if (departmentOptions.includes(item.department)) {
-                    // 미리 정의된 옵션인 경우
-                    if (departmentSelect) {
-                        departmentSelect.value = item.department;
-                        console.log(`참석자 department 값 설정: ${item.department}`);
-                    }
-                    if (departmentCustomInput) {
-                        departmentCustomInput.classList.add('hidden');
-                    }
-                } else if (item.department && item.department.trim() !== '') {
-                    // 직접 입력된 값인 경우 (값이 있고 비어있지 않은 경우)
-                    if (departmentSelect) {
-                        departmentSelect.value = '직접입력';
-                    }
-                    if (departmentCustomInput) {
-                        departmentCustomInput.value = item.department;
-                        departmentCustomInput.classList.remove('hidden');
-                        console.log(`참석자 department 직접입력 값 설정: ${item.department}`);
-                    }
-                } else {
-                    // 값이 없는 경우
-                    if (departmentSelect) {
-                        departmentSelect.value = '';
-                    }
-                    if (departmentCustomInput) {
-                        departmentCustomInput.classList.add('hidden');
-                        departmentCustomInput.value = '';
-                    }
-                }
+            // 소속 필드 처리 (텍스트 입력)
+            const departmentInput = row.querySelector('[data-field="department"]');
+            if (departmentInput) {
+                departmentInput.value = item.department || '';
+                departmentInput.setAttribute('value', item.department || '');
             }
             
-            // 업무 필드 처리
-            if (item.work !== undefined && item.work !== null) {
-                const workOptions = ['본부장', '담당임원', '담당간부', '담당자', '기술지원팀장','영업대표', '프레임워크사업팀', 'SK증권 SM', '라이나 생명 SM', '산업은행 SM', '삼성카드 SM', 'PM'];
-                const workSelect = row.querySelector('select[data-field="work"]');
-                const workCustomInput = row.querySelector('input[data-field="work-custom"]');
-                
-                if (workOptions.includes(item.work)) {
-                    // 미리 정의된 옵션인 경우
-                    if (workSelect) {
-                        workSelect.value = item.work;
-                        console.log(`참석자 work 값 설정: ${item.work}`);
-                    }
-                    if (workCustomInput) {
-                        workCustomInput.classList.add('hidden');
-                    }
-                } else if (item.work && item.work.trim() !== '') {
-                    // 직접입력인 경우 (값이 있고 비어있지 않은 경우)
-                    if (workSelect) {
-                        workSelect.value = '직접입력';
-                    }
-                    if (workCustomInput) {
-                        workCustomInput.value = item.work;
-                        workCustomInput.classList.remove('hidden');
-                        console.log(`참석자 work 직접입력 값 설정: ${item.work}`);
-                    }
-                } else {
-                    // 값이 없는 경우
-                    if (workSelect) {
-                        workSelect.value = '';
-                    }
-                    if (workCustomInput) {
-                        workCustomInput.classList.add('hidden');
-                        workCustomInput.value = '';
-                    }
-                }
+            // 업무 필드 처리 (텍스트 입력)
+            const workInput = row.querySelector('[data-field="work"]');
+            if (workInput) {
+                workInput.value = item.work || '';
+                workInput.setAttribute('value', item.work || '');
             }
             
             // 참석여부 필드 처리
@@ -1769,39 +1432,14 @@ class SeminarPlanningApp {
         Array.from(attendeeRows).forEach((row, index) => {
             // data-field 속성을 사용하여 정확한 요소 선택
             const nameInput = row.querySelector('input[data-field="name"]');
-            const positionSelect = row.querySelector('select[data-field="position"]');
-            const positionCustomInput = row.querySelector('input[data-field="position-custom"]');
-            const departmentSelect = row.querySelector('select[data-field="department"]');
-            const departmentCustomInput = row.querySelector('input[data-field="department-custom"]');
-            const workSelect = row.querySelector('select[data-field="work"]');
-            const workCustomInput = row.querySelector('input[data-field="work-custom"]');
+            const positionInput = row.querySelector('[data-field="position"]');
+            const departmentInput = row.querySelector('[data-field="department"]');
+            const workInput = row.querySelector('[data-field="work"]');
             const attendanceSelect = row.querySelector('select[data-field="attendance"]');
             
-            // 직급 데이터 수집 (select 또는 custom input에서)
-            let position = '';
-            if (positionSelect && positionSelect.value && positionSelect.value !== '직접입력') {
-                position = positionSelect.value;
-            } else if (positionCustomInput && positionCustomInput.value) {
-                position = positionCustomInput.value;
-            }
-            
-            // 소속 데이터 수집 (select 또는 custom input에서)
-            let department = '';
-            if (departmentSelect && departmentSelect.value && departmentSelect.value !== '직접입력') {
-                department = departmentSelect.value;
-            } else if (departmentCustomInput && departmentCustomInput.value) {
-                department = departmentCustomInput.value;
-            }
-            
-            // 업무 데이터 수집 (select 또는 custom input에서)
-            let work = '';
-            if (workSelect && workSelect.value && workSelect.value !== '직접입력') {
-                work = workSelect.value;
-            } else if (workCustomInput && workCustomInput.value) {
-                work = workCustomInput.value;
-            }
-            
-            // 참석여부 데이터 수집
+            const position = positionInput ? positionInput.value : '';
+            const department = departmentInput ? departmentInput.value : '';
+            const work = workInput ? workInput.value : '';
             const attendance = attendanceSelect?.value || 'N';
             
             console.log(`참석자 데이터 수집: index=${index}, name=${nameInput?.value}, attendance=${attendance}`);
