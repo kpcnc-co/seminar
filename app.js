@@ -2564,10 +2564,10 @@ class SeminarPlanningApp {
             // 나머지 부분들을 4칸 들여쓰기와 함께 추가
             for (let i = 1; i < parts.length; i++) {
                 if (i == 1 && parts[i].trim()) {
-                    result += '&nbsp;&nbsp;&nbsp;&nbsp;□ ' + parts[i]; // 4칸 들여쓰기
+                    result += '    □ ' + parts[i]; // 4칸 들여쓰기
                 }
                 if (i !=1 && parts[i].trim()) {
-                    result += '<br>&nbsp;&nbsp;&nbsp;&nbsp;□ ' + parts[i]; // 4칸 들여쓰기
+                    result += '<br>    □ ' + parts[i]; // 4칸 들여쓰기
                 }
             }
             
@@ -4030,7 +4030,7 @@ class SeminarPlanningApp {
                     {
                         columns: [
                             {
-                                text: '&nbsp;&nbsp;&nbsp;&nbsp;□ 일시/장소:',
+                                text: '  □ 일시/장소:',
                                 width: 'auto'
                             },
                             {
@@ -4043,7 +4043,7 @@ class SeminarPlanningApp {
                     {
                         columns: [
                             {
-                                text: '&nbsp;&nbsp;&nbsp;&nbsp;□ 참석 인력:',
+                                text: '  □ 참석 인력:',
                                 width: 'auto'
                             },
                             {
@@ -4158,7 +4158,7 @@ class SeminarPlanningApp {
             const dateString = currentDate.getFullYear().toString() + 
                               (currentDate.getMonth() + 1).toString().padStart(2, '0') + 
                               currentDate.getDate().toString().padStart(2, '0');
-            pdfMake.createPdf(docDefinition).download(`${dateString} 전사 신기술 세미나 시행결과.pdf`);
+            pdfMake.createPdf(docDefinition).download(`${dateString} 전사 신기술 세미나 실시결과.pdf`);
             this.showSuccessToast('PDF 실시결과가 성공적으로 생성되었습니다.');
             this.showLoading(false);
             
@@ -4195,7 +4195,7 @@ class SeminarPlanningApp {
             const dateString = currentDate.getFullYear().toString() + 
                               (currentDate.getMonth() + 1).toString().padStart(2, '0') + 
                               currentDate.getDate().toString().padStart(2, '0');
-            newWindow.document.title = `${dateString} 전사 신기술 세미나 시행결과.pdf`;
+            newWindow.document.title = `${dateString} 전사 신기술 세미나 실시결과.pdf`;
             
             // 인쇄 대화상자 열기
             setTimeout(() => {
@@ -4228,26 +4228,26 @@ class SeminarPlanningApp {
             // □ 로 시작하는 경우 (공백 포함)
             if (trimmedLine.startsWith('□ ')) {
                 const content = trimmedLine.substring(2).trim();
-                result.push(`&nbsp;&nbsp;□ ${content}`);
+                result.push(`  □ ${content}`);
             }
             // - 로 시작하는 경우 (공백 포함)
             else if (trimmedLine.startsWith('- ')) {
                 const content = trimmedLine.substring(2).trim();
-                result.push(`&nbsp;&nbsp;&nbsp;&nbsp;- ${content}`);
+                result.push(`    - ${content}`);
             }
             // □ 로 시작하는 경우 (공백 없음)
             else if (trimmedLine.startsWith('□')) {
                 const content = trimmedLine.substring(1).trim();
-                result.push(`&nbsp;&nbsp;□ ${content}`);
+                result.push(`  □ ${content}`);
             }
             // - 로 시작하는 경우 (공백 없음)
             else if (trimmedLine.startsWith('-')) {
                 const content = trimmedLine.substring(1).trim();
-                result.push(`&nbsp;&nbsp;&nbsp;&nbsp;- ${content}`);
+                result.push(`    - ${content}`);
             }
             // 일반 텍스트인 경우
             else {
-                result.push(`&nbsp;&nbsp;□ ${trimmedLine}`);
+                result.push(`  □ ${trimmedLine}`);
             }
         }
         
