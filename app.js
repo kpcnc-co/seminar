@@ -461,6 +461,9 @@ class SeminarPlanningApp {
         this.populateAttendeeTable();
         console.log('참석자 테이블 채우기 완료');
         
+        // 스케치 초기화 먼저 실행
+        this.resetSketches();
+        
         // 실시결과 데이터도 함께 로드 (목표 포함)
         await this.loadMainResultData();
         
@@ -1891,7 +1894,8 @@ class SeminarPlanningApp {
             location: '',
             attendees: '',
             timeSchedule: [],
-            attendeeList: []
+            attendeeList: [],
+            sketches: []
         };
         
         // Firebase 문서 ID 초기화
@@ -1913,6 +1917,9 @@ class SeminarPlanningApp {
         
         // 기본 행 추가 (직접 생성)
         this.addDefaultRows();
+        
+        // 스케치 초기화 (스케치0, 스케치1만 남기고 나머지 제거)
+        this.resetSketches();
         
         // PDF 실시결과 내보내기 버튼 숨기기
         this.toggleExportResultPDFButton();
@@ -4627,14 +4634,12 @@ class SeminarPlanningApp {
                     console.log('✅ currentData에서 스케치 정보 발견:', this.currentData.sketches);
                     this.populateMainResultForm({ sketches: this.currentData.sketches });
                 } else {
-                    console.log('ℹ️ currentData에도 스케치 정보가 없음, 폼 초기화');
-                    this.clearMainResultForm();
+                    console.log('ℹ️ currentData에도 스케치 정보가 없음, 기존 상태 유지');
                 }
             }
             
         } catch (error) {
             console.error('메인화면 실시결과 데이터 로드 오류:', error);
-            this.clearMainResultForm();
         }
     }
 
