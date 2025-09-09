@@ -160,6 +160,17 @@ class SeminarPlanningApp {
         document.getElementById('mainDownloadFile2').addEventListener('click', () => this.downloadMainFile(2));
         document.getElementById('mainFileUploadArea2').addEventListener('click', () => document.getElementById('mainSketchFile2').click());
         
+        // 스케치 업로드 추가 버튼
+        document.getElementById('addSketchUpload').addEventListener('click', () => this.addSketchUpload());
+        
+        // 스케치 삭제 버튼 (이벤트 위임)
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.removeSketchBtn')) {
+                const sketchNumber = e.target.closest('.removeSketchBtn').getAttribute('data-sketch-number');
+                this.removeSketchUpload(parseInt(sketchNumber));
+            }
+        });
+        
         // 메인화면 실시결과 저장 버튼
         //document.getElementById('saveMainResultBtn').addEventListener('click', () => this.saveMainResultData());
              
@@ -283,16 +294,20 @@ class SeminarPlanningApp {
     
     // 스케치 정보 변경 여부 확인
     hasSketchChanges() {
-        // 스케치 1 확인
-        const title1 = document.getElementById('mainSketchTitle1').value.trim();
-        const file1 = document.getElementById('mainSketchFile1').files[0];
+        const container = document.getElementById('sketchUploadContainer');
+        const sketchElements = container.querySelectorAll('[data-sketch-number]');
         
-        // 스케치 2 확인
-        const title2 = document.getElementById('mainSketchTitle2').value.trim();
-        const file2 = document.getElementById('mainSketchFile2').files[0];
+        let hasCurrentChanges = false;
         
-        // 제목이나 파일이 있으면 변경된 것으로 간주
-        const hasCurrentChanges = (title1.length > 0 || file1) || (title2.length > 0 || file2);
+        sketchElements.forEach((sketchElement) => {
+            const sketchNumber = sketchElement.getAttribute('data-sketch-number');
+            const title = document.getElementById(`mainSketchTitle${sketchNumber}`)?.value.trim() || '';
+            const file = document.getElementById(`mainSketchFile${sketchNumber}`)?.files[0];
+            
+            if (title.length > 0 || file) {
+                hasCurrentChanges = true;
+            }
+        });
         
         // currentData에 스케치 정보가 있는지 확인 (조회된 데이터가 있는 경우)
         const hasExistingSketchData = this.currentData && this.currentData.sketches && this.currentData.sketches.length > 0;
@@ -4297,6 +4312,181 @@ class SeminarPlanningApp {
         return attendees;
     }
 
+    // 스케치 업로드 추가
+    addSketchUpload() {
+        const container = document.getElementById('sketchUploadContainer');
+        const existingSketches = container.querySelectorAll('[data-sketch-number]');
+        const nextSketchNumber = existingSketches.length + 1;
+        
+        // 최대 10개까지만 추가 가능
+        if (nextSketchNumber > 10) {
+            this.showErrorToast('최대 10개의 스케치만 추가할 수 있습니다.');
+            return;
+        }
+        
+        const sketchDiv = document.createElement('div');
+        sketchDiv.className = 'border border-gray-200 rounded-lg p-4';
+        sketchDiv.setAttribute('data-sketch-number', nextSketchNumber);
+        
+        sketchDiv.innerHTML = `
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-md font-medium text-gray-700 flex items-center">
+                    <i class="fas fa-image text-orange-500 mr-2"></i>
+                    스케치 ${nextSketchNumber}
+                </h3>
+                <button type="button" class="removeSketchBtn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm transition-colors duration-200" data-sketch-number="${nextSketchNumber}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block mb-2">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white text-xs font-semibold shadow-sm">
+                            <i class="fas fa-heading mr-2"></i>업로드 제목
+                        </span>
+                    </label>
+                    <input type="text" id="mainSketchTitle${nextSketchNumber}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="스케치 제목을 입력하세요">
+                </div>
+                <div>
+                    <label class="block mb-2">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white text-xs font-semibold shadow-sm">
+                            <i class="fas fa-file-image mr-2"></i>이미지 파일
+                        </span>
+                    </label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-orange-400 transition-colors duration-200">
+                        <input type="file" id="mainSketchFile${nextSketchNumber}" accept="image/*" class="hidden">
+                        <div id="mainFileUploadArea${nextSketchNumber}" class="cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-gray-600 text-sm mb-1">클릭하여 이미지를 선택하세요</p>
+                            <p class="text-xs text-gray-500">JPG, PNG, GIF 파일만 업로드 가능합니다</p>
+                        </div>
+                        <div id="mainFilePreview${nextSketchNumber}" class="hidden mt-3">
+                            <img id="mainPreviewImage${nextSketchNumber}" class="max-w-full max-h-32 mx-auto rounded-lg shadow-md">
+                            <p id="mainFileName${nextSketchNumber}" class="text-xs text-gray-600 mt-2"></p>
+                            <div class="mt-2 flex justify-center space-x-2">
+                                <button type="button" id="mainDownloadFile${nextSketchNumber}" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center">
+                                    <i class="fas fa-download mr-1"></i>파일 다운로드
+                                </button>
+                                <button type="button" id="mainRemoveFile${nextSketchNumber}" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-xs px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center">
+                                    <i class="fas fa-trash mr-1"></i>파일 제거
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(sketchDiv);
+        
+        // 이벤트 리스너 추가
+        this.bindSketchEvents(nextSketchNumber);
+        
+        // 데이터 구조에 추가
+        if (!this.currentData.sketches) {
+            this.currentData.sketches = [];
+        }
+        this.currentData.sketches[nextSketchNumber - 1] = {
+            title: '',
+            imageData: '',
+            fileName: ''
+        };
+        
+        this.showSuccessToast(`스케치 ${nextSketchNumber}이 추가되었습니다.`);
+    }
+    
+    // 스케치 업로드 삭제
+    removeSketchUpload(sketchNumber) {
+        // 최소 1개는 유지
+        const container = document.getElementById('sketchUploadContainer');
+        const existingSketches = container.querySelectorAll('[data-sketch-number]');
+        
+        if (existingSketches.length <= 1) {
+            this.showErrorToast('최소 1개의 스케치는 유지해야 합니다.');
+            return;
+        }
+        
+        if (confirm(`스케치 ${sketchNumber}을 삭제하시겠습니까?`)) {
+            const sketchDiv = container.querySelector(`[data-sketch-number="${sketchNumber}"]`);
+            if (sketchDiv) {
+                sketchDiv.remove();
+                
+                // 데이터에서도 제거
+                if (this.currentData.sketches && this.currentData.sketches[sketchNumber - 1]) {
+                    this.currentData.sketches[sketchNumber - 1] = null;
+                }
+                
+                // 스케치 번호 재정렬
+                this.reorderSketchNumbers();
+                
+                this.showSuccessToast(`스케치 ${sketchNumber}이 삭제되었습니다.`);
+            }
+        }
+    }
+    
+    // 스케치 번호 재정렬
+    reorderSketchNumbers() {
+        const container = document.getElementById('sketchUploadContainer');
+        const sketches = Array.from(container.querySelectorAll('[data-sketch-number]'));
+        
+        sketches.forEach((sketch, index) => {
+            const newNumber = index + 1;
+            sketch.setAttribute('data-sketch-number', newNumber);
+            
+            // 제목 업데이트
+            const titleElement = sketch.querySelector('h3');
+            titleElement.textContent = `스케치 ${newNumber}`;
+            
+            // 삭제 버튼 번호 업데이트
+            const removeBtn = sketch.querySelector('.removeSketchBtn');
+            removeBtn.setAttribute('data-sketch-number', newNumber);
+            
+            // ID 업데이트
+            const inputs = sketch.querySelectorAll('input, button, img, p, div');
+            inputs.forEach(input => {
+                if (input.id) {
+                    const oldId = input.id;
+                    const newId = oldId.replace(/\d+/, newNumber);
+                    input.id = newId;
+                }
+            });
+            
+            // 이벤트 리스너 재바인딩
+            this.bindSketchEvents(newNumber);
+        });
+        
+        // 데이터 재정렬
+        if (this.currentData.sketches) {
+            const validSketches = this.currentData.sketches.filter(sketch => sketch !== null);
+            this.currentData.sketches = validSketches;
+        }
+    }
+    
+    // 스케치 이벤트 바인딩
+    bindSketchEvents(sketchNumber) {
+        // 파일 업로드 이벤트
+        const fileInput = document.getElementById(`mainSketchFile${sketchNumber}`);
+        const uploadArea = document.getElementById(`mainFileUploadArea${sketchNumber}`);
+        const removeBtn = document.getElementById(`mainRemoveFile${sketchNumber}`);
+        const downloadBtn = document.getElementById(`mainDownloadFile${sketchNumber}`);
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => this.handleMainFileUpload(e, sketchNumber));
+        }
+        
+        if (uploadArea) {
+            uploadArea.addEventListener('click', () => fileInput.click());
+        }
+        
+        if (removeBtn) {
+            removeBtn.addEventListener('click', () => this.removeMainFile(sketchNumber));
+        }
+        
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => this.downloadMainFile(sketchNumber));
+        }
+    }
+
     // 메인화면 파일 업로드 처리
     handleMainFileUpload(event, sketchNumber) {
         const file = event.target.files[0];
@@ -4398,32 +4588,23 @@ class SeminarPlanningApp {
     // 메인화면 스케치 데이터 가져오기
     getMainSketchData() {
         const sketches = [];
+        const container = document.getElementById('sketchUploadContainer');
+        const sketchElements = container.querySelectorAll('[data-sketch-number]');
         
-        // 스케치 1
-        const title1 = document.getElementById('mainSketchTitle1').value.trim();
-        const file1 = document.getElementById('mainSketchFile1').files[0];
-        const previewImg1 = document.getElementById('mainPreviewImage1');
-        
-        if (title1 && (file1 || previewImg1?.src)) {
-            sketches.push({
-                title: title1,
-                imageData: previewImg1?.src || null,
-                fileName: file1?.name || '업로드된 이미지'
-            });
-        }
-        
-        // 스케치 2
-        const title2 = document.getElementById('mainSketchTitle2').value.trim();
-        const file2 = document.getElementById('mainSketchFile2').files[0];
-        const previewImg2 = document.getElementById('mainPreviewImage2');
-        
-        if (title2 && (file2 || previewImg2?.src)) {
-            sketches.push({
-                title: title2,
-                imageData: previewImg2?.src || null,
-                fileName: file2?.name || '업로드된 이미지'
-            });
-        }
+        sketchElements.forEach((sketchElement, index) => {
+            const sketchNumber = sketchElement.getAttribute('data-sketch-number');
+            const title = document.getElementById(`mainSketchTitle${sketchNumber}`)?.value.trim() || '';
+            const file = document.getElementById(`mainSketchFile${sketchNumber}`)?.files[0];
+            const previewImg = document.getElementById(`mainPreviewImage${sketchNumber}`);
+            
+            if (title && (file || previewImg?.src)) {
+                sketches.push({
+                    title: title,
+                    imageData: previewImg?.src || null,
+                    fileName: file?.name || '업로드된 이미지'
+                });
+            }
+        });
         
         return sketches;
     }
@@ -4524,57 +4705,45 @@ class SeminarPlanningApp {
             if (resultData.sketches && resultData.sketches.length > 0) {
                 console.log('🖼️ 스케치 데이터 처리:', resultData.sketches);
                 
-                // 스케치 1
-                if (resultData.sketches[0]) {
-                    const sketch1 = resultData.sketches[0];
-                    const title1El = document.getElementById('mainSketchTitle1');
-                    
-                    if (title1El) {
-                        title1El.value = sketch1.title || '';
-                        console.log('✅ 스케치 1 제목 설정:', sketch1.title);
-                    }
-                    
-                    if (sketch1.imageData) {
-                        // Base64 이미지 표시
-                        const previewImg1 = document.getElementById('mainPreviewImage1');
-                        const fileName1 = document.getElementById('mainFileName1');
-                        const preview1 = document.getElementById('mainFilePreview1');
-                        const uploadArea1 = document.getElementById('mainFileUploadArea1');
-                        
-                        if (previewImg1) previewImg1.src = sketch1.imageData;
-                        if (fileName1) fileName1.textContent = sketch1.fileName || '업로드된 이미지';
-                        if (preview1) preview1.classList.remove('hidden');
-                        if (uploadArea1) uploadArea1.classList.add('hidden');
-                        
-                        console.log('✅ 스케치 1 이미지 표시');
-                    }
+                // 기존 스케치들 초기화
+                this.clearMainSketchFields();
+                
+                // 필요한 만큼 스케치 추가
+                const container = document.getElementById('sketchUploadContainer');
+                const existingSketches = container.querySelectorAll('[data-sketch-number]');
+                
+                // 기존 스케치가 데이터보다 적으면 추가
+                while (existingSketches.length < resultData.sketches.length) {
+                    this.addSketchUpload();
                 }
                 
-                // 스케치 2
-                if (resultData.sketches[1]) {
-                    const sketch2 = resultData.sketches[1];
-                    const title2El = document.getElementById('mainSketchTitle2');
-                    
-                    if (title2El) {
-                        title2El.value = sketch2.title || '';
-                        console.log('✅ 스케치 2 제목 설정:', sketch2.title);
-                    }
-                    
-                    if (sketch2.imageData) {
-                        // Base64 이미지 표시
-                        const previewImg2 = document.getElementById('mainPreviewImage2');
-                        const fileName2 = document.getElementById('mainFileName2');
-                        const preview2 = document.getElementById('mainFilePreview2');
-                        const uploadArea2 = document.getElementById('mainFileUploadArea2');
+                // 스케치 데이터 설정
+                resultData.sketches.forEach((sketch, index) => {
+                    if (sketch) {
+                        const sketchNumber = index + 1;
+                        const titleEl = document.getElementById(`mainSketchTitle${sketchNumber}`);
                         
-                        if (previewImg2) previewImg2.src = sketch2.imageData;
-                        if (fileName2) fileName2.textContent = sketch2.fileName || '업로드된 이미지';
-                        if (preview2) preview2.classList.remove('hidden');
-                        if (uploadArea2) uploadArea2.classList.add('hidden');
+                        if (titleEl) {
+                            titleEl.value = sketch.title || '';
+                            console.log(`✅ 스케치 ${sketchNumber} 제목 설정:`, sketch.title);
+                        }
                         
-                        console.log('✅ 스케치 2 이미지 표시');
+                        if (sketch.imageData) {
+                            // Base64 이미지 표시
+                            const previewImg = document.getElementById(`mainPreviewImage${sketchNumber}`);
+                            const fileName = document.getElementById(`mainFileName${sketchNumber}`);
+                            const preview = document.getElementById(`mainFilePreview${sketchNumber}`);
+                            const uploadArea = document.getElementById(`mainFileUploadArea${sketchNumber}`);
+                            
+                            if (previewImg) previewImg.src = sketch.imageData;
+                            if (fileName) fileName.textContent = sketch.fileName || '업로드된 이미지';
+                            if (preview) preview.classList.remove('hidden');
+                            if (uploadArea) uploadArea.classList.add('hidden');
+                            
+                            console.log(`✅ 스케치 ${sketchNumber} 이미지 표시`);
+                        }
                     }
-                }
+                });
             } else {
                 // 스케치가 없으면 초기화
                 console.log('ℹ️ 스케치 데이터가 없어 스케치 필드 초기화');
@@ -4602,17 +4771,28 @@ class SeminarPlanningApp {
 
     // 메인화면 스케치 필드 초기화
     clearMainSketchFields() {
-        // 스케치 1 초기화
-        document.getElementById('mainSketchTitle1').value = '';
-        document.getElementById('mainSketchFile1').value = '';
-        document.getElementById('mainFilePreview1').classList.add('hidden');
-        document.getElementById('mainFileUploadArea1').classList.remove('hidden');
+        const container = document.getElementById('sketchUploadContainer');
+        const sketchElements = container.querySelectorAll('[data-sketch-number]');
         
-        // 스케치 2 초기화
-        document.getElementById('mainSketchTitle2').value = '';
-        document.getElementById('mainSketchFile2').value = '';
-        document.getElementById('mainFilePreview2').classList.add('hidden');
-        document.getElementById('mainFileUploadArea2').classList.remove('hidden');
+        sketchElements.forEach((sketchElement) => {
+            const sketchNumber = sketchElement.getAttribute('data-sketch-number');
+            
+            // 제목 초기화
+            const titleInput = document.getElementById(`mainSketchTitle${sketchNumber}`);
+            if (titleInput) titleInput.value = '';
+            
+            // 파일 초기화
+            const fileInput = document.getElementById(`mainSketchFile${sketchNumber}`);
+            if (fileInput) fileInput.value = '';
+            
+            // 미리보기 숨기기
+            const preview = document.getElementById(`mainFilePreview${sketchNumber}`);
+            if (preview) preview.classList.add('hidden');
+            
+            // 업로드 영역 보이기
+            const uploadArea = document.getElementById(`mainFileUploadArea${sketchNumber}`);
+            if (uploadArea) uploadArea.classList.remove('hidden');
+        });
     }
 
     // 메인화면 실시결과 저장
