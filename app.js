@@ -2299,13 +2299,13 @@ class SeminarPlanningApp {
                     
                     // 기본 정보
                     { text: '1. 목표', style: 'sectionHeader', margin: [0, 0, 0, 5] },
-                    { text: '    □ ' + (safeText(this.currentData.objective) || '미입력'), style: 'tableCell', margin: [0, 0, 0, 10] },
+                    { text: '　　□ ' + (safeText(this.currentData.objective) || '미입력'), style: 'tableCell', margin: [0, 0, 0, 10] },
                     
                     { text: '2. 일시/장소', style: 'sectionHeader', margin: [0, 0, 0, 5] },
-                    { text: '    □ ' + ((formatDateTime(safeText(this.currentData.datetime)) || '미입력') + ' / ' + (safeText(this.currentData.location) || '미입력')), style: 'tableCell', margin: [0, 0, 0, 10] },
+                    { text: '　　□ ' + ((formatDateTime(safeText(this.currentData.datetime)) || '미입력') + ' / ' + (safeText(this.currentData.location) || '미입력')), style: 'tableCell', margin: [0, 0, 0, 10] },
                     
                     { text: '3. 참석 대상', style: 'sectionHeader', margin: [0, 0, 0, 5] },
-                    { text: '    □ ' + (safeText(this.currentData.attendees) || '미입력'), style: 'tableCell', margin: [0, 0, 0, 20] }
+                    { text: '　　□ ' + (safeText(this.currentData.attendees) || '미입력'), style: 'tableCell', margin: [0, 0, 0, 20] }
                 ],
                 styles: {
                     header: {
@@ -2514,7 +2514,7 @@ class SeminarPlanningApp {
         
         // 안전한 텍스트 처리 함수
         const safeText = (text) => {
-            if (!text) return '미입력';
+            if (!text || text.trim() === '') return '미입력';
             return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         };
         
@@ -2537,10 +2537,10 @@ class SeminarPlanningApp {
             // 나머지 부분들을 4칸 들여쓰기와 함께 추가
             for (let i = 1; i < parts.length; i++) {
                 if (i == 1 && parts[i].trim()) {
-                    result += '&nbsp;&nbsp;&nbsp;&nbsp;□ ' + parts[i]; // 4칸 들여쓰기
+                    result += '　　□ ' + parts[i]; // 4칸 들여쓰기
                 }
                 if (i !=1 && parts[i].trim()) {
-                    result += '<br>&nbsp;&nbsp;&nbsp;&nbsp;□ ' + parts[i]; // 4칸 들여쓰기
+                    result += '<br>　　□ ' + parts[i]; // 4칸 들여쓰기
                 }
             }
             
@@ -2722,10 +2722,10 @@ class SeminarPlanningApp {
         <p class="info-content">${formatObjectiveHTML(safeText(this.currentData.objective))}</p>
         
         <h2>2. 일시/장소</h2>
-        <p class="info-content">&nbsp;&nbsp;&nbsp;&nbsp;□ ${formatDateTime(safeText(this.currentData.datetime))} / ${safeText(this.currentData.location)}</p>
+        <p class="info-content">　　□ ${formatDateTime(safeText(this.currentData.datetime))} / ${safeText(this.currentData.location)}</p>
         
         <h2>3. 참석 대상</h2>
-        <p class="info-content">&nbsp;&nbsp;&nbsp;&nbsp;□ ${safeText(this.currentData.attendees)}</p>
+        <p class="info-content">　　□ ${safeText(this.currentData.attendees)}</p>
     </div>
 `;
 
@@ -4003,7 +4003,7 @@ class SeminarPlanningApp {
                     {
                         columns: [
                             {
-                                text: '  □ 일시/장소:',
+                                text: '　　□ 일시/장소:',
                                 width: 'auto'
                             },
                             {
@@ -4016,7 +4016,7 @@ class SeminarPlanningApp {
                     {
                         columns: [
                             {
-                                text: '  □ 참석 인력:',
+                                text: '　　□ 참석 인력:',
                                 width: 'auto'
                             },
                             {
@@ -4081,10 +4081,10 @@ class SeminarPlanningApp {
                             ],
                             ...attendeeList.map((attendee, index) => [
                                 { text: (index + 1).toString(), alignment: 'center' },
-                                { text: attendee.name || '', alignment: 'center' },
-                                { text: attendee.position || '', alignment: 'center' },
-                                { text: attendee.department || '', alignment: 'center' },
-                                { text: attendee.work || '', alignment: 'left' }
+                                { text: attendee.name || '미입력', alignment: 'center' },
+                                { text: attendee.position || '미입력', alignment: 'center' },
+                                { text: attendee.department || '미입력', alignment: 'center' },
+                                { text: attendee.work || '미입력', alignment: 'left' }
                             ])
                         ]
                     },
@@ -4198,26 +4198,26 @@ class SeminarPlanningApp {
             // □ 로 시작하는 경우 (공백 포함)
             if (trimmedLine.startsWith('□ ')) {
                 const content = trimmedLine.substring(2).trim();
-                result.push(`&nbsp;&nbsp;&nbsp;&nbsp;□ ${content}`);
+                result.push(`　　□ ${content}`);
             }
             // - 로 시작하는 경우 (공백 포함)
             else if (trimmedLine.startsWith('- ')) {
                 const content = trimmedLine.substring(2).trim();
-                result.push(`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- ${content}`);
+                result.push(`　　　　- ${content}`);
             }
             // □ 로 시작하는 경우 (공백 없음)
             else if (trimmedLine.startsWith('□')) {
                 const content = trimmedLine.substring(1).trim();
-                result.push(`  □ ${content}`);
+                result.push(`　　${content}`);
             }
             // - 로 시작하는 경우 (공백 없음)
             else if (trimmedLine.startsWith('-')) {
                 const content = trimmedLine.substring(1).trim();
-                result.push(`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- ${content}`);
+                result.push(`　　　　- ${content}`);
             }
             // 일반 텍스트인 경우
             else {
-                result.push(`&nbsp;&nbsp;□ ${trimmedLine}`);
+                result.push(`　　□ ${trimmedLine}`);
             }
         }
         
@@ -4235,25 +4235,49 @@ class SeminarPlanningApp {
             if (cells.length >= 6) { // 참석여부 컬럼 추가로 6개 컬럼
                 const name = cells[1].querySelector('input')?.value || '';
                 
-                // 직급 필드 처리 (select 또는 직접입력)
-                let position = cells[2].querySelector('select')?.value || '';
-                if (position === '직접입력') {
-                    const customPosition = cells[2].querySelector('input[data-field="position-custom"]')?.value || '';
-                    position = customPosition;
+                // 직급 필드 처리 (select 또는 input)
+                let position = '';
+                const positionSelect = cells[2].querySelector('select');
+                const positionInput = cells[2].querySelector('input');
+                
+                if (positionSelect) {
+                    position = positionSelect.value || '';
+                    if (position === '직접입력') {
+                        const customPosition = cells[2].querySelector('input[data-field="position-custom"]')?.value || '';
+                        position = customPosition;
+                    }
+                } else if (positionInput) {
+                    position = positionInput.value || '';
                 }
                 
-                // 소속 필드 처리 (select 또는 직접입력)
-                let department = cells[3].querySelector('select')?.value || '';
-                if (department === '직접입력') {
-                    const customDepartment = cells[3].querySelector('input[data-field="department-custom"]')?.value || '';
-                    department = customDepartment;
+                // 소속 필드 처리 (select 또는 input)
+                let department = '';
+                const departmentSelect = cells[3].querySelector('select');
+                const departmentInput = cells[3].querySelector('input');
+                
+                if (departmentSelect) {
+                    department = departmentSelect.value || '';
+                    if (department === '직접입력') {
+                        const customDepartment = cells[3].querySelector('input[data-field="department-custom"]')?.value || '';
+                        department = customDepartment;
+                    }
+                } else if (departmentInput) {
+                    department = departmentInput.value || '';
                 }
                 
-                // 업무 필드 처리 (select 또는 직접입력)
-                let work = cells[4].querySelector('select')?.value || '';
-                if (work === '직접입력') {
-                    const customWork = cells[4].querySelector('input[data-field="work-custom"]')?.value || '';
-                    work = customWork;
+                // 업무 필드 처리 (select 또는 input)
+                let work = '';
+                const workSelect = cells[4].querySelector('select');
+                const workInput = cells[4].querySelector('input');
+                
+                if (workSelect) {
+                    work = workSelect.value || '';
+                    if (work === '직접입력') {
+                        const customWork = cells[4].querySelector('input[data-field="work-custom"]')?.value || '';
+                        work = customWork;
+                    }
+                } else if (workInput) {
+                    work = workInput.value || '';
                 }
                 
                 const attendance = cells[5].querySelector('select')?.value || 'N'; // 참석여부 값 가져오기
@@ -4842,7 +4866,7 @@ class SeminarPlanningApp {
         
         // 안전한 텍스트 처리 함수
         const safeText = (text) => {
-            if (!text) return '미입력';
+            if (!text || text.trim() === '') return '미입력';
             return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         };
         
@@ -5056,8 +5080,8 @@ class SeminarPlanningApp {
                 </div>  
                 <div class="section">
                     <h2>1. 개요</h2>
-                    <p class="info-content">&nbsp;&nbsp;&nbsp;&nbsp;□ 일시/장소: ${safeText(datetime)} / ${safeText(location)}</p>
-                    <p class="info-content">&nbsp;&nbsp;&nbsp;&nbsp;□ 참석 인력: ${safeText(attendeeTarget)}</p>
+                    <p class="info-content">　　□ 일시/장소: ${safeText(datetime)} / ${safeText(location)}</p>
+                    <p class="info-content">　　□ 참석 인력: ${safeText(attendeeTarget)}</p>
                     
                     <h2>2. 주요 내용</h2>
                     <p class="info-content" style="white-space: pre-line;">${safeText(this.parseMainContent(resultData.mainContent))}</p>
