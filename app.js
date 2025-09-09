@@ -13,6 +13,8 @@ class SeminarPlanningApp {
         };
         
         this.currentDocumentId = null; // Firebase 문서 ID 저장
+        this.originalSession = null; // 원본 회차 저장
+        this.originalDatetime = null; // 원본 일시 저장
         
         // 라이브러리 로딩 상태 확인 및 초기화
         this.initializeApp().catch(error => {
@@ -460,9 +462,6 @@ class SeminarPlanningApp {
         console.log('참석자 테이블 채우기 시작...');
         this.populateAttendeeTable();
         console.log('참석자 테이블 채우기 완료');
-        
-        // 스케치 초기화 먼저 실행
-        this.resetSketches();
         
         // 실시결과 데이터도 함께 로드 (목표 포함)
         await this.loadMainResultData();
@@ -1199,31 +1198,26 @@ class SeminarPlanningApp {
                 return;
             }
             
-            // 회차 + 일시를 키값으로 사용
-            const keyValue = `${this.currentData.session}_${this.currentData.datetime}`;
+            // 회차나 일시가 변경되었는지 확인
+            const sessionChanged = this.originalSession && this.originalSession !== this.currentData.session;
+            const datetimeChanged = this.originalDatetime && this.originalDatetime !== this.currentData.datetime;
+            const isKeyChanged = sessionChanged || datetimeChanged;
             
-            // 기존 데이터에서 동일한 키값을 가진 데이터 찾기
-            const existingData = await this.findExistingDataByKey(keyValue);
+            console.log('🔍 회차/일시 변경 확인:', {
+                originalSession: this.originalSession,
+                currentSession: this.currentData.session,
+                originalDatetime: this.originalDatetime,
+                currentDatetime: this.currentData.datetime,
+                sessionChanged,
+                datetimeChanged,
+                isKeyChanged
+            });
             
             let result;
             
-            if (existingData) {
-                // 기존 데이터가 있으면 수정
-                console.log('기존 데이터 발견, 수정 처리:', existingData.id);
-                
-                if (useLocalStorage) {
-                    result = this.saveToLocalStorage(this.currentData, existingData.id);
-                } else {
-                    result = await window.updateData(existingData.id, this.currentData);
-                }
-                
-                if (result.success) {
-                    this.currentDocumentId = existingData.id;
-                    this.showSuccessToast(`${this.currentData.session} 세미나 데이터가 수정되었습니다.`);
-                }
-            } else {
-                // 기존 데이터가 없으면 새로 등록
-                console.log('새 데이터 등록 처리');
+            if (isKeyChanged) {
+                // 회차나 일시가 변경된 경우 신규 등록
+                console.log('🆕 회차/일시 변경 감지, 신규 등록 처리');
                 
                 if (useLocalStorage) {
                     result = this.saveToLocalStorage(this.currentData);
@@ -1233,7 +1227,51 @@ class SeminarPlanningApp {
                 
                 if (result.success && result.id) {
                     this.currentDocumentId = result.id;
-                    this.showSuccessToast(`${this.currentData.session} 세미나 데이터가 새로 등록되었습니다.`);
+                    this.showSuccessToast(`${this.currentData.session} 세미나 데이터가 새로운 회차/일시로 등록되었습니다.`);
+                    
+                    // 원본 회차/일시 업데이트
+                    this.originalSession = this.currentData.session;
+                    this.originalDatetime = this.currentData.datetime;
+                }
+            } else {
+                // 회차와 일시가 변경되지 않은 경우 기존 로직 사용
+                const keyValue = `${this.currentData.session}_${this.currentData.datetime}`;
+                
+                // 기존 데이터에서 동일한 키값을 가진 데이터 찾기
+                const existingData = await this.findExistingDataByKey(keyValue);
+                
+                if (existingData) {
+                    // 기존 데이터가 있으면 수정
+                    console.log('기존 데이터 발견, 수정 처리:', existingData.id);
+                    
+                    if (useLocalStorage) {
+                        result = this.saveToLocalStorage(this.currentData, existingData.id);
+                    } else {
+                        result = await window.updateData(existingData.id, this.currentData);
+                    }
+                    
+                    if (result.success) {
+                        this.currentDocumentId = existingData.id;
+                        this.showSuccessToast(`${this.currentData.session} 세미나 데이터가 수정되었습니다.`);
+                    }
+                } else {
+                    // 기존 데이터가 없으면 새로 등록
+                    console.log('새 데이터 등록 처리');
+                    
+                    if (useLocalStorage) {
+                        result = this.saveToLocalStorage(this.currentData);
+                    } else {
+                        result = await window.saveData(this.currentData);
+                    }
+                    
+                    if (result.success && result.id) {
+                        this.currentDocumentId = result.id;
+                        this.showSuccessToast(`${this.currentData.session} 세미나 데이터가 새로 등록되었습니다.`);
+                        
+                        // 원본 회차/일시 업데이트
+                        this.originalSession = this.currentData.session;
+                        this.originalDatetime = this.currentData.datetime;
+                    }
                 }
             }
             
@@ -1753,6 +1791,12 @@ class SeminarPlanningApp {
                 // 메인 화면에 데이터 로드
                 this.currentData = normalizedData;
                 this.currentDocumentId = existingData.id; // 찾은 데이터의 ID 사용
+                
+                // 원본 회차와 일시 저장 (변경 감지용)
+                this.originalSession = normalizedData.session;
+                this.originalDatetime = normalizedData.datetime;
+                console.log('📋 원본 회차/일시 저장:', this.originalSession, this.originalDatetime);
+                
                 console.log('📋 currentData 설정 완료:', this.currentData);
                 
                 await this.populateForm();
@@ -1901,6 +1945,10 @@ class SeminarPlanningApp {
         // Firebase 문서 ID 초기화
         this.currentDocumentId = null;
         
+        // 원본 회차/일시 초기화
+        this.originalSession = null;
+        this.originalDatetime = null;
+        
         // 폼 필드 초기화
         document.getElementById('sessionSelect').value = '';
         document.getElementById('sessionInput').value = '';
@@ -2007,6 +2055,10 @@ class SeminarPlanningApp {
             
             // 스케치 초기화 (스케치1, 스케치2만 남기고 나머지 제거)
             this.resetSketches();
+            
+            // 원본 회차/일시 초기화
+            this.originalSession = null;
+            this.originalDatetime = null;
             
             this.showSuccessToast('모든 입력 필드가 초기화되고 기본 행이 추가되었습니다.');
         } catch (error) {
@@ -4688,6 +4740,9 @@ class SeminarPlanningApp {
             if (resultData.sketches && resultData.sketches.length > 0) {
                 console.log('🖼️ 스케치 데이터 처리:', resultData.sketches);
                 
+                // 스케치 초기화 먼저 실행
+                this.resetSketches();
+                
                 // 기존 동적 스케치들 모두 제거 (스케치 0, 1 제외)
                 const container = document.getElementById('sketchUploadContainer');
                 const existingSketches = container.querySelectorAll('[data-sketch-index]');
@@ -4708,7 +4763,13 @@ class SeminarPlanningApp {
                 // 스케치 데이터 설정
                 resultData.sketches.forEach((sketch, index) => {
                     if (sketch) {
-                        const titleEl = document.getElementById(`mainSketchTitle${index}`);
+                        // 스케치가 존재하지 않으면 생성
+                        let titleEl = document.getElementById(`mainSketchTitle${index}`);
+                        if (!titleEl) {
+                            console.log(`스케치 ${index}가 존재하지 않아 생성합니다.`);
+                            this.createDefaultSketch(index);
+                            titleEl = document.getElementById(`mainSketchTitle${index}`);
+                        }
                         
                         if (titleEl) {
                             titleEl.value = sketch.title || '';
@@ -4799,7 +4860,13 @@ class SeminarPlanningApp {
         // 스케치0, 스케치1의 내용만 초기화
         for (let i = 0; i <= 1; i++) {
             const titleInput = document.getElementById(`mainSketchTitle${i}`);
-            if (titleInput) titleInput.value = '';
+            if (titleInput) {
+                titleInput.value = '';
+            } else {
+                // 스케치가 존재하지 않으면 생성
+                console.log(`스케치 ${i}가 존재하지 않아 생성합니다.`);
+                this.createDefaultSketch(i);
+            }
             
             const fileInput = document.getElementById(`mainSketchFile${i}`);
             if (fileInput) fileInput.value = '';
@@ -4817,6 +4884,67 @@ class SeminarPlanningApp {
         }
         
         console.log('스케치 초기화 완료: 스케치1, 스케치2만 유지');
+    }
+
+    // 기본 스케치 생성
+    createDefaultSketch(sketchIndex) {
+        const container = document.getElementById('sketchUploadContainer');
+        
+        // 스케치 div 생성
+        const sketchDiv = document.createElement('div');
+        sketchDiv.className = 'bg-white p-6 rounded-lg border-2 border-dashed border-gray-300 mb-4 relative';
+        sketchDiv.setAttribute('data-sketch-index', sketchIndex);
+        
+        sketchDiv.innerHTML = `
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                    <i class="fas fa-image text-orange-500 mr-2"></i>스케치 업로드
+                </h3>
+                <button type="button" class="removeSketchBtn text-red-500 hover:text-red-700 p-1" data-sketch-index="${sketchIndex}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-heading text-blue-500 mr-1"></i>업로드 제목
+                </label>
+                <input type="text" id="mainSketchTitle${sketchIndex}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="스케치 제목을 입력하세요">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-file-image text-purple-500 mr-1"></i>이미지 파일
+                </label>
+                <div id="mainFileUploadArea${sketchIndex}" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 mb-2">클릭하여 이미지를 선택하세요</p>
+                    <p class="text-sm text-gray-500">JPG, PNG, GIF 파일만 업로드 가능합니다</p>
+                    <input type="file" id="mainSketchFile${sketchIndex}" accept="image/*" class="hidden">
+                </div>
+                
+                <div id="mainFilePreview${sketchIndex}" class="hidden">
+                    <img id="mainPreviewImage${sketchIndex}" class="w-full h-48 object-cover rounded-lg mb-2" alt="미리보기">
+                    <p id="mainFileName${sketchIndex}" class="text-sm text-gray-600 mb-2">업로드된 이미지</p>
+                    <div class="flex space-x-2">
+                        <button type="button" id="mainDownloadFile${sketchIndex}" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
+                            <i class="fas fa-download mr-1"></i>파일 다운로드
+                        </button>
+                        <button type="button" id="mainRemoveFile${sketchIndex}" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
+                            <i class="fas fa-trash mr-1"></i>파일 제거
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // 컨테이너에 추가
+        container.appendChild(sketchDiv);
+        
+        // 이벤트 바인딩
+        this.bindSketchEvents(sketchIndex);
+        
+        console.log(`스케치 ${sketchIndex} 생성 완료`);
     }
 
     // 메인화면 실시결과 저장
