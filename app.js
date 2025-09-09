@@ -4316,13 +4316,18 @@ class SeminarPlanningApp {
     addSketchUpload() {
         const container = document.getElementById('sketchUploadContainer');
         const existingSketches = container.querySelectorAll('[data-sketch-number]');
-        const nextSketchNumber = existingSketches.length + 1;
+        
+        // 현재 스케치 개수 확인
+        const currentCount = existingSketches.length;
         
         // 최대 10개까지만 추가 가능
-        if (nextSketchNumber > 10) {
+        if (currentCount >= 10) {
             this.showErrorToast('최대 10개의 스케치만 추가할 수 있습니다.');
             return;
         }
+        
+        // 다음 스케치 번호는 현재 개수 + 1
+        const nextSketchNumber = currentCount + 1;
         
         const sketchDiv = document.createElement('div');
         sketchDiv.className = 'border border-gray-200 rounded-lg p-4';
@@ -4429,30 +4434,42 @@ class SeminarPlanningApp {
         const container = document.getElementById('sketchUploadContainer');
         const sketches = Array.from(container.querySelectorAll('[data-sketch-number]'));
         
+        // 스케치를 현재 DOM 순서대로 정렬
+        sketches.sort((a, b) => {
+            const aRect = a.getBoundingClientRect();
+            const bRect = b.getBoundingClientRect();
+            return aRect.top - bRect.top;
+        });
+        
         sketches.forEach((sketch, index) => {
             const newNumber = index + 1;
-            sketch.setAttribute('data-sketch-number', newNumber);
+            const oldNumber = sketch.getAttribute('data-sketch-number');
             
-            // 제목 업데이트
-            const titleElement = sketch.querySelector('h3');
-            titleElement.textContent = `스케치 ${newNumber}`;
-            
-            // 삭제 버튼 번호 업데이트
-            const removeBtn = sketch.querySelector('.removeSketchBtn');
-            removeBtn.setAttribute('data-sketch-number', newNumber);
-            
-            // ID 업데이트
-            const inputs = sketch.querySelectorAll('input, button, img, p, div');
-            inputs.forEach(input => {
-                if (input.id) {
-                    const oldId = input.id;
-                    const newId = oldId.replace(/\d+/, newNumber);
-                    input.id = newId;
-                }
-            });
-            
-            // 이벤트 리스너 재바인딩
-            this.bindSketchEvents(newNumber);
+            // 번호가 변경된 경우에만 업데이트
+            if (parseInt(oldNumber) !== newNumber) {
+                sketch.setAttribute('data-sketch-number', newNumber);
+                
+                // 제목 업데이트
+                const titleElement = sketch.querySelector('h3');
+                titleElement.textContent = `스케치 ${newNumber}`;
+                
+                // 삭제 버튼 번호 업데이트
+                const removeBtn = sketch.querySelector('.removeSketchBtn');
+                removeBtn.setAttribute('data-sketch-number', newNumber);
+                
+                // ID 업데이트
+                const inputs = sketch.querySelectorAll('input, button, img, p, div');
+                inputs.forEach(input => {
+                    if (input.id) {
+                        const oldId = input.id;
+                        const newId = oldId.replace(/\d+/, newNumber);
+                        input.id = newId;
+                    }
+                });
+                
+                // 이벤트 리스너 재바인딩
+                this.bindSketchEvents(newNumber);
+            }
         });
         
         // 데이터 재정렬
@@ -4705,15 +4722,20 @@ class SeminarPlanningApp {
             if (resultData.sketches && resultData.sketches.length > 0) {
                 console.log('🖼️ 스케치 데이터 처리:', resultData.sketches);
                 
-                // 기존 스케치들 초기화
-                this.clearMainSketchFields();
-                
-                // 필요한 만큼 스케치 추가
+                // 기존 스케치들 모두 제거 (스케치 1, 2 제외)
                 const container = document.getElementById('sketchUploadContainer');
                 const existingSketches = container.querySelectorAll('[data-sketch-number]');
                 
-                // 기존 스케치가 데이터보다 적으면 추가
-                while (existingSketches.length < resultData.sketches.length) {
+                // 스케치 3번부터 모두 제거
+                existingSketches.forEach(sketch => {
+                    const sketchNumber = parseInt(sketch.getAttribute('data-sketch-number'));
+                    if (sketchNumber > 2) {
+                        sketch.remove();
+                    }
+                });
+                
+                // 필요한 만큼 스케치 추가 (순차적으로)
+                for (let i = 2; i < resultData.sketches.length; i++) {
                     this.addSketchUpload();
                 }
                 
