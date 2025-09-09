@@ -4465,24 +4465,34 @@ class SeminarPlanningApp {
             const futurePlanEl = document.getElementById('mainResultFuturePlan');
             
             if (mainContentEl) {
-                if (resultData.mainContent) {
-                    mainContentEl.value = resultData.mainContent;
-                    console.log('✅ 주요 내용 설정 (실시결과 데이터):', resultData.mainContent);
+                if (Object.prototype.hasOwnProperty.call(resultData, 'mainContent')) {
+                    // 값이 존재(빈 문자열 포함)하면 해당 값 반영
+                    mainContentEl.value = resultData.mainContent || '';
+                    if (resultData.mainContent) {
+                        console.log('✅ 주요 내용 설정 (실시결과 데이터):', resultData.mainContent);
+                    } else {
+                        console.log('ℹ️ 실시결과 데이터에 주요 내용이 비어있음, 빈 값 반영');
+                    }
                 } else {
-                    mainContentEl.value = '';
-                    console.log('ℹ️ 실시결과 데이터에 주요 내용이 없음, 폼 값 초기화');
+                    // partial 업데이트 시 기존 값 유지
+                    console.log('↩️ 주요 내용 키가 없어 기존 값 유지');
                 }
                 // PDF 실시결과 내보내기 버튼 상태 업데이트
                 this.toggleExportResultPDFButton();
             }
             
             if (futurePlanEl) {
-                if (resultData.futurePlan) {
-                    futurePlanEl.value = resultData.futurePlan;
-                    console.log('✅ 향후 계획 설정 (실시결과 데이터):', resultData.futurePlan);
+                if (Object.prototype.hasOwnProperty.call(resultData, 'futurePlan')) {
+                    // 값이 존재(빈 문자열 포함)하면 해당 값 반영
+                    futurePlanEl.value = resultData.futurePlan || '';
+                    if (resultData.futurePlan) {
+                        console.log('✅ 향후 계획 설정 (실시결과 데이터):', resultData.futurePlan);
+                    } else {
+                        console.log('ℹ️ 실시결과 데이터에 향후 계획이 비어있음, 빈 값 반영');
+                    }
                 } else {
-                    futurePlanEl.value = '';
-                    console.log('ℹ️ 실시결과 데이터에 향후 계획이 없음, 폼 값 초기화');
+                    // partial 업데이트 시 기존 값 유지
+                    console.log('↩️ 향후 계획 키가 없어 기존 값 유지');
                 }
             }
             
