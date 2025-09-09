@@ -4573,10 +4573,12 @@ class SeminarPlanningApp {
             const file = document.getElementById(`mainSketchFile${sketchIndex}`)?.files[0];
             const previewImg = document.getElementById(`mainPreviewImage${sketchIndex}`);
             
-            if (title && (file || previewImg?.src)) {
+            // imageData가 있고 비어있지 않은 경우만 추가
+            const imageData = previewImg?.src;
+            if (imageData && imageData.trim() !== '') {
                 sketches.push({
                     title: title,
-                    imageData: previewImg?.src || null,
+                    imageData: imageData,
                     fileName: file?.name || '업로드된 이미지'
                 });
             }
@@ -4834,82 +4836,21 @@ class SeminarPlanningApp {
             const mainContent = document.getElementById('mainResultContent')?.value?.trim() || '';
             const futurePlan = document.getElementById('mainResultFuturePlan')?.value?.trim() || '';
             
-            // 스케치 1 정보
-            const sketchTitle1 = document.getElementById('mainSketchTitle0')?.value?.trim() || '';
-            const sketchFile1 = document.getElementById('mainSketchFile0')?.files?.[0];
-            
-            // 스케치 2 정보
-            const sketchTitle2 = document.getElementById('mainSketchTitle1')?.value?.trim() || '';
-            const sketchFile2 = document.getElementById('mainSketchFile1')?.files?.[0];
-            
-            // 실시결과 입력 항목과 스케치 정보는 필수값이 아니므로 유효성 검사 제거
-            // 공백값으로도 저장 가능
+            // 스케치 데이터는 getMainSketchData()에서 처리됨
             
             // 기존 실시결과 데이터 조회
             const existingResult = await loadResultDataByKey(session, datetime);
             
-            // 실시결과 데이터 구성 (기존 스케치 데이터로 초기화)
+            // 실시결과 데이터 구성 (현재 UI의 스케치 데이터 사용)
             const resultData = {
                 session: session,
                 datetime: datetime,
                 mainContent: mainContent || '', // 공백값도 저장 가능
                 futurePlan: futurePlan || '', // 공백값도 저장 가능
-                sketches: existingResult && existingResult.sketches ? [...existingResult.sketches] : []
+                sketches: this.getMainSketchData() // 현재 UI의 스케치 데이터 사용
             };
             
-            // 스케치 1 처리
-            if (sketchFile1) {
-                // 새 파일이 업로드된 경우
-                const uploadResult = await uploadImage(sketchFile1, '');
-                if (uploadResult.success) {
-                    const sketch1Data = {
-                        title: sketchTitle1,
-                        imageData: uploadResult.url,
-                        fileName: sketchFile1.name
-                    };
-                    // 기존 스케치 1이 있으면 교체, 없으면 추가
-                    if (resultData.sketches.length > 0) {
-                        resultData.sketches[0] = sketch1Data;
-                    } else {
-                        resultData.sketches.push(sketch1Data);
-                    }
-                } else {
-                    this.showErrorToast(`스케치 1 업로드 실패: ${uploadResult.message}`);
-                    this.showLoading(false);
-                    return;
-                }
-            } else if (sketchTitle1 && resultData.sketches.length > 0) {
-                // 새 파일은 없지만 제목이 변경된 경우 (기존 스케치 1의 제목만 업데이트)
-                resultData.sketches[0].title = sketchTitle1;
-            }
-            
-            // 스케치 2 처리
-            if (sketchFile2) {
-                // 새 파일이 업로드된 경우
-                const uploadResult = await uploadImage(sketchFile2, '');
-                if (uploadResult.success) {
-                    const sketch2Data = {
-                        title: sketchTitle2,
-                        imageData: uploadResult.url,
-                        fileName: sketchFile2.name
-                    };
-                    // 기존 스케치 2가 있으면 교체, 없으면 추가
-                    if (resultData.sketches.length > 1) {
-                        resultData.sketches[1] = sketch2Data;
-                    } else if (resultData.sketches.length === 1) {
-                        resultData.sketches.push(sketch2Data);
-                    } else {
-                        resultData.sketches.push(sketch2Data);
-                    }
-                } else {
-                    this.showErrorToast(`스케치 2 업로드 실패: ${uploadResult.message}`);
-                    this.showLoading(false);
-                    return;
-                }
-            } else if (sketchTitle2 && resultData.sketches.length > 1) {
-                // 새 파일은 없지만 제목이 변경된 경우 (기존 스케치 2의 제목만 업데이트)
-                resultData.sketches[1].title = sketchTitle2;
-            }
+            // 스케치 데이터는 getMainSketchData()에서 처리됨 (imageData가 있는 것만 포함)
             
             // 데이터 저장
             const result = await saveResultData(resultData);
@@ -4945,91 +4886,19 @@ class SeminarPlanningApp {
                 return;
             }
             
-            // 스케치 1 정보
-            const sketchTitle1 = document.getElementById('mainSketchTitle0')?.value?.trim() || '';
-            const sketchFile1 = document.getElementById('mainSketchFile0')?.files?.[0];
-            
-            // 스케치 2 정보
-            const sketchTitle2 = document.getElementById('mainSketchTitle1')?.value?.trim() || '';
-            const sketchFile2 = document.getElementById('mainSketchFile1')?.files?.[0];
-            
-            // 스케치 정보는 필수값이 아니므로 유효성 검사 제거
-            // 공백값으로도 저장 가능 (스케치 정보를 모두 지우고 저장하는 경우)
+            // 스케치 데이터는 getMainSketchData()에서 처리됨
             
             // 기존 실시결과 데이터 조회
             const existingResult = await loadResultDataByKey(session, datetime);
             
-            // 스케치 데이터만 구성
+            // 스케치 데이터만 구성 (현재 UI의 스케치 데이터 사용)
             const sketchData = {
                 session: session,
                 datetime: datetime,
-                sketches: existingResult && existingResult.sketches ? [...existingResult.sketches] : []
+                sketches: this.getMainSketchData() // 현재 UI의 스케치 데이터 사용 (imageData가 있는 것만 포함)
             };
             
-            // 현재 변경사항 확인
-            const hasCurrentChanges = sketchFile1 || sketchFile2 || sketchTitle1 || sketchTitle2;
-            const hasExistingSketchData = this.currentData && this.currentData.sketches && this.currentData.sketches.length > 0;
-            
-            // 스케치 정보가 없는 경우 공백으로 저장
-            // 현재 변경사항이 없고 기존 스케치 데이터가 있는 경우, 모든 스케치를 삭제하는 것으로 간주
-            // 또는 스케치 정보를 모두 지우고 저장하는 경우도 허용
-            if (!hasCurrentChanges) {
-                sketchData.sketches = []; // 빈 배열로 설정하여 모든 스케치 삭제 또는 공백 저장
-            }
-            
-            // 스케치 1 처리
-            if (sketchFile1) {
-                // 새 파일이 업로드된 경우
-                const uploadResult = await uploadImage(sketchFile1, '');
-                if (uploadResult.success) {
-                    const sketch1Data = {
-                        title: sketchTitle1,
-                        imageData: uploadResult.url,
-                        fileName: sketchFile1.name
-                    };
-                    // 기존 스케치 1이 있으면 교체, 없으면 추가
-                    if (sketchData.sketches.length > 0) {
-                        sketchData.sketches[0] = sketch1Data;
-                    } else {
-                        sketchData.sketches.push(sketch1Data);
-                    }
-                } else {
-                    this.showErrorToast(`스케치 1 업로드 실패: ${uploadResult.message}`);
-                    this.showLoading(false);
-                    return;
-                }
-            } else if (sketchTitle1 && sketchData.sketches.length > 0) {
-                // 새 파일은 없지만 제목이 변경된 경우 (기존 스케치 1의 제목만 업데이트)
-                sketchData.sketches[0].title = sketchTitle1;
-            }
-            
-            // 스케치 2 처리
-            if (sketchFile2) {
-                // 새 파일이 업로드된 경우
-                const uploadResult = await uploadImage(sketchFile2, '');
-                if (uploadResult.success) {
-                    const sketch2Data = {
-                        title: sketchTitle2,
-                        imageData: uploadResult.url,
-                        fileName: sketchFile2.name
-                    };
-                    // 기존 스케치 2가 있으면 교체, 없으면 추가
-                    if (sketchData.sketches.length > 1) {
-                        sketchData.sketches[1] = sketch2Data;
-                    } else if (sketchData.sketches.length === 1) {
-                        sketchData.sketches.push(sketch2Data);
-                    } else {
-                        sketchData.sketches.push(sketch2Data);
-                    }
-                } else {
-                    this.showErrorToast(`스케치 2 업로드 실패: ${uploadResult.message}`);
-                    this.showLoading(false);
-                    return;
-                }
-            } else if (sketchTitle2 && sketchData.sketches.length > 1) {
-                // 새 파일은 없지만 제목이 변경된 경우 (기존 스케치 2의 제목만 업데이트)
-                sketchData.sketches[1].title = sketchTitle2;
-            }
+            // 스케치 데이터는 getMainSketchData()에서 처리됨 (imageData가 있는 것만 포함)
             
             // 스케치 데이터만 저장
             const result = await saveResultData(sketchData);
