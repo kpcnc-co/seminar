@@ -297,14 +297,14 @@ class SeminarPlanningApp {
     // 스케치 정보 변경 여부 확인
     hasSketchChanges() {
         const container = document.getElementById('sketchUploadContainer');
-        const sketchElements = container.querySelectorAll('[data-sketch-number]');
+        const sketchElements = container.querySelectorAll('[data-sketch-index]');
         
         let hasCurrentChanges = false;
         
         sketchElements.forEach((sketchElement) => {
-            const sketchNumber = sketchElement.getAttribute('data-sketch-number');
-            const title = document.getElementById(`mainSketchTitle${sketchNumber}`)?.value.trim() || '';
-            const file = document.getElementById(`mainSketchFile${sketchNumber}`)?.files[0];
+            const sketchIndex = sketchElement.getAttribute('data-sketch-index');
+            const title = document.getElementById(`mainSketchTitle${sketchIndex}`)?.value.trim() || '';
+            const file = document.getElementById(`mainSketchFile${sketchIndex}`)?.files[0];
             
             if (title.length > 0 || file) {
                 hasCurrentChanges = true;
@@ -4565,13 +4565,13 @@ class SeminarPlanningApp {
     getMainSketchData() {
         const sketches = [];
         const container = document.getElementById('sketchUploadContainer');
-        const sketchElements = container.querySelectorAll('[data-sketch-number]');
+        const sketchElements = container.querySelectorAll('[data-sketch-index]');
         
         sketchElements.forEach((sketchElement, index) => {
-            const sketchNumber = sketchElement.getAttribute('data-sketch-number');
-            const title = document.getElementById(`mainSketchTitle${sketchNumber}`)?.value.trim() || '';
-            const file = document.getElementById(`mainSketchFile${sketchNumber}`)?.files[0];
-            const previewImg = document.getElementById(`mainPreviewImage${sketchNumber}`);
+            const sketchIndex = sketchElement.getAttribute('data-sketch-index');
+            const title = document.getElementById(`mainSketchTitle${sketchIndex}`)?.value.trim() || '';
+            const file = document.getElementById(`mainSketchFile${sketchIndex}`)?.files[0];
+            const previewImg = document.getElementById(`mainPreviewImage${sketchIndex}`);
             
             if (title && (file || previewImg?.src)) {
                 sketches.push({
@@ -4681,14 +4681,14 @@ class SeminarPlanningApp {
             if (resultData.sketches && resultData.sketches.length > 0) {
                 console.log('🖼️ 스케치 데이터 처리:', resultData.sketches);
                 
-                // 기존 동적 스케치들 모두 제거 (스케치 1, 2 제외)
+                // 기존 동적 스케치들 모두 제거 (스케치 0, 1 제외)
                 const container = document.getElementById('sketchUploadContainer');
-                const existingSketches = container.querySelectorAll('[data-sketch-number]');
+                const existingSketches = container.querySelectorAll('[data-sketch-index]');
                 
-                // 스케치 3번부터 모두 제거
+                // 스케치 인덱스 2번부터 모두 제거
                 existingSketches.forEach(sketch => {
-                    const sketchNumber = parseInt(sketch.getAttribute('data-sketch-number'));
-                    if (sketchNumber > 2) {
+                    const sketchIndex = parseInt(sketch.getAttribute('data-sketch-index'));
+                    if (sketchIndex >= 2) {
                         sketch.remove();
                     }
                 });
@@ -4701,27 +4701,26 @@ class SeminarPlanningApp {
                 // 스케치 데이터 설정
                 resultData.sketches.forEach((sketch, index) => {
                     if (sketch) {
-                        const sketchNumber = index + 1;
-                        const titleEl = document.getElementById(`mainSketchTitle${sketchNumber}`);
+                        const titleEl = document.getElementById(`mainSketchTitle${index}`);
                         
                         if (titleEl) {
                             titleEl.value = sketch.title || '';
-                            console.log(`✅ 스케치 ${sketchNumber} 제목 설정:`, sketch.title);
+                            console.log(`✅ 스케치 ${index} 제목 설정:`, sketch.title);
                         }
                         
                         if (sketch.imageData) {
                             // Base64 이미지 표시
-                            const previewImg = document.getElementById(`mainPreviewImage${sketchNumber}`);
-                            const fileName = document.getElementById(`mainFileName${sketchNumber}`);
-                            const preview = document.getElementById(`mainFilePreview${sketchNumber}`);
-                            const uploadArea = document.getElementById(`mainFileUploadArea${sketchNumber}`);
+                            const previewImg = document.getElementById(`mainPreviewImage${index}`);
+                            const fileName = document.getElementById(`mainFileName${index}`);
+                            const preview = document.getElementById(`mainFilePreview${index}`);
+                            const uploadArea = document.getElementById(`mainFileUploadArea${index}`);
                             
                             if (previewImg) previewImg.src = sketch.imageData;
                             if (fileName) fileName.textContent = sketch.fileName || '업로드된 이미지';
                             if (preview) preview.classList.remove('hidden');
                             if (uploadArea) uploadArea.classList.add('hidden');
                             
-                            console.log(`✅ 스케치 ${sketchNumber} 이미지 표시`);
+                            console.log(`✅ 스케치 ${index} 이미지 표시`);
                         }
                     }
                 });
@@ -4753,45 +4752,45 @@ class SeminarPlanningApp {
     // 메인화면 스케치 필드 초기화
     clearMainSketchFields() {
         const container = document.getElementById('sketchUploadContainer');
-        const sketchElements = container.querySelectorAll('[data-sketch-number]');
+        const sketchElements = container.querySelectorAll('[data-sketch-index]');
         
         sketchElements.forEach((sketchElement) => {
-            const sketchNumber = sketchElement.getAttribute('data-sketch-number');
+            const sketchIndex = sketchElement.getAttribute('data-sketch-index');
             
             // 제목 초기화
-            const titleInput = document.getElementById(`mainSketchTitle${sketchNumber}`);
+            const titleInput = document.getElementById(`mainSketchTitle${sketchIndex}`);
             if (titleInput) titleInput.value = '';
             
             // 파일 초기화
-            const fileInput = document.getElementById(`mainSketchFile${sketchNumber}`);
+            const fileInput = document.getElementById(`mainSketchFile${sketchIndex}`);
             if (fileInput) fileInput.value = '';
             
             // 미리보기 숨기기
-            const preview = document.getElementById(`mainFilePreview${sketchNumber}`);
+            const preview = document.getElementById(`mainFilePreview${sketchIndex}`);
             if (preview) preview.classList.add('hidden');
             
             // 업로드 영역 보이기
-            const uploadArea = document.getElementById(`mainFileUploadArea${sketchNumber}`);
+            const uploadArea = document.getElementById(`mainFileUploadArea${sketchIndex}`);
             if (uploadArea) uploadArea.classList.remove('hidden');
         });
     }
 
-    // 스케치 초기화 (스케치1, 스케치2만 남기고 나머지 제거)
+    // 스케치 초기화 (스케치0, 스케치1만 남기고 나머지 제거)
     resetSketches() {
         const container = document.getElementById('sketchUploadContainer');
-        const existingSketches = container.querySelectorAll('[data-sketch-number]');
+        const existingSketches = container.querySelectorAll('[data-sketch-index]');
         
-        // 스케치3부터 모든 동적 스케치 제거
+        // 스케치 인덱스 2부터 모든 동적 스케치 제거
         existingSketches.forEach(sketch => {
-            const sketchNumber = parseInt(sketch.getAttribute('data-sketch-number'));
-            if (sketchNumber > 2) {
-                console.log(`스케치 ${sketchNumber} 제거`);
+            const sketchIndex = parseInt(sketch.getAttribute('data-sketch-index'));
+            if (sketchIndex >= 2) {
+                console.log(`스케치 ${sketchIndex} 제거`);
                 sketch.remove();
             }
         });
         
-        // 스케치1, 스케치2의 내용만 초기화
-        for (let i = 1; i <= 2; i++) {
+        // 스케치0, 스케치1의 내용만 초기화
+        for (let i = 0; i <= 1; i++) {
             const titleInput = document.getElementById(`mainSketchTitle${i}`);
             if (titleInput) titleInput.value = '';
             
@@ -4836,12 +4835,12 @@ class SeminarPlanningApp {
             const futurePlan = document.getElementById('mainResultFuturePlan').value.trim();
             
             // 스케치 1 정보
-            const sketchTitle1 = document.getElementById('mainSketchTitle1').value.trim();
-            const sketchFile1 = document.getElementById('mainSketchFile1').files[0];
+            const sketchTitle1 = document.getElementById('mainSketchTitle0').value.trim();
+            const sketchFile1 = document.getElementById('mainSketchFile0').files[0];
             
             // 스케치 2 정보
-            const sketchTitle2 = document.getElementById('mainSketchTitle2').value.trim();
-            const sketchFile2 = document.getElementById('mainSketchFile2').files[0];
+            const sketchTitle2 = document.getElementById('mainSketchTitle1').value.trim();
+            const sketchFile2 = document.getElementById('mainSketchFile1').files[0];
             
             // 실시결과 입력 항목과 스케치 정보는 필수값이 아니므로 유효성 검사 제거
             // 공백값으로도 저장 가능
@@ -4947,12 +4946,12 @@ class SeminarPlanningApp {
             }
             
             // 스케치 1 정보
-            const sketchTitle1 = document.getElementById('mainSketchTitle1').value.trim();
-            const sketchFile1 = document.getElementById('mainSketchFile1').files[0];
+            const sketchTitle1 = document.getElementById('mainSketchTitle0').value.trim();
+            const sketchFile1 = document.getElementById('mainSketchFile0').files[0];
             
             // 스케치 2 정보
-            const sketchTitle2 = document.getElementById('mainSketchTitle2').value.trim();
-            const sketchFile2 = document.getElementById('mainSketchFile2').files[0];
+            const sketchTitle2 = document.getElementById('mainSketchTitle1').value.trim();
+            const sketchFile2 = document.getElementById('mainSketchFile1').files[0];
             
             // 스케치 정보는 필수값이 아니므로 유효성 검사 제거
             // 공백값으로도 저장 가능 (스케치 정보를 모두 지우고 저장하는 경우)
