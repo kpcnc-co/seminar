@@ -4320,21 +4320,35 @@ class SeminarPlanningApp {
     // 스케치 업로드 추가
     addSketchUpload() {
         const container = document.getElementById('sketchUploadContainer');
-        const existingSketches = container.querySelectorAll('[data-sketch-number]');
         
-        // 현재 스케치 개수 확인
-        const currentCount = existingSketches.length;
+        // 더 정확한 개수 체크: 컨테이너의 직접 자식 요소 중 스케치 div 개수 확인
+        const sketchDivs = Array.from(container.children).filter(child => 
+            child.hasAttribute('data-sketch-number') || 
+            child.classList.contains('border') // 스케치 div의 공통 클래스
+        );
+        
+        const currentCount = sketchDivs.length;
+        
+        console.log('addSketchUpload 호출됨');
+        console.log('컨테이너 자식 요소 개수:', container.children.length);
+        console.log('스케치 div 개수:', currentCount);
+        console.log('스케치 divs:', sketchDivs.map(sketch => ({
+            element: sketch,
+            number: sketch.getAttribute('data-sketch-number'),
+            title: sketch.querySelector('h3')?.textContent
+        })));
         
         // 최대 10개까지만 추가 가능
         if (currentCount >= 10) {
+            console.log('스케치 개수 제한에 걸림:', currentCount);
             this.showErrorToast('최대 10개의 스케치만 추가할 수 있습니다.');
             return;
         }
         
         // 기존 스케치 번호들을 배열로 수집하고 최대값 찾기
-        const existingNumbers = Array.from(existingSketches).map(sketch => 
+        const existingNumbers = sketchDivs.map(sketch => 
             parseInt(sketch.getAttribute('data-sketch-number'))
-        );
+        ).filter(num => !isNaN(num));
         
         // 다음 스케치 번호 계산 (기존 번호 중 최대값 + 1)
         const nextSketchNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
@@ -4416,16 +4430,24 @@ class SeminarPlanningApp {
         
         // 최소 1개는 유지
         const container = document.getElementById('sketchUploadContainer');
-        const existingSketches = container.querySelectorAll('[data-sketch-number]');
         
-        console.log('현재 스케치 개수:', existingSketches.length);
-        console.log('기존 스케치들:', Array.from(existingSketches).map(sketch => ({
+        // 더 정확한 개수 체크: 컨테이너의 직접 자식 요소 중 스케치 div 개수 확인
+        const sketchDivs = Array.from(container.children).filter(child => 
+            child.hasAttribute('data-sketch-number') || 
+            child.classList.contains('border') // 스케치 div의 공통 클래스
+        );
+        
+        const currentCount = sketchDivs.length;
+        
+        console.log('컨테이너 자식 요소 개수:', container.children.length);
+        console.log('스케치 div 개수:', currentCount);
+        console.log('스케치 divs:', sketchDivs.map(sketch => ({
             element: sketch,
             number: sketch.getAttribute('data-sketch-number'),
             title: sketch.querySelector('h3')?.textContent
         })));
         
-        if (existingSketches.length <= 1) {
+        if (currentCount <= 1) {
             this.showErrorToast('최소 1개의 스케치는 유지해야 합니다.');
             return;
         }
@@ -4457,6 +4479,13 @@ class SeminarPlanningApp {
     reorderSketchNumbers() {
         const container = document.getElementById('sketchUploadContainer');
         const sketches = Array.from(container.querySelectorAll('[data-sketch-number]'));
+        
+        console.log('reorderSketchNumbers 시작, 발견된 스케치 개수:', sketches.length);
+        console.log('발견된 스케치들:', sketches.map(sketch => ({
+            element: sketch,
+            number: sketch.getAttribute('data-sketch-number'),
+            title: sketch.querySelector('h3')?.textContent
+        })));
         
         // 스케치를 현재 DOM 순서대로 정렬 (위치 기준)
         sketches.sort((a, b) => {
