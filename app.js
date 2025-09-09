@@ -4820,8 +4820,8 @@ class SeminarPlanningApp {
             }
             
             // 현재 세미나 정보 가져오기
-            const session = document.getElementById('sessionSelect').value || document.getElementById('sessionInput').value;
-            const datetime = document.getElementById('datetime').value;
+            const session = document.getElementById('sessionSelect')?.value || document.getElementById('sessionInput')?.value || '';
+            const datetime = document.getElementById('datetime')?.value || '';
             
             if (!session || !datetime) {
                 this.showErrorToast('먼저 세미나 정보를 입력해주세요.');
@@ -4831,16 +4831,16 @@ class SeminarPlanningApp {
                 return;
             }
             
-            const mainContent = document.getElementById('mainResultContent').value.trim();
-            const futurePlan = document.getElementById('mainResultFuturePlan').value.trim();
+            const mainContent = document.getElementById('mainResultContent')?.value?.trim() || '';
+            const futurePlan = document.getElementById('mainResultFuturePlan')?.value?.trim() || '';
             
             // 스케치 1 정보
-            const sketchTitle1 = document.getElementById('mainSketchTitle0').value.trim();
-            const sketchFile1 = document.getElementById('mainSketchFile0').files[0];
+            const sketchTitle1 = document.getElementById('mainSketchTitle0')?.value?.trim() || '';
+            const sketchFile1 = document.getElementById('mainSketchFile0')?.files?.[0];
             
             // 스케치 2 정보
-            const sketchTitle2 = document.getElementById('mainSketchTitle1').value.trim();
-            const sketchFile2 = document.getElementById('mainSketchFile1').files[0];
+            const sketchTitle2 = document.getElementById('mainSketchTitle1')?.value?.trim() || '';
+            const sketchFile2 = document.getElementById('mainSketchFile1')?.files?.[0];
             
             // 실시결과 입력 항목과 스케치 정보는 필수값이 아니므로 유효성 검사 제거
             // 공백값으로도 저장 가능
@@ -4936,8 +4936,8 @@ class SeminarPlanningApp {
             this.showLoading(true);
             
             // 현재 세미나 정보 가져오기
-            const session = document.getElementById('sessionSelect').value || document.getElementById('sessionInput').value;
-            const datetime = document.getElementById('datetime').value;
+            const session = document.getElementById('sessionSelect')?.value || document.getElementById('sessionInput')?.value || '';
+            const datetime = document.getElementById('datetime')?.value || '';
             
             if (!session || !datetime) {
                 this.showErrorToast('먼저 세미나 정보를 입력해주세요.');
@@ -4946,12 +4946,12 @@ class SeminarPlanningApp {
             }
             
             // 스케치 1 정보
-            const sketchTitle1 = document.getElementById('mainSketchTitle0').value.trim();
-            const sketchFile1 = document.getElementById('mainSketchFile0').files[0];
+            const sketchTitle1 = document.getElementById('mainSketchTitle0')?.value?.trim() || '';
+            const sketchFile1 = document.getElementById('mainSketchFile0')?.files?.[0];
             
             // 스케치 2 정보
-            const sketchTitle2 = document.getElementById('mainSketchTitle1').value.trim();
-            const sketchFile2 = document.getElementById('mainSketchFile1').files[0];
+            const sketchTitle2 = document.getElementById('mainSketchTitle1')?.value?.trim() || '';
+            const sketchFile2 = document.getElementById('mainSketchFile1')?.files?.[0];
             
             // 스케치 정보는 필수값이 아니므로 유효성 검사 제거
             // 공백값으로도 저장 가능 (스케치 정보를 모두 지우고 저장하는 경우)
