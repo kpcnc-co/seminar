@@ -166,7 +166,9 @@ class SeminarPlanningApp {
         // 스케치 삭제 버튼 (이벤트 위임)
         document.addEventListener('click', (e) => {
             if (e.target.closest('.removeSketchBtn')) {
-                const sketchNumber = e.target.closest('.removeSketchBtn').getAttribute('data-sketch-number');
+                const removeBtn = e.target.closest('.removeSketchBtn');
+                const sketchNumber = removeBtn.getAttribute('data-sketch-number');
+                console.log('삭제 버튼 클릭됨, data-sketch-number:', sketchNumber);
                 this.removeSketchUpload(parseInt(sketchNumber));
             }
         });
@@ -4410,9 +4412,18 @@ class SeminarPlanningApp {
     
     // 스케치 업로드 삭제
     removeSketchUpload(sketchNumber) {
+        console.log('removeSketchUpload 호출됨, sketchNumber:', sketchNumber);
+        
         // 최소 1개는 유지
         const container = document.getElementById('sketchUploadContainer');
         const existingSketches = container.querySelectorAll('[data-sketch-number]');
+        
+        console.log('현재 스케치 개수:', existingSketches.length);
+        console.log('기존 스케치들:', Array.from(existingSketches).map(sketch => ({
+            element: sketch,
+            number: sketch.getAttribute('data-sketch-number'),
+            title: sketch.querySelector('h3')?.textContent
+        })));
         
         if (existingSketches.length <= 1) {
             this.showErrorToast('최소 1개의 스케치는 유지해야 합니다.');
@@ -4436,6 +4447,8 @@ class SeminarPlanningApp {
                 }, 100);
                 
                 this.showSuccessToast(`스케치 ${sketchNumber}이 삭제되었습니다.`);
+            } else {
+                console.log(`스케치 ${sketchNumber}을 찾을 수 없음`);
             }
         }
     }
