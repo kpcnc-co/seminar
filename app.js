@@ -2537,10 +2537,10 @@ class SeminarPlanningApp {
             // 나머지 부분들을 4칸 들여쓰기와 함께 추가
             for (let i = 1; i < parts.length; i++) {
                 if (i == 1 && parts[i].trim()) {
-                    result += '    □ ' + parts[i]; // 4칸 들여쓰기
+                    result += '&nbsp;&nbsp;&nbsp;&nbsp;□ ' + parts[i]; // 4칸 들여쓰기
                 }
                 if (i !=1 && parts[i].trim()) {
-                    result += '<br>    □ ' + parts[i]; // 4칸 들여쓰기
+                    result += '<br>&nbsp;&nbsp;&nbsp;&nbsp;□ ' + parts[i]; // 4칸 들여쓰기
                 }
             }
             
@@ -4198,12 +4198,12 @@ class SeminarPlanningApp {
             // □ 로 시작하는 경우 (공백 포함)
             if (trimmedLine.startsWith('□ ')) {
                 const content = trimmedLine.substring(2).trim();
-                result.push(`  □ ${content}`);
+                result.push(`&nbsp;&nbsp;&nbsp;&nbsp;□ ${content}`);
             }
             // - 로 시작하는 경우 (공백 포함)
             else if (trimmedLine.startsWith('- ')) {
                 const content = trimmedLine.substring(2).trim();
-                result.push(`    - ${content}`);
+                result.push(`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- ${content}`);
             }
             // □ 로 시작하는 경우 (공백 없음)
             else if (trimmedLine.startsWith('□')) {
@@ -4213,11 +4213,11 @@ class SeminarPlanningApp {
             // - 로 시작하는 경우 (공백 없음)
             else if (trimmedLine.startsWith('-')) {
                 const content = trimmedLine.substring(1).trim();
-                result.push(`    - ${content}`);
+                result.push(`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- ${content}`);
             }
             // 일반 텍스트인 경우
             else {
-                result.push(`  □ ${trimmedLine}`);
+                result.push(`&nbsp;&nbsp;□ ${trimmedLine}`);
             }
         }
         
@@ -5056,8 +5056,8 @@ class SeminarPlanningApp {
                 </div>  
                 <div class="section">
                     <h2>1. 개요</h2>
-                    <p class="info-content">&nbsp;&nbsp;□ 일시/장소: ${safeText(datetime)} / ${safeText(location)}</p>
-                    <p class="info-content">&nbsp;&nbsp;□ 참석 인력: ${safeText(attendeeTarget)}</p>
+                    <p class="info-content">&nbsp;&nbsp;&nbsp;&nbsp;□ 일시/장소: ${safeText(datetime)} / ${safeText(location)}</p>
+                    <p class="info-content">&nbsp;&nbsp;&nbsp;&nbsp;□ 참석 인력: ${safeText(attendeeTarget)}</p>
                     
                     <h2>2. 주요 내용</h2>
                     <p class="info-content" style="white-space: pre-line;">${safeText(this.parseMainContent(resultData.mainContent))}</p>
