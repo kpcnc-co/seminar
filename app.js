@@ -1996,6 +1996,9 @@ class SeminarPlanningApp {
             this.addTimeRow();
             this.addAttendeeRow();
             
+            // 스케치 초기화 (스케치1, 스케치2만 남기고 나머지 제거)
+            this.resetSketches();
+            
             this.showSuccessToast('모든 입력 필드가 초기화되고 기본 행이 추가되었습니다.');
         } catch (error) {
             console.error('폼 초기화 오류:', error);
@@ -4830,6 +4833,43 @@ class SeminarPlanningApp {
             const uploadArea = document.getElementById(`mainFileUploadArea${sketchNumber}`);
             if (uploadArea) uploadArea.classList.remove('hidden');
         });
+    }
+
+    // 스케치 초기화 (스케치1, 스케치2만 남기고 나머지 제거)
+    resetSketches() {
+        const container = document.getElementById('sketchUploadContainer');
+        const existingSketches = container.querySelectorAll('[data-sketch-number]');
+        
+        // 스케치3부터 모든 동적 스케치 제거
+        existingSketches.forEach(sketch => {
+            const sketchNumber = parseInt(sketch.getAttribute('data-sketch-number'));
+            if (sketchNumber > 2) {
+                console.log(`스케치 ${sketchNumber} 제거`);
+                sketch.remove();
+            }
+        });
+        
+        // 스케치1, 스케치2의 내용만 초기화
+        for (let i = 1; i <= 2; i++) {
+            const titleInput = document.getElementById(`mainSketchTitle${i}`);
+            if (titleInput) titleInput.value = '';
+            
+            const fileInput = document.getElementById(`mainSketchFile${i}`);
+            if (fileInput) fileInput.value = '';
+            
+            const preview = document.getElementById(`mainFilePreview${i}`);
+            if (preview) preview.classList.add('hidden');
+            
+            const uploadArea = document.getElementById(`mainFileUploadArea${i}`);
+            if (uploadArea) uploadArea.classList.remove('hidden');
+        }
+        
+        // 데이터에서도 동적 스케치 제거
+        if (this.currentData.sketches) {
+            this.currentData.sketches = this.currentData.sketches.slice(0, 2);
+        }
+        
+        console.log('스케치 초기화 완료: 스케치1, 스케치2만 유지');
     }
 
     // 메인화면 실시결과 저장
