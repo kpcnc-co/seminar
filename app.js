@@ -1235,38 +1235,38 @@ class SeminarPlanningApp {
                 }
             } else {
                 // 회차와 일시가 변경되지 않은 경우 기존 로직 사용
-                const keyValue = `${this.currentData.session}_${this.currentData.datetime}`;
+            const keyValue = `${this.currentData.session}_${this.currentData.datetime}`;
+            
+            // 기존 데이터에서 동일한 키값을 가진 데이터 찾기
+            const existingData = await this.findExistingDataByKey(keyValue);
+            
+            if (existingData) {
+                // 기존 데이터가 있으면 수정
+                console.log('기존 데이터 발견, 수정 처리:', existingData.id);
                 
-                // 기존 데이터에서 동일한 키값을 가진 데이터 찾기
-                const existingData = await this.findExistingDataByKey(keyValue);
-                
-                if (existingData) {
-                    // 기존 데이터가 있으면 수정
-                    console.log('기존 데이터 발견, 수정 처리:', existingData.id);
-                    
-                    if (useLocalStorage) {
-                        result = this.saveToLocalStorage(this.currentData, existingData.id);
-                    } else {
-                        result = await window.updateData(existingData.id, this.currentData);
-                    }
-                    
-                    if (result.success) {
-                        this.currentDocumentId = existingData.id;
-                        this.showSuccessToast(`${this.currentData.session} 세미나 데이터가 수정되었습니다.`);
-                    }
+                if (useLocalStorage) {
+                    result = this.saveToLocalStorage(this.currentData, existingData.id);
                 } else {
-                    // 기존 데이터가 없으면 새로 등록
-                    console.log('새 데이터 등록 처리');
-                    
-                    if (useLocalStorage) {
-                        result = this.saveToLocalStorage(this.currentData);
-                    } else {
-                        result = await window.saveData(this.currentData);
-                    }
-                    
-                    if (result.success && result.id) {
-                        this.currentDocumentId = result.id;
-                        this.showSuccessToast(`${this.currentData.session} 세미나 데이터가 새로 등록되었습니다.`);
+                    result = await window.updateData(existingData.id, this.currentData);
+                }
+                
+                if (result.success) {
+                    this.currentDocumentId = existingData.id;
+                    this.showSuccessToast(`${this.currentData.session} 세미나 데이터가 수정되었습니다.`);
+                }
+            } else {
+                // 기존 데이터가 없으면 새로 등록
+                console.log('새 데이터 등록 처리');
+                
+                if (useLocalStorage) {
+                    result = this.saveToLocalStorage(this.currentData);
+                } else {
+                    result = await window.saveData(this.currentData);
+                }
+                
+                if (result.success && result.id) {
+                    this.currentDocumentId = result.id;
+                    this.showSuccessToast(`${this.currentData.session} 세미나 데이터가 새로 등록되었습니다.`);
                         
                         // 원본 회차/일시 업데이트
                         this.originalSession = this.currentData.session;
@@ -1968,6 +1968,12 @@ class SeminarPlanningApp {
         
         // 스케치 초기화 (스케치0, 스케치1만 남기고 나머지 제거)
         this.resetSketches();
+        
+        // 실시결과 필드 초기화
+        const mainResultContent = document.getElementById('mainResultContent');
+        const mainResultFuturePlan = document.getElementById('mainResultFuturePlan');
+        if (mainResultContent) mainResultContent.value = '';
+        if (mainResultFuturePlan) mainResultFuturePlan.value = '';
         
         // PDF 실시결과 내보내기 버튼 숨기기
         this.toggleExportResultPDFButton();
@@ -3914,7 +3920,31 @@ class SeminarPlanningApp {
 
             // Firebase에서 데이터 삭제
             if (this.currentDocumentId) {
+                // 실행계획 데이터 삭제
                 const result = await window.deleteData(this.currentDocumentId);
+                
+                // 실시결과 데이터도 삭제
+                if (this.currentData.session && this.currentData.datetime) {
+                    const keyValue = `${this.currentData.session}_${this.currentData.datetime}`;
+                    console.log('🗑️ 실시결과 데이터 삭제 시도:', keyValue);
+                    
+                    try {
+                        if (useLocalStorage) {
+                            // 로컬 스토리지에서 실시결과 데이터 삭제
+                            const existingResults = JSON.parse(localStorage.getItem('seminarResults') || '{}');
+                            delete existingResults[keyValue];
+                            localStorage.setItem('seminarResults', JSON.stringify(existingResults));
+                            console.log('✅ 로컬 스토리지에서 실시결과 데이터 삭제 완료');
+                        } else {
+                            // Firebase에서 실시결과 데이터 삭제
+                            await db.collection('seminarResults').doc(keyValue).delete();
+                            console.log('✅ Firebase에서 실시결과 데이터 삭제 완료');
+                        }
+                    } catch (error) {
+                        console.error('실시결과 데이터 삭제 오류:', error);
+                    }
+                }
+                
                 if (result.success) {
                     this.showSuccessToast('데이터가 성공적으로 삭제되었습니다.');
                     
@@ -3926,18 +3956,42 @@ class SeminarPlanningApp {
                         location: '',
                         attendees: '',
                         timeSchedule: [],
-                        attendeeList: []
+                        attendeeList: [],
+                        sketches: []
                     };
                     this.currentDocumentId = null;
                     
+                    // 원본 회차/일시 초기화
+                    this.originalSession = null;
+                    this.originalDatetime = null;
+                    
                     // 폼 초기화
                     this.initializeMainForm();
+                    
+                    // 실시결과 폼도 초기화
+                    this.clearMainResultForm();
                 } else {
                     this.showErrorToast(`데이터 삭제 실패: ${result.error}`);
                 }
             } else {
                 // 로컬 스토리지에서 데이터 삭제
                 localStorage.removeItem('seminarData');
+                
+                // 실시결과 데이터도 삭제
+                if (this.currentData.session && this.currentData.datetime) {
+                    const keyValue = `${this.currentData.session}_${this.currentData.datetime}`;
+                    console.log('🗑️ 로컬 스토리지에서 실시결과 데이터 삭제 시도:', keyValue);
+                    
+                    try {
+                        const existingResults = JSON.parse(localStorage.getItem('seminarResults') || '{}');
+                        delete existingResults[keyValue];
+                        localStorage.setItem('seminarResults', JSON.stringify(existingResults));
+                        console.log('✅ 로컬 스토리지에서 실시결과 데이터 삭제 완료');
+                    } catch (error) {
+                        console.error('실시결과 데이터 삭제 오류:', error);
+                    }
+                }
+                
                 this.showSuccessToast('데이터가 성공적으로 삭제되었습니다.');
                 
                 // 현재 데이터 초기화
@@ -3948,12 +4002,20 @@ class SeminarPlanningApp {
                     location: '',
                     attendees: '',
                     timeSchedule: [],
-                    attendeeList: []
+                    attendeeList: [],
+                    sketches: []
                 };
                 this.currentDocumentId = null;
                 
+                // 원본 회차/일시 초기화
+                this.originalSession = null;
+                this.originalDatetime = null;
+                
                 // 폼 초기화
                 this.initializeMainForm();
+                
+                // 실시결과 폼도 초기화
+                this.clearMainResultForm();
             }
         } catch (error) {
             console.error('데이터 삭제 오류:', error);
@@ -4321,9 +4383,9 @@ class SeminarPlanningApp {
                 
                 if (positionSelect) {
                     position = positionSelect.value || '';
-                    if (position === '직접입력') {
-                        const customPosition = cells[2].querySelector('input[data-field="position-custom"]')?.value || '';
-                        position = customPosition;
+                if (position === '직접입력') {
+                    const customPosition = cells[2].querySelector('input[data-field="position-custom"]')?.value || '';
+                    position = customPosition;
                     }
                 } else if (positionInput) {
                     position = positionInput.value || '';
@@ -4336,9 +4398,9 @@ class SeminarPlanningApp {
                 
                 if (departmentSelect) {
                     department = departmentSelect.value || '';
-                    if (department === '직접입력') {
-                        const customDepartment = cells[3].querySelector('input[data-field="department-custom"]')?.value || '';
-                        department = customDepartment;
+                if (department === '직접입력') {
+                    const customDepartment = cells[3].querySelector('input[data-field="department-custom"]')?.value || '';
+                    department = customDepartment;
                     }
                 } else if (departmentInput) {
                     department = departmentInput.value || '';
@@ -4351,9 +4413,9 @@ class SeminarPlanningApp {
                 
                 if (workSelect) {
                     work = workSelect.value || '';
-                    if (work === '직접입력') {
-                        const customWork = cells[4].querySelector('input[data-field="work-custom"]')?.value || '';
-                        work = customWork;
+                if (work === '직접입력') {
+                    const customWork = cells[4].querySelector('input[data-field="work-custom"]')?.value || '';
+                    work = customWork;
                     }
                 } else if (workInput) {
                     work = workInput.value || '';
@@ -4635,7 +4697,7 @@ class SeminarPlanningApp {
             // imageData가 있고 비어있지 않은 경우만 추가
             const imageData = previewImg?.src;
             if (imageData && imageData.trim() !== '') {
-                sketches.push({
+            sketches.push({
                     title: title,
                     imageData: imageData,
                     fileName: file?.name || '업로드된 이미지'
@@ -4777,7 +4839,7 @@ class SeminarPlanningApp {
                         }
                         
                         if (sketch.imageData) {
-                            // Base64 이미지 표시
+                        // Base64 이미지 표시
                             const previewImg = document.getElementById(`mainPreviewImage${index}`);
                             const fileName = document.getElementById(`mainFileName${index}`);
                             const preview = document.getElementById(`mainFilePreview${index}`);
@@ -4812,8 +4874,13 @@ class SeminarPlanningApp {
 
     // 메인화면 실시결과 폼 초기화
     clearMainResultForm() {
-        // 목표, 주요 내용, 향후 계획은 기본 정보이므로 클리어하지 않음
-        // 스케치만 초기화
+        // 실시결과 필드 초기화
+        const mainResultContent = document.getElementById('mainResultContent');
+        const mainResultFuturePlan = document.getElementById('mainResultFuturePlan');
+        if (mainResultContent) mainResultContent.value = '';
+        if (mainResultFuturePlan) mainResultFuturePlan.value = '';
+        
+        // 스케치도 초기화
         this.clearMainSketchFields();
     }
 
