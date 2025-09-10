@@ -4442,12 +4442,9 @@ class SeminarPlanningApp {
     addSketchUpload() {
         const container = document.getElementById('sketchUploadContainer');
         
-        // 현재 스케치 개수 확인 (실제로 보이는 스케치만)
-        const visibleSketches = Array.from(container.children).filter(child => 
-            child.getAttribute('data-sketch-index') !== null && 
-            child.offsetParent !== null
-        );
-        const currentCount = visibleSketches.length;
+        // 현재 실제로 존재하는 스케치 개수 확인
+        const existingSketches = container.querySelectorAll('[data-sketch-index]');
+        const currentCount = existingSketches.length;
         
         console.log('addSketchUpload 호출됨, 현재 개수:', currentCount);
         
@@ -4533,10 +4530,13 @@ class SeminarPlanningApp {
     
     // 스케치 업로드 삭제
     removeSketchUpload(sketchIndex) {
-        console.log('removeSketchUpload 호출됨, sketchIndex:', sketchIndex);
+        console.log('🗑️ removeSketchUpload 호출됨, sketchIndex:', sketchIndex);
         
         const container = document.getElementById('sketchUploadContainer');
-        const currentCount = container.children.length;
+        const existingSketches = container.querySelectorAll('[data-sketch-index]');
+        const currentCount = existingSketches.length;
+        
+        console.log(`📊 삭제 전 스케치 개수: ${currentCount}`);
         
         // 최소 1개는 유지
         if (currentCount <= 1) {
@@ -4547,32 +4547,30 @@ class SeminarPlanningApp {
         if (confirm('스케치 업로드를 삭제하시겠습니까?')) {
             const sketchDiv = container.querySelector(`[data-sketch-index="${sketchIndex}"]`);
             if (sketchDiv) {
-                console.log(`스케치 인덱스 ${sketchIndex} 삭제 시작`);
+                console.log(`🗑️ 스케치 인덱스 ${sketchIndex} 삭제 시작`);
                 
                 // DOM에서 완전히 제거
                 sketchDiv.remove();
-                console.log(`스케치 ${sketchIndex} DOM에서 제거됨`);
+                console.log(`✅ 스케치 ${sketchIndex} DOM에서 제거됨`);
                 
                 // 데이터에서도 제거 (배열에서 완전히 제거)
                 if (this.currentData.sketches && this.currentData.sketches[sketchIndex]) {
                     this.currentData.sketches.splice(sketchIndex, 1);
-                    console.log(`스케치 ${sketchIndex} 데이터에서 제거됨`);
+                    console.log(`✅ 스케치 ${sketchIndex} 데이터에서 제거됨`);
                 }
                 
                 // 인덱스 재정렬
                 this.reindexSketches();
                 
                 // 삭제 후 현재 스케치 개수 확인
-                const remainingCount = container.children.length;
-                console.log(`삭제 후 남은 스케치 개수: ${remainingCount}`);
-                
-                // 삭제 후 스케치 상태 확인
                 const remainingSketches = container.querySelectorAll('[data-sketch-index]');
-                console.log(`삭제 후 남은 스케치 요소들:`, Array.from(remainingSketches).map(s => s.getAttribute('data-sketch-index')));
+                const remainingCount = remainingSketches.length;
+                console.log(`📊 삭제 후 남은 스케치 개수: ${remainingCount}`);
+                console.log(`📊 삭제 후 남은 스케치 인덱스:`, Array.from(remainingSketches).map(s => s.getAttribute('data-sketch-index')));
                 
                 this.showSuccessToast('스케치 업로드가 삭제되었습니다.');
             } else {
-                console.log(`스케치 인덱스 ${sketchIndex}을 찾을 수 없음`);
+                console.log(`❌ 스케치 인덱스 ${sketchIndex}을 찾을 수 없음`);
             }
         }
     }
@@ -4584,6 +4582,11 @@ class SeminarPlanningApp {
         
         console.log(`🔄 스케치 재정렬 시작, 총 ${sketches.length}개 스케치`);
         
+        if (sketches.length === 0) {
+            console.log('⚠️ 재정렬할 스케치가 없음');
+            return;
+        }
+        
         // 스케치를 인덱스 순으로 정렬
         sketches.sort((a, b) => {
             const indexA = parseInt(a.getAttribute('data-sketch-index'));
@@ -4591,39 +4594,40 @@ class SeminarPlanningApp {
             return indexA - indexB;
         });
         
+        // 각 스케치의 인덱스를 0부터 순차적으로 재설정
         sketches.forEach((sketch, newIndex) => {
             const oldIndex = parseInt(sketch.getAttribute('data-sketch-index'));
             
             // 인덱스가 이미 올바르면 건너뛰기
             if (oldIndex === newIndex) {
-                console.log(`스케치 인덱스 ${oldIndex}는 이미 올바름`);
+                console.log(`✅ 스케치 인덱스 ${oldIndex}는 이미 올바름`);
                 return;
             }
             
+            console.log(`🔄 스케치 인덱스 ${oldIndex} -> ${newIndex}로 재정렬`);
+            
+            // data-sketch-index 속성 업데이트
             sketch.setAttribute('data-sketch-index', newIndex);
             
-            // ID들도 업데이트
-            const titleInput = sketch.querySelector(`#mainSketchTitle${oldIndex}`);
-            if (titleInput) titleInput.id = `mainSketchTitle${newIndex}`;
-            
-            const fileInput = sketch.querySelector(`#mainSketchFile${oldIndex}`);
-            if (fileInput) fileInput.id = `mainSketchFile${newIndex}`;
-            
-            const removeBtn = sketch.querySelector('.removeSketchBtn');
-            if (removeBtn) removeBtn.setAttribute('data-sketch-index', newIndex);
-            
-            // 기타 ID들도 업데이트
+            // 모든 관련 ID들 업데이트
             const elementsToUpdate = [
-                'mainFileUploadArea', 'mainFilePreview', 'mainPreviewImage', 
-                'mainFileName', 'mainRemoveFile', 'mainDownloadFile'
+                'mainSketchTitle', 'mainSketchFile', 'mainFileUploadArea', 
+                'mainFilePreview', 'mainPreviewImage', 'mainFileName', 
+                'mainRemoveFile', 'mainDownloadFile'
             ];
             
             elementsToUpdate.forEach(prefix => {
                 const element = sketch.querySelector(`#${prefix}${oldIndex}`);
-                if (element) element.id = `${prefix}${newIndex}`;
+                if (element) {
+                    element.id = `${prefix}${newIndex}`;
+                }
             });
             
-            console.log(`스케치 인덱스 ${oldIndex} -> ${newIndex}로 재정렬`);
+            // 삭제 버튼의 data-sketch-index 속성 업데이트
+            const removeBtn = sketch.querySelector('.removeSketchBtn');
+            if (removeBtn) {
+                removeBtn.setAttribute('data-sketch-index', newIndex);
+            }
         });
         
         console.log(`✅ 스케치 재정렬 완료, 총 ${sketches.length}개 스케치`);
@@ -4758,15 +4762,12 @@ class SeminarPlanningApp {
         const sketches = [];
         const container = document.getElementById('sketchUploadContainer');
         
-        // 실제로 DOM에 존재하는 스케치 요소만 찾기 (제거된 요소는 제외)
-        const sketchElements = Array.from(container.children).filter(child => 
-            child.hasAttribute('data-sketch-index') && 
-            child.offsetParent !== null // 실제로 화면에 보이는 요소만
-        );
+        // 실제로 DOM에 존재하는 스케치 요소만 찾기
+        const sketchElements = container.querySelectorAll('[data-sketch-index]');
         
         console.log('🔍 DOM에서 찾은 스케치 요소 개수:', sketchElements.length);
         
-        sketchElements.forEach((sketchElement, index) => {
+        sketchElements.forEach((sketchElement) => {
             const sketchIndex = sketchElement.getAttribute('data-sketch-index');
             const title = document.getElementById(`mainSketchTitle${sketchIndex}`)?.value.trim() || '';
             const file = document.getElementById(`mainSketchFile${sketchIndex}`)?.files[0];
@@ -4900,7 +4901,7 @@ class SeminarPlanningApp {
                     // 스케치가 존재하지 않으면 생성
                     let titleEl = document.getElementById(`mainSketchTitle${index}`);
                     if (!titleEl) {
-                        console.log(`스케치 ${index}가 존재하지 않아 생성합니다.`);
+                        console.log(`➕ 스케치 ${index}가 존재하지 않아 생성합니다.`);
                         this.createDefaultSketch(index);
                         titleEl = document.getElementById(`mainSketchTitle${index}`);
                     }
@@ -4992,7 +4993,7 @@ class SeminarPlanningApp {
         existingSketches.forEach(sketch => {
             const sketchIndex = parseInt(sketch.getAttribute('data-sketch-index'));
             if (sketchIndex >= 2) {
-                console.log(`스케치 ${sketchIndex} 제거`);
+                console.log(`🗑️ 스케치 ${sketchIndex} 제거`);
                 sketch.remove();
             }
         });
@@ -5004,7 +5005,7 @@ class SeminarPlanningApp {
                 titleInput.value = '';
             } else {
                 // 스케치가 존재하지 않으면 생성
-                console.log(`스케치 ${i}가 존재하지 않아 생성합니다.`);
+                console.log(`➕ 스케치 ${i}가 존재하지 않아 생성합니다.`);
                 this.createDefaultSketch(i);
             }
             
@@ -5023,7 +5024,7 @@ class SeminarPlanningApp {
         console.log(`🔍 초기화 후 스케치 개수: ${remainingSketches.length}`);
         
         // currentData의 스케치 데이터는 초기화하지 않음 (실제 데이터 유지)
-        console.log('스케치 초기화 완료: 스케치0, 스케치1만 유지');
+        console.log('✅ 스케치 초기화 완료: 스케치0, 스케치1만 유지');
     }
 
     // 기본 스케치 생성
