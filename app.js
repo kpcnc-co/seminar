@@ -5388,6 +5388,42 @@ class SeminarPlanningApp {
     }
 }
 
+function htmlToFile(file) {
+
+	
+
+	var header = "<html>"+
+
+        "<head><meta charset='utf-8'></head><body>";
+
+	var footer = "</body></html>";
+
+	var sourceHTML = header+document.getElementById("source-html").value+footer;
+
+
+
+	var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+
+	var fileDownload = document.createElement("a");
+
+	document.body.appendChild(fileDownload);
+
+	fileDownload.href = source;
+
+	fileDownload.download = 'hi098123file.'+file;
+
+	fileDownload.click();
+
+	document.body.removeChild(fileDownload);
+
+}
+
+function hi098123inputcode(){
+
+	document.getElementById("source-html").value='<h1 style="text-align:center;">제목</h1>\n<p>p 태그 내용 입니다.</p>\n<table border="1">\n\t<th>테이블</th>\n\t<th>만들기</th>\n\t<tr>\n\t\t<td>첫번째줄 1</td>\n\t\t<td>첫번째줄 2</td>\n\t</tr>\n\t<tr>\n\t\t<td>두번째줄 1</td>\n\t\t<td>두번째줄 2</td>\n\t</tr>\n</table>';
+
+}
+
 // 앱 초기화
 let app;
 document.addEventListener('DOMContentLoaded', async function() {
