@@ -4544,7 +4544,10 @@ class SeminarPlanningApp {
             const sketchDiv = container.querySelector(`[data-sketch-index="${sketchIndex}"]`);
             if (sketchDiv) {
                 console.log(`스케치 인덱스 ${sketchIndex} 삭제 시작`);
+                
+                // DOM에서 완전히 제거
                 sketchDiv.remove();
+                console.log(`스케치 ${sketchIndex} DOM에서 제거됨`);
                 
                 // 데이터에서도 제거 (배열에서 완전히 제거)
                 if (this.currentData.sketches && this.currentData.sketches[sketchIndex]) {
@@ -4554,6 +4557,10 @@ class SeminarPlanningApp {
                 
                 // 인덱스 재정렬
                 this.reindexSketches();
+                
+                // 삭제 후 현재 스케치 개수 확인
+                const remainingCount = container.children.length;
+                console.log(`삭제 후 남은 스케치 개수: ${remainingCount}`);
                 
                 this.showSuccessToast('스케치 업로드가 삭제되었습니다.');
             } else {
@@ -4724,7 +4731,14 @@ class SeminarPlanningApp {
     getMainSketchData() {
         const sketches = [];
         const container = document.getElementById('sketchUploadContainer');
-        const sketchElements = container.querySelectorAll('[data-sketch-index]');
+        
+        // 실제로 DOM에 존재하는 스케치 요소만 찾기 (제거된 요소는 제외)
+        const sketchElements = Array.from(container.children).filter(child => 
+            child.hasAttribute('data-sketch-index') && 
+            child.offsetParent !== null // 실제로 화면에 보이는 요소만
+        );
+        
+        console.log('🔍 DOM에서 찾은 스케치 요소 개수:', sketchElements.length);
         
         sketchElements.forEach((sketchElement, index) => {
             const sketchIndex = sketchElement.getAttribute('data-sketch-index');
@@ -4740,10 +4754,13 @@ class SeminarPlanningApp {
                     imageData: imageData,
                     fileName: file?.name || '업로드된 이미지'
                 });
+                console.log(`✅ 스케치 ${sketchIndex} 추가:`, title);
+            } else {
+                console.log(`❌ 스케치 ${sketchIndex} 제외:`, { title, hasImageData: !!imageData });
             }
         });
         
-        console.log('📊 getMainSketchData 결과:', sketches);
+        console.log('📊 getMainSketchData 최종 결과:', sketches);
         return sketches;
     }
 
@@ -4943,6 +4960,8 @@ class SeminarPlanningApp {
         const container = document.getElementById('sketchUploadContainer');
         const existingSketches = container.querySelectorAll('[data-sketch-index]');
         
+        console.log(`🔍 초기화 전 스케치 개수: ${existingSketches.length}`);
+        
         // 스케치 인덱스 2부터 모든 동적 스케치 제거
         existingSketches.forEach(sketch => {
             const sketchIndex = parseInt(sketch.getAttribute('data-sketch-index'));
@@ -4972,6 +4991,10 @@ class SeminarPlanningApp {
             const uploadArea = document.getElementById(`mainFileUploadArea${i}`);
             if (uploadArea) uploadArea.classList.remove('hidden');
         }
+        
+        // 초기화 후 스케치 개수 확인
+        const remainingSketches = container.querySelectorAll('[data-sketch-index]');
+        console.log(`🔍 초기화 후 스케치 개수: ${remainingSketches.length}`);
         
         // currentData의 스케치 데이터는 초기화하지 않음 (실제 데이터 유지)
         console.log('스케치 초기화 완료: 스케치0, 스케치1만 유지');
