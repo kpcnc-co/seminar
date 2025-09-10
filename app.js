@@ -4546,16 +4546,54 @@ class SeminarPlanningApp {
                 console.log(`스케치 인덱스 ${sketchIndex} 삭제 시작`);
                 sketchDiv.remove();
                 
-                // 데이터에서도 제거
+                // 데이터에서도 제거 (배열에서 완전히 제거)
                 if (this.currentData.sketches && this.currentData.sketches[sketchIndex]) {
-                    this.currentData.sketches[sketchIndex] = null;
+                    this.currentData.sketches.splice(sketchIndex, 1);
+                    console.log(`스케치 ${sketchIndex} 데이터에서 제거됨`);
                 }
+                
+                // 인덱스 재정렬
+                this.reindexSketches();
                 
                 this.showSuccessToast('스케치 업로드가 삭제되었습니다.');
             } else {
                 console.log(`스케치 인덱스 ${sketchIndex}을 찾을 수 없음`);
             }
         }
+    }
+    
+    // 스케치 인덱스 재정렬
+    reindexSketches() {
+        const container = document.getElementById('sketchUploadContainer');
+        const sketches = container.querySelectorAll('[data-sketch-index]');
+        
+        sketches.forEach((sketch, newIndex) => {
+            const oldIndex = parseInt(sketch.getAttribute('data-sketch-index'));
+            sketch.setAttribute('data-sketch-index', newIndex);
+            
+            // ID들도 업데이트
+            const titleInput = sketch.querySelector(`#mainSketchTitle${oldIndex}`);
+            if (titleInput) titleInput.id = `mainSketchTitle${newIndex}`;
+            
+            const fileInput = sketch.querySelector(`#mainSketchFile${oldIndex}`);
+            if (fileInput) fileInput.id = `mainSketchFile${newIndex}`;
+            
+            const removeBtn = sketch.querySelector('.removeSketchBtn');
+            if (removeBtn) removeBtn.setAttribute('data-sketch-index', newIndex);
+            
+            // 기타 ID들도 업데이트
+            const elementsToUpdate = [
+                'mainFileUploadArea', 'mainFilePreview', 'mainPreviewImage', 
+                'mainFileName', 'mainRemoveFile', 'mainDownloadFile'
+            ];
+            
+            elementsToUpdate.forEach(prefix => {
+                const element = sketch.querySelector(`#${prefix}${oldIndex}`);
+                if (element) element.id = `${prefix}${newIndex}`;
+            });
+            
+            console.log(`스케치 인덱스 ${oldIndex} -> ${newIndex}로 재정렬`);
+        });
     }
     
     
@@ -4696,8 +4734,8 @@ class SeminarPlanningApp {
             
             // imageData가 있고 비어있지 않은 경우만 추가
             const imageData = previewImg?.src;
-            if (imageData && imageData.trim() !== '') {
-            sketches.push({
+            if (imageData && imageData.trim() !== '' && !imageData.includes('data:image/svg+xml')) {
+                sketches.push({
                     title: title,
                     imageData: imageData,
                     fileName: file?.name || '업로드된 이미지'
@@ -4705,6 +4743,7 @@ class SeminarPlanningApp {
             }
         });
         
+        console.log('📊 getMainSketchData 결과:', sketches);
         return sketches;
     }
 
@@ -4805,53 +4844,42 @@ class SeminarPlanningApp {
                 // 스케치 초기화 먼저 실행
                 this.resetSketches();
                 
-                // 기존 동적 스케치들 모두 제거 (스케치 0, 1 제외)
-                const container = document.getElementById('sketchUploadContainer');
-                const existingSketches = container.querySelectorAll('[data-sketch-index]');
+                // 스케치 데이터 설정 (빈 슬롯 제거)
+                const validSketches = resultData.sketches.filter(sketch => sketch && sketch.imageData);
+                console.log('📊 유효한 스케치 데이터:', validSketches);
                 
-                // 스케치 인덱스 2번부터 모두 제거
-                existingSketches.forEach(sketch => {
-                    const sketchIndex = parseInt(sketch.getAttribute('data-sketch-index'));
-                    if (sketchIndex >= 2) {
-                        sketch.remove();
-                    }
-                });
-                
-                // 필요한 만큼 스케치 추가 (순차적으로)
-                for (let i = 2; i < resultData.sketches.length; i++) {
+                // 유효한 스케치 개수에 맞춰 추가 (2개 이상인 경우)
+                for (let i = 2; i < validSketches.length; i++) {
                     this.addSketchUpload();
                 }
                 
-                // 스케치 데이터 설정
-                resultData.sketches.forEach((sketch, index) => {
-                    if (sketch) {
-                        // 스케치가 존재하지 않으면 생성
-                        let titleEl = document.getElementById(`mainSketchTitle${index}`);
-                        if (!titleEl) {
-                            console.log(`스케치 ${index}가 존재하지 않아 생성합니다.`);
-                            this.createDefaultSketch(index);
-                            titleEl = document.getElementById(`mainSketchTitle${index}`);
-                        }
+                validSketches.forEach((sketch, index) => {
+                    // 스케치가 존재하지 않으면 생성
+                    let titleEl = document.getElementById(`mainSketchTitle${index}`);
+                    if (!titleEl) {
+                        console.log(`스케치 ${index}가 존재하지 않아 생성합니다.`);
+                        this.createDefaultSketch(index);
+                        titleEl = document.getElementById(`mainSketchTitle${index}`);
+                    }
+                    
+                    if (titleEl) {
+                        titleEl.value = sketch.title || '';
+                        console.log(`✅ 스케치 ${index} 제목 설정:`, sketch.title);
+                    }
+                    
+                    if (sketch.imageData) {
+                    // Base64 이미지 표시
+                        const previewImg = document.getElementById(`mainPreviewImage${index}`);
+                        const fileName = document.getElementById(`mainFileName${index}`);
+                        const preview = document.getElementById(`mainFilePreview${index}`);
+                        const uploadArea = document.getElementById(`mainFileUploadArea${index}`);
                         
-                        if (titleEl) {
-                            titleEl.value = sketch.title || '';
-                            console.log(`✅ 스케치 ${index} 제목 설정:`, sketch.title);
-                        }
+                        if (previewImg) previewImg.src = sketch.imageData;
+                        if (fileName) fileName.textContent = sketch.fileName || '업로드된 이미지';
+                        if (preview) preview.classList.remove('hidden');
+                        if (uploadArea) uploadArea.classList.add('hidden');
                         
-                        if (sketch.imageData) {
-                        // Base64 이미지 표시
-                            const previewImg = document.getElementById(`mainPreviewImage${index}`);
-                            const fileName = document.getElementById(`mainFileName${index}`);
-                            const preview = document.getElementById(`mainFilePreview${index}`);
-                            const uploadArea = document.getElementById(`mainFileUploadArea${index}`);
-                            
-                            if (previewImg) previewImg.src = sketch.imageData;
-                            if (fileName) fileName.textContent = sketch.fileName || '업로드된 이미지';
-                            if (preview) preview.classList.remove('hidden');
-                            if (uploadArea) uploadArea.classList.add('hidden');
-                            
-                            console.log(`✅ 스케치 ${index} 이미지 표시`);
-                        }
+                        console.log(`✅ 스케치 ${index} 이미지 표시`);
                     }
                 });
             } else {
@@ -4945,12 +4973,8 @@ class SeminarPlanningApp {
             if (uploadArea) uploadArea.classList.remove('hidden');
         }
         
-        // 데이터에서도 동적 스케치 제거
-        if (this.currentData.sketches) {
-            this.currentData.sketches = this.currentData.sketches.slice(0, 2);
-        }
-        
-        console.log('스케치 초기화 완료: 스케치1, 스케치2만 유지');
+        // currentData의 스케치 데이터는 초기화하지 않음 (실제 데이터 유지)
+        console.log('스케치 초기화 완료: 스케치0, 스케치1만 유지');
     }
 
     // 기본 스케치 생성
