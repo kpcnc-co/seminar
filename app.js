@@ -4442,8 +4442,12 @@ class SeminarPlanningApp {
     addSketchUpload() {
         const container = document.getElementById('sketchUploadContainer');
         
-        // 현재 스케치 개수 확인 (단순하게)
-        const currentCount = container.children.length;
+        // 현재 스케치 개수 확인 (실제로 보이는 스케치만)
+        const visibleSketches = Array.from(container.children).filter(child => 
+            child.getAttribute('data-sketch-index') !== null && 
+            child.offsetParent !== null
+        );
+        const currentCount = visibleSketches.length;
         
         console.log('addSketchUpload 호출됨, 현재 개수:', currentCount);
         
@@ -4572,7 +4576,9 @@ class SeminarPlanningApp {
     // 스케치 인덱스 재정렬
     reindexSketches() {
         const container = document.getElementById('sketchUploadContainer');
-        const sketches = container.querySelectorAll('[data-sketch-index]');
+        const sketches = Array.from(container.querySelectorAll('[data-sketch-index]'));
+        
+        console.log(`🔄 스케치 재정렬 시작, 총 ${sketches.length}개 스케치`);
         
         sketches.forEach((sketch, newIndex) => {
             const oldIndex = parseInt(sketch.getAttribute('data-sketch-index'));
@@ -4601,6 +4607,8 @@ class SeminarPlanningApp {
             
             console.log(`스케치 인덱스 ${oldIndex} -> ${newIndex}로 재정렬`);
         });
+        
+        console.log(`✅ 스케치 재정렬 완료, 총 ${sketches.length}개 스케치`);
     }
     
     
@@ -4885,7 +4893,7 @@ class SeminarPlanningApp {
                     }
                     
                     if (sketch.imageData) {
-                    // Base64 이미지 표시
+                        // Base64 이미지 표시
                         const previewImg = document.getElementById(`mainPreviewImage${index}`);
                         const fileName = document.getElementById(`mainFileName${index}`);
                         const preview = document.getElementById(`mainFilePreview${index}`);
