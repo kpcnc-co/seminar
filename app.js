@@ -4897,15 +4897,9 @@ class SeminarPlanningApp {
                     this.addSketchUpload();
                 }
                 
+                // 스케치 데이터 설정
                 validSketches.forEach((sketch, index) => {
-                    // 스케치가 존재하지 않으면 생성
-                    let titleEl = document.getElementById(`mainSketchTitle${index}`);
-                    if (!titleEl) {
-                        console.log(`➕ 스케치 ${index}가 존재하지 않아 생성합니다.`);
-                        this.createDefaultSketch(index);
-                        titleEl = document.getElementById(`mainSketchTitle${index}`);
-                    }
-                    
+                    const titleEl = document.getElementById(`mainSketchTitle${index}`);
                     if (titleEl) {
                         titleEl.value = sketch.title || '';
                         console.log(`✅ 스케치 ${index} 제목 설정:`, sketch.title);
@@ -4989,34 +4983,16 @@ class SeminarPlanningApp {
         
         console.log(`🔍 초기화 전 스케치 개수: ${existingSketches.length}`);
         
-        // 스케치 인덱스 2부터 모든 동적 스케치 제거
+        // 모든 스케치를 먼저 제거
         existingSketches.forEach(sketch => {
-            const sketchIndex = parseInt(sketch.getAttribute('data-sketch-index'));
-            if (sketchIndex >= 2) {
-                console.log(`🗑️ 스케치 ${sketchIndex} 제거`);
-                sketch.remove();
-            }
+            console.log(`🗑️ 스케치 ${sketch.getAttribute('data-sketch-index')} 제거`);
+            sketch.remove();
         });
         
-        // 스케치0, 스케치1의 내용만 초기화
+        // 스케치0, 스케치1만 새로 생성
         for (let i = 0; i <= 1; i++) {
-            const titleInput = document.getElementById(`mainSketchTitle${i}`);
-            if (titleInput) {
-                titleInput.value = '';
-            } else {
-                // 스케치가 존재하지 않으면 생성
-                console.log(`➕ 스케치 ${i}가 존재하지 않아 생성합니다.`);
-                this.createDefaultSketch(i);
-            }
-            
-            const fileInput = document.getElementById(`mainSketchFile${i}`);
-            if (fileInput) fileInput.value = '';
-            
-            const preview = document.getElementById(`mainFilePreview${i}`);
-            if (preview) preview.classList.add('hidden');
-            
-            const uploadArea = document.getElementById(`mainFileUploadArea${i}`);
-            if (uploadArea) uploadArea.classList.remove('hidden');
+            console.log(`➕ 스케치 ${i} 생성`);
+            this.createDefaultSketch(i);
         }
         
         // 초기화 후 스케치 개수 확인
@@ -5029,6 +5005,7 @@ class SeminarPlanningApp {
 
     // 기본 스케치 생성
     createDefaultSketch(sketchIndex) {
+        console.log(`➕ createDefaultSketch 호출됨, sketchIndex: ${sketchIndex}`);
         const container = document.getElementById('sketchUploadContainer');
         
         // 스케치 div 생성
@@ -5085,7 +5062,7 @@ class SeminarPlanningApp {
         // 이벤트 바인딩
         this.bindSketchEvents(sketchIndex);
         
-        console.log(`스케치 ${sketchIndex} 생성 완료`);
+        console.log(`✅ 스케치 ${sketchIndex} 생성 완료`);
     }
 
     // 메인화면 실시결과 저장
