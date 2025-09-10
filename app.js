@@ -151,27 +151,47 @@ class SeminarPlanningApp {
         document.getElementById('exportResultPDF').addEventListener('click', () => this.exportResultToPDF());
         
         
-        // 메인화면 실시결과 스케치 이벤트
-        document.getElementById('mainSketchFile0').addEventListener('change', (e) => this.handleMainFileUpload(e, 0));
-        document.getElementById('mainRemoveFile0').addEventListener('click', () => this.removeMainFile(0));
-        document.getElementById('mainDownloadFile0').addEventListener('click', () => this.downloadMainFile(0));
-        document.getElementById('mainFileUploadArea0').addEventListener('click', () => document.getElementById('mainSketchFile0').click());
-        
-        document.getElementById('mainSketchFile1').addEventListener('change', (e) => this.handleMainFileUpload(e, 1));
-        document.getElementById('mainRemoveFile1').addEventListener('click', () => this.removeMainFile(1));
-        document.getElementById('mainDownloadFile1').addEventListener('click', () => this.downloadMainFile(1));
-        document.getElementById('mainFileUploadArea1').addEventListener('click', () => document.getElementById('mainSketchFile1').click());
+        // 메인화면 실시결과 스케치 이벤트는 동적 이벤트 위임으로 처리
         
         // 스케치 업로드 추가 버튼
         document.getElementById('addSketchUpload').addEventListener('click', () => this.addSketchUpload());
         
-        // 스케치 삭제 버튼 (이벤트 위임)
+        // 스케치 관련 이벤트 위임
         document.addEventListener('click', (e) => {
+            // 스케치 삭제 버튼
             if (e.target.closest('.removeSketchBtn')) {
                 const removeBtn = e.target.closest('.removeSketchBtn');
                 const sketchIndex = removeBtn.getAttribute('data-sketch-index');
                 console.log('삭제 버튼 클릭됨, data-sketch-index:', sketchIndex);
                 this.removeSketchUpload(parseInt(sketchIndex));
+            }
+            // 파일 업로드 영역 클릭
+            else if (e.target.closest('[id^="mainFileUploadArea"]')) {
+                const uploadArea = e.target.closest('[id^="mainFileUploadArea"]');
+                const sketchIndex = uploadArea.id.replace('mainFileUploadArea', '');
+                const fileInput = document.getElementById(`mainSketchFile${sketchIndex}`);
+                if (fileInput) fileInput.click();
+            }
+            // 파일 다운로드 버튼
+            else if (e.target.closest('[id^="mainDownloadFile"]')) {
+                const downloadBtn = e.target.closest('[id^="mainDownloadFile"]');
+                const sketchIndex = downloadBtn.id.replace('mainDownloadFile', '');
+                this.downloadMainFile(parseInt(sketchIndex));
+            }
+            // 파일 제거 버튼
+            else if (e.target.closest('[id^="mainRemoveFile"]')) {
+                const removeBtn = e.target.closest('[id^="mainRemoveFile"]');
+                const sketchIndex = removeBtn.id.replace('mainRemoveFile', '');
+                this.removeMainFile(parseInt(sketchIndex));
+            }
+        });
+        
+        // 파일 업로드 이벤트 위임
+        document.addEventListener('change', (e) => {
+            if (e.target.matches('[id^="mainSketchFile"]')) {
+                const fileInput = e.target;
+                const sketchIndex = fileInput.id.replace('mainSketchFile', '');
+                this.handleMainFileUpload(e, parseInt(sketchIndex));
             }
         });
         
@@ -4448,13 +4468,7 @@ class SeminarPlanningApp {
         
         console.log('addSketchUpload 호출됨, 현재 개수:', currentCount);
         
-        // 최대 10개까지만 추가 가능
-        if (currentCount >= 10) {
-            this.showErrorToast('최대 10개의 스케치만 추가할 수 있습니다.');
-            return;
-        }
-        
-        // 다음 인덱스는 현재 개수
+        // 다음 인덱스는 현재 개수 (제약사항 제거)
         const nextIndex = currentCount;
         
         const sketchDiv = document.createElement('div');
@@ -4467,8 +4481,8 @@ class SeminarPlanningApp {
                     <i class="fas fa-image text-orange-500 mr-2"></i>
                     스케치 업로드
                 </h3>
-                <button type="button" class="removeSketchBtn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm transition-colors duration-200" data-sketch-index="${nextIndex}">
-                    <i class="fas fa-trash"></i>
+                <button type="button" class="removeSketchBtn bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center" data-sketch-index="${nextIndex}">
+                    <i class="fas fa-trash mr-1"></i>삭제
                 </button>
             </div>
             <div class="space-y-3">
@@ -4512,9 +4526,6 @@ class SeminarPlanningApp {
         
         container.appendChild(sketchDiv);
         
-        // 이벤트 리스너 추가
-        this.bindSketchEvents(nextIndex);
-        
         // 데이터 구조에 추가
         if (!this.currentData.sketches) {
             this.currentData.sketches = [];
@@ -4538,12 +4549,6 @@ class SeminarPlanningApp {
         
         console.log(`📊 삭제 전 스케치 개수: ${currentCount}`);
         
-        // 최소 1개는 유지
-        if (currentCount <= 1) {
-            this.showErrorToast('최소 1개의 스케치는 유지해야 합니다.');
-            return;
-        }
-        
         if (confirm('스케치 업로드를 삭제하시겠습니까?')) {
             const sketchDiv = container.querySelector(`[data-sketch-index="${sketchIndex}"]`);
             if (sketchDiv) {
@@ -4559,8 +4564,8 @@ class SeminarPlanningApp {
                     console.log(`✅ 스케치 ${sketchIndex} 데이터에서 제거됨`);
                 }
                 
-                // 인덱스 재정렬
-                this.reindexSketches();
+                // 간단한 인덱스 재정렬
+                this.reindexSketchesSimple();
                 
                 // 삭제 후 현재 스케치 개수 확인
                 const remainingSketches = container.querySelectorAll('[data-sketch-index]');
@@ -4575,24 +4580,17 @@ class SeminarPlanningApp {
         }
     }
     
-    // 스케치 인덱스 재정렬
-    reindexSketches() {
+    // 간단한 스케치 인덱스 재정렬
+    reindexSketchesSimple() {
         const container = document.getElementById('sketchUploadContainer');
         const sketches = Array.from(container.querySelectorAll('[data-sketch-index]'));
         
-        console.log(`🔄 스케치 재정렬 시작, 총 ${sketches.length}개 스케치`);
+        console.log(`🔄 간단한 스케치 재정렬 시작, 총 ${sketches.length}개 스케치`);
         
         if (sketches.length === 0) {
             console.log('⚠️ 재정렬할 스케치가 없음');
             return;
         }
-        
-        // 스케치를 인덱스 순으로 정렬
-        sketches.sort((a, b) => {
-            const indexA = parseInt(a.getAttribute('data-sketch-index'));
-            const indexB = parseInt(b.getAttribute('data-sketch-index'));
-            return indexA - indexB;
-        });
         
         // 각 스케치의 인덱스를 0부터 순차적으로 재설정
         sketches.forEach((sketch, newIndex) => {
@@ -4600,7 +4598,6 @@ class SeminarPlanningApp {
             
             // 인덱스가 이미 올바르면 건너뛰기
             if (oldIndex === newIndex) {
-                console.log(`✅ 스케치 인덱스 ${oldIndex}는 이미 올바름`);
                 return;
             }
             
@@ -4630,34 +4627,10 @@ class SeminarPlanningApp {
             }
         });
         
-        console.log(`✅ 스케치 재정렬 완료, 총 ${sketches.length}개 스케치`);
+        console.log(`✅ 간단한 스케치 재정렬 완료, 총 ${sketches.length}개 스케치`);
     }
     
     
-    // 스케치 이벤트 바인딩
-    bindSketchEvents(sketchIndex) {
-        // 파일 업로드 이벤트
-        const fileInput = document.getElementById(`mainSketchFile${sketchIndex}`);
-        const uploadArea = document.getElementById(`mainFileUploadArea${sketchIndex}`);
-        const removeBtn = document.getElementById(`mainRemoveFile${sketchIndex}`);
-        const downloadBtn = document.getElementById(`mainDownloadFile${sketchIndex}`);
-        
-        if (fileInput) {
-            fileInput.addEventListener('change', (e) => this.handleMainFileUpload(e, sketchIndex));
-        }
-        
-        if (uploadArea) {
-            uploadArea.addEventListener('click', () => fileInput.click());
-        }
-        
-        if (removeBtn) {
-            removeBtn.addEventListener('click', () => this.removeMainFile(sketchIndex));
-        }
-        
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', () => this.downloadMainFile(sketchIndex));
-        }
-    }
 
     // 메인화면 파일 업로드 처리
     handleMainFileUpload(event, sketchIndex) {
@@ -4976,7 +4949,7 @@ class SeminarPlanningApp {
         });
     }
 
-    // 스케치 초기화 (스케치0, 스케치1만 남기고 나머지 제거)
+    // 스케치 초기화 (모든 스케치 제거)
     resetSketches() {
         const container = document.getElementById('sketchUploadContainer');
         const existingSketches = container.querySelectorAll('[data-sketch-index]');
@@ -4989,18 +4962,16 @@ class SeminarPlanningApp {
             sketch.remove();
         });
         
-        // 스케치0, 스케치1만 새로 생성
-        for (let i = 0; i <= 1; i++) {
-            console.log(`➕ 스케치 ${i} 생성`);
-            this.createDefaultSketch(i);
+        // currentData의 스케치 데이터도 초기화
+        if (this.currentData.sketches) {
+            this.currentData.sketches = [];
         }
         
         // 초기화 후 스케치 개수 확인
         const remainingSketches = container.querySelectorAll('[data-sketch-index]');
         console.log(`🔍 초기화 후 스케치 개수: ${remainingSketches.length}`);
         
-        // currentData의 스케치 데이터는 초기화하지 않음 (실제 데이터 유지)
-        console.log('✅ 스케치 초기화 완료: 스케치0, 스케치1만 유지');
+        console.log('✅ 스케치 초기화 완료: 모든 스케치 제거');
     }
 
     // 기본 스케치 생성
@@ -5018,8 +4989,8 @@ class SeminarPlanningApp {
                 <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                     <i class="fas fa-image text-orange-500 mr-2"></i>스케치 업로드
                 </h3>
-                <button type="button" class="removeSketchBtn text-red-500 hover:text-red-700 p-1" data-sketch-index="${sketchIndex}">
-                    <i class="fas fa-trash"></i>
+                <button type="button" class="removeSketchBtn bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center" data-sketch-index="${sketchIndex}">
+                    <i class="fas fa-trash mr-1"></i>삭제
                 </button>
             </div>
             
@@ -5058,9 +5029,6 @@ class SeminarPlanningApp {
         
         // 컨테이너에 추가
         container.appendChild(sketchDiv);
-        
-        // 이벤트 바인딩
-        this.bindSketchEvents(sketchIndex);
         
         console.log(`✅ 스케치 ${sketchIndex} 생성 완료`);
     }
