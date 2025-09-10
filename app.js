@@ -486,12 +486,6 @@ class SeminarPlanningApp {
         // 실시결과 데이터도 함께 로드 (목표 포함)
         await this.loadMainResultData();
         
-        // 스케치 정보가 있으면 표시 (loadMainResultData 후에)
-        if (this.currentData.sketches && this.currentData.sketches.length > 0) {
-            console.log('🖼️ currentData에서 스케치 정보 발견, 표시:', this.currentData.sketches);
-            this.populateMainResultForm({ sketches: this.currentData.sketches });
-        }
-        
         // PDF 실시결과 내보내기 버튼 상태 초기화
         this.toggleExportResultPDFButton();
         
@@ -2114,7 +2108,7 @@ class SeminarPlanningApp {
         this.clearResultInputs();
         
         // 세미나 스케치 업로드 항목 초기화
-        this.clearSketchInputs();
+        this.resetSketches();
         
         // 현재 데이터의 입력 필드 값만 초기화 (저장된 데이터는 유지)
         this.currentData.session = '';
@@ -2157,56 +2151,6 @@ class SeminarPlanningApp {
         this.toggleExportResultPDFButton();
     }
     
-    // 세미나 스케치 업로드 항목 초기화
-    clearSketchInputs() {
-        // 스케치 1 초기화
-        this.clearSketchInput(1);
-        
-        // 스케치 2 초기화
-        this.clearSketchInput(2);
-        
-        // 스케치 빠른 저장 버튼 상태 업데이트
-        this.toggleQuickSaveSketchButton();
-    }
-    
-    // 개별 스케치 입력 초기화
-    clearSketchInput(sketchNumber) {
-        // 스케치 제목 초기화
-        const titleElement = document.getElementById(`mainSketchTitle${sketchNumber}`);
-        if (titleElement) {
-            titleElement.value = '';
-        }
-        
-        // 스케치 파일 초기화
-        const fileElement = document.getElementById(`mainSketchFile${sketchNumber}`);
-        if (fileElement) {
-            fileElement.value = '';
-        }
-        
-        // 파일 미리보기 숨기기
-        const previewElement = document.getElementById(`mainFilePreview${sketchNumber}`);
-        if (previewElement) {
-            previewElement.classList.add('hidden');
-        }
-        
-        // 파일 업로드 영역 표시
-        const uploadAreaElement = document.getElementById(`mainFileUploadArea${sketchNumber}`);
-        if (uploadAreaElement) {
-            uploadAreaElement.classList.remove('hidden');
-        }
-        
-        // 미리보기 이미지 초기화
-        const previewImageElement = document.getElementById(`mainPreviewImage${sketchNumber}`);
-        if (previewImageElement) {
-            previewImageElement.src = '';
-        }
-        
-        // 파일명 초기화
-        const fileNameElement = document.getElementById(`mainFileName${sketchNumber}`);
-        if (fileNameElement) {
-            fileNameElement.textContent = '';
-        }
-    }
 
     // 모바일 호환성을 위한 헬퍼 메서드들
     
@@ -4858,7 +4802,7 @@ class SeminarPlanningApp {
             if (resultData.sketches && resultData.sketches.length > 0) {
                 console.log('🖼️ 스케치 데이터 처리:', resultData.sketches);
                 
-                // 스케치 데이터 설정 (빈 슬롯 제거)
+                // 스케치 데이터 설정 (imageData가 있는 스케치만)
                 const validSketches = resultData.sketches.filter(sketch => sketch && sketch.imageData);
                 console.log('📊 유효한 스케치 데이터:', validSketches);
                 
@@ -4962,10 +4906,7 @@ class SeminarPlanningApp {
             sketch.remove();
         });
         
-        // currentData의 스케치 데이터도 초기화
-        if (this.currentData.sketches) {
-            this.currentData.sketches = [];
-        }
+        // currentData의 스케치 데이터는 초기화하지 않음 (실제 데이터 유지)
         
         // 초기화 후 스케치 개수 확인
         const remainingSketches = container.querySelectorAll('[data-sketch-index]');
@@ -4974,64 +4915,6 @@ class SeminarPlanningApp {
         console.log('✅ 스케치 초기화 완료: 모든 스케치 제거');
     }
 
-    // 기본 스케치 생성
-    createDefaultSketch(sketchIndex) {
-        console.log(`➕ createDefaultSketch 호출됨, sketchIndex: ${sketchIndex}`);
-        const container = document.getElementById('sketchUploadContainer');
-        
-        // 스케치 div 생성
-        const sketchDiv = document.createElement('div');
-        sketchDiv.className = 'bg-white p-6 rounded-lg border-2 border-dashed border-gray-300 mb-4 relative';
-        sketchDiv.setAttribute('data-sketch-index', sketchIndex);
-        
-        sketchDiv.innerHTML = `
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                    <i class="fas fa-image text-orange-500 mr-2"></i>스케치 업로드
-                </h3>
-                <button type="button" class="removeSketchBtn bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center" data-sketch-index="${sketchIndex}">
-                    <i class="fas fa-trash mr-1"></i>삭제
-                </button>
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-heading text-blue-500 mr-1"></i>업로드 제목
-                </label>
-                <input type="text" id="mainSketchTitle${sketchIndex}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="스케치 제목을 입력하세요">
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-file-image text-purple-500 mr-1"></i>이미지 파일
-                </label>
-                <div id="mainFileUploadArea${sketchIndex}" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors">
-                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                    <p class="text-gray-600 mb-2">클릭하여 이미지를 선택하세요</p>
-                    <p class="text-sm text-gray-500">JPG, PNG, GIF 파일만 업로드 가능합니다</p>
-                    <input type="file" id="mainSketchFile${sketchIndex}" accept="image/*" class="hidden">
-                </div>
-                
-                <div id="mainFilePreview${sketchIndex}" class="hidden">
-                    <img id="mainPreviewImage${sketchIndex}" class="w-full h-48 object-cover rounded-lg mb-2" alt="미리보기">
-                    <p id="mainFileName${sketchIndex}" class="text-sm text-gray-600 mb-2">업로드된 이미지</p>
-                    <div class="flex space-x-2">
-                        <button type="button" id="mainDownloadFile${sketchIndex}" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
-                            <i class="fas fa-download mr-1"></i>파일 다운로드
-                        </button>
-                        <button type="button" id="mainRemoveFile${sketchIndex}" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
-                            <i class="fas fa-trash mr-1"></i>파일 제거
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // 컨테이너에 추가
-        container.appendChild(sketchDiv);
-        
-        console.log(`✅ 스케치 ${sketchIndex} 생성 완료`);
-    }
 
     // 메인화면 실시결과 저장
     async saveMainResultData(skipLoading = false) {
