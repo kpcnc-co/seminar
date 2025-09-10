@@ -4412,7 +4412,7 @@ class SeminarPlanningApp {
         
         console.log('addSketchUpload 호출됨, 현재 개수:', currentCount);
         
-        // 다음 인덱스는 현재 개수 (제약사항 제거)
+        // 다음 인덱스는 현재 개수 (연속된 인덱스 보장)
         const nextIndex = currentCount;
         console.log('다음 인덱스:', nextIndex);
         
@@ -4820,27 +4820,36 @@ class SeminarPlanningApp {
                     this.addSketchUpload();
                 }
                 
-                // 스케치 데이터 설정
+                // 스케치 데이터 설정 - 실제 DOM 인덱스와 매칭
+                const container = document.getElementById('sketchUploadContainer');
+                const sketchElements = container.querySelectorAll('[data-sketch-index]');
+                
                 validSketches.forEach((sketch, index) => {
-                    const titleEl = document.getElementById(`mainSketchTitle${index}`);
-                    if (titleEl) {
-                        titleEl.value = sketch.title || '';
-                        console.log(`✅ 스케치 ${index} 제목 설정:`, sketch.title);
-                    }
-                    
-                    if (sketch.imageData) {
-                        // Base64 이미지 표시
-                        const previewImg = document.getElementById(`mainPreviewImage${index}`);
-                        const fileName = document.getElementById(`mainFileName${index}`);
-                        const preview = document.getElementById(`mainFilePreview${index}`);
-                        const uploadArea = document.getElementById(`mainFileUploadArea${index}`);
+                    // 실제 DOM에 존재하는 스케치 요소의 인덱스 사용
+                    if (index < sketchElements.length) {
+                        const actualIndex = sketchElements[index].getAttribute('data-sketch-index');
+                        console.log(`스케치 데이터 ${index}를 DOM 인덱스 ${actualIndex}에 설정`);
                         
-                        if (previewImg) previewImg.src = sketch.imageData;
-                        if (fileName) fileName.textContent = sketch.fileName || '업로드된 이미지';
-                        if (preview) preview.classList.remove('hidden');
-                        if (uploadArea) uploadArea.classList.add('hidden');
+                        const titleEl = document.getElementById(`mainSketchTitle${actualIndex}`);
+                        if (titleEl) {
+                            titleEl.value = sketch.title || '';
+                            console.log(`✅ 스케치 ${actualIndex} 제목 설정:`, sketch.title);
+                        }
                         
-                        console.log(`✅ 스케치 ${index} 이미지 표시`);
+                        if (sketch.imageData) {
+                            // Base64 이미지 표시
+                            const previewImg = document.getElementById(`mainPreviewImage${actualIndex}`);
+                            const fileName = document.getElementById(`mainFileName${actualIndex}`);
+                            const preview = document.getElementById(`mainFilePreview${actualIndex}`);
+                            const uploadArea = document.getElementById(`mainFileUploadArea${actualIndex}`);
+                            
+                            if (previewImg) previewImg.src = sketch.imageData;
+                            if (fileName) fileName.textContent = sketch.fileName || '업로드된 이미지';
+                            if (preview) preview.classList.remove('hidden');
+                            if (uploadArea) uploadArea.classList.add('hidden');
+                            
+                            console.log(`✅ 스케치 ${actualIndex} 이미지 표시`);
+                        }
                     }
                 });
             } else {
