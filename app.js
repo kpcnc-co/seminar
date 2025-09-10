@@ -4858,15 +4858,15 @@ class SeminarPlanningApp {
             if (resultData.sketches && resultData.sketches.length > 0) {
                 console.log('🖼️ 스케치 데이터 처리:', resultData.sketches);
                 
-                // 스케치 초기화 먼저 실행
-                this.resetSketches();
-                
                 // 스케치 데이터 설정 (빈 슬롯 제거)
                 const validSketches = resultData.sketches.filter(sketch => sketch && sketch.imageData);
                 console.log('📊 유효한 스케치 데이터:', validSketches);
                 
-                // 유효한 스케치 개수에 맞춰 추가 (2개 이상인 경우)
-                for (let i = 2; i < validSketches.length; i++) {
+                // 스케치 초기화 먼저 실행
+                this.resetSketches();
+                
+                // 유효한 스케치 개수에 맞춰 스케치 생성
+                for (let i = 0; i < validSketches.length; i++) {
                     this.addSketchUpload();
                 }
                 
