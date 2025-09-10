@@ -4566,6 +4566,10 @@ class SeminarPlanningApp {
                 const remainingCount = container.children.length;
                 console.log(`삭제 후 남은 스케치 개수: ${remainingCount}`);
                 
+                // 삭제 후 스케치 상태 확인
+                const remainingSketches = container.querySelectorAll('[data-sketch-index]');
+                console.log(`삭제 후 남은 스케치 요소들:`, Array.from(remainingSketches).map(s => s.getAttribute('data-sketch-index')));
+                
                 this.showSuccessToast('스케치 업로드가 삭제되었습니다.');
             } else {
                 console.log(`스케치 인덱스 ${sketchIndex}을 찾을 수 없음`);
@@ -4580,8 +4584,22 @@ class SeminarPlanningApp {
         
         console.log(`🔄 스케치 재정렬 시작, 총 ${sketches.length}개 스케치`);
         
+        // 스케치를 인덱스 순으로 정렬
+        sketches.sort((a, b) => {
+            const indexA = parseInt(a.getAttribute('data-sketch-index'));
+            const indexB = parseInt(b.getAttribute('data-sketch-index'));
+            return indexA - indexB;
+        });
+        
         sketches.forEach((sketch, newIndex) => {
             const oldIndex = parseInt(sketch.getAttribute('data-sketch-index'));
+            
+            // 인덱스가 이미 올바르면 건너뛰기
+            if (oldIndex === newIndex) {
+                console.log(`스케치 인덱스 ${oldIndex}는 이미 올바름`);
+                return;
+            }
+            
             sketch.setAttribute('data-sketch-index', newIndex);
             
             // ID들도 업데이트
