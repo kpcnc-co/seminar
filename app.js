@@ -4414,6 +4414,7 @@ class SeminarPlanningApp {
         
         // 다음 인덱스는 현재 개수 (제약사항 제거)
         const nextIndex = currentCount;
+        console.log('다음 인덱스:', nextIndex);
         
         const sketchDiv = document.createElement('div');
         sketchDiv.className = 'border border-gray-200 rounded-lg p-4';
@@ -4469,6 +4470,11 @@ class SeminarPlanningApp {
         `;
         
         container.appendChild(sketchDiv);
+        console.log('스케치 DOM 추가 완료, 인덱스:', nextIndex);
+        
+        // 추가 후 스케치 개수 확인
+        const afterSketches = container.querySelectorAll('[data-sketch-index]');
+        console.log('추가 후 스케치 개수:', afterSketches.length);
         
         // 데이터 구조에 추가
         if (!this.currentData.sketches) {
