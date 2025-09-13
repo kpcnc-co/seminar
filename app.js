@@ -4156,7 +4156,8 @@ class SeminarPlanningApp {
                         text: this.parseMainContent(resultData.futurePlan),
                         margin: [0, 0, 0, 20],
                         preserveLeadingSpaces: true
-                    }
+                    },
+                    { text: '- 이 상 –', alignment: 'right', fontSize: 10, margin: [0, 0, 0, 20] }
                 ],
                 styles: {
                     header: {
@@ -5346,6 +5347,7 @@ class SeminarPlanningApp {
                     
                     <h2>3. 향후 계획</h2>
                     <p class="info-content" style="white-space: pre-line;">${safeText(this.parseMainContent(resultData.futurePlan))}</p>
+                    <div style="text-align: right; margin-top: 10px; font-size: 12px;">– 이 상 –</div>
                 </div> 
                 
                 ${attendeeTableHTML}
