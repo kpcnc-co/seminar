@@ -3498,31 +3498,57 @@ class SeminarPlanningApp {
                 );
             }
             
-            // 스케치 추가 (새 페이지, 첨부형식)
+            // 스케치 추가 (새 페이지, 첨부형식) - 3건씩 배치
             if (resultData.sketches && resultData.sketches.length > 0) {
                 docDefinition.content.push(
                     { text: '', pageBreak: 'before' },
                     { text: '[별첨 2] 세미나 스케치', style: 'header' },
                 );
                 
-                resultData.sketches.forEach((sketch, index) => {
-                    if (sketch.title && sketch.imageData) {
-                        docDefinition.content.push(
-                            {
-                                text: `${index + 1}. ${sketch.title}`,
-                                fontSize: 11,
+                // 스케치를 3개씩 그룹으로 나누어 처리
+                const validSketches = resultData.sketches.filter(sketch => sketch.title && sketch.imageData);
+                
+                for (let i = 0; i < validSketches.length; i += 3) {
+                    const sketchGroup = validSketches.slice(i, i + 3);
+                    
+                    // 3개씩 한 줄에 배치
+                    const columns = sketchGroup.map((sketch, groupIndex) => {
+                        const globalIndex = i + groupIndex + 1;
+                        return {
+                            width: '33%',
+                            stack: [
+                                {
+                                    text: `${globalIndex}. ${sketch.title}`,
+                                    fontSize: 10,
                                 bold: true,
-                                margin: [0, 10, 0, 5]
+                                    margin: [0, 5, 0, 3],
+                                    alignment: 'center'
                             },
                             {
                                 image: sketch.imageData,
-                                width: 400,
+                                    width: 120,
+                                    height: 90,
+                                    fit: [120, 90],
                                 alignment: 'center',
-                                margin: [0, 0, 0, 20]
-                            }
-                        );
+                                    margin: [0, 0, 0, 10]
+                                }
+                            ]
+                        };
+                    });
+                    
+                    // 빈 공간 채우기 (3개 미만인 경우)
+                    while (columns.length < 3) {
+                        columns.push({
+                            width: '33%',
+                            stack: []
+                        });
                     }
-                });
+                    
+                    docDefinition.content.push({
+                        columns: columns,
+                        margin: [0, 0, 0, 15]
+                    });
+                }
             }
             
             // PDF 생성 및 다운로드
@@ -3806,32 +3832,32 @@ class SeminarPlanningApp {
         }
         
         const sketchDiv = container.querySelector(`div[data-sketch-index="${sketchIndex}"]`);
-        if (sketchDiv) {
-            console.log(`🗑️ 스케치 인덱스 ${sketchIndex} 삭제 시작`);
-            
-            // DOM에서 완전히 제거
-            sketchDiv.remove();
-            console.log(`✅ 스케치 ${sketchIndex} DOM에서 제거됨`);
-            
+            if (sketchDiv) {
+                console.log(`🗑️ 스케치 인덱스 ${sketchIndex} 삭제 시작`);
+                
+                // DOM에서 완전히 제거
+                sketchDiv.remove();
+                console.log(`✅ 스케치 ${sketchIndex} DOM에서 제거됨`);
+                
             // currentData.sketches는 데이터 로드 시에만 관리 (여기서는 제거하지 않음)
-            
-            // 간단한 인덱스 재정렬
-            this.reindexSketchesSimple();
-            
-            // 삭제 후 현재 스케치 개수 확인
+                
+                // 간단한 인덱스 재정렬
+                this.reindexSketchesSimple();
+                
+                // 삭제 후 현재 스케치 개수 확인
             const remainingSketches = container.querySelectorAll('div[data-sketch-index]');
-            const remainingCount = remainingSketches.length;
-            console.log(`📊 삭제 후 남은 스케치 개수: ${remainingCount}`);
-            console.log(`📊 삭제 후 남은 스케치 인덱스:`, Array.from(remainingSketches).map(s => s.getAttribute('data-sketch-index')));
+                const remainingCount = remainingSketches.length;
+                console.log(`📊 삭제 후 남은 스케치 개수: ${remainingCount}`);
+                console.log(`📊 삭제 후 남은 스케치 인덱스:`, Array.from(remainingSketches).map(s => s.getAttribute('data-sketch-index')));
             
             // 스케치가 없으면 빈 상태 유지 (자동 추가하지 않음)
             if (remainingCount === 0) {
                 console.log('ℹ️ 모든 스케치가 삭제됨, 빈 상태 유지');
             }
-            
-            this.showSuccessToast('스케치 업로드가 삭제되었습니다.');
-        } else {
-            console.log(`❌ 스케치 인덱스 ${sketchIndex}을 찾을 수 없음`);
+                
+                this.showSuccessToast('스케치 업로드가 삭제되었습니다.');
+            } else {
+                console.log(`❌ 스케치 인덱스 ${sketchIndex}을 찾을 수 없음`);
         }
     }
     
@@ -4010,8 +4036,8 @@ class SeminarPlanningApp {
             
             // DOM 순서대로 스케치 데이터 저장
             sketches[domIndex] = {
-                title: title,
-                imageData: imageData,
+                    title: title,
+                    imageData: imageData,
                 fileName: fileName
             };
             
@@ -4152,11 +4178,11 @@ class SeminarPlanningApp {
                         }
                         
                         // 이미지 데이터 설정 (있으면 표시, 없으면 빈 상태 유지)
-                        const previewImg = document.getElementById(`mainPreviewImage${actualIndex}`);
-                        const fileName = document.getElementById(`mainFileName${actualIndex}`);
-                        const preview = document.getElementById(`mainFilePreview${actualIndex}`);
-                        const uploadArea = document.getElementById(`mainFileUploadArea${actualIndex}`);
-                        
+                            const previewImg = document.getElementById(`mainPreviewImage${actualIndex}`);
+                            const fileName = document.getElementById(`mainFileName${actualIndex}`);
+                            const preview = document.getElementById(`mainFilePreview${actualIndex}`);
+                            const uploadArea = document.getElementById(`mainFileUploadArea${actualIndex}`);
+                            
                         if (sketch.imageData && sketch.imageData.trim() !== '') {
                             // 이미지가 있으면 표시
                             if (previewImg) previewImg.src = sketch.imageData;
@@ -4457,26 +4483,38 @@ class SeminarPlanningApp {
             `;
         }
         
-        // 스케치 HTML 생성 (첨부형식)
+        // 스케치 HTML 생성 (첨부형식) - 3건씩 배치
         let sketchHTML = '';
         if (resultData.sketches && resultData.sketches.length > 0) {
+            const validSketches = resultData.sketches.filter(sketch => sketch.title && sketch.imageData);
+            
+            let sketchRows = '';
+            for (let i = 0; i < validSketches.length; i += 3) {
+                const sketchGroup = validSketches.slice(i, i + 3);
+                
+                sketchRows += `
+                    <div style="display: flex; margin: 15px 0; gap: 10px;">
+                        ${sketchGroup.map((sketch, groupIndex) => {
+                            const globalIndex = i + groupIndex + 1;
+                                return `
+                                <div style="flex: 1; border: 1px solid #ddd; padding: 8px; text-align: center;">
+                                    <p style="font-size: 10px; margin: 0 0 8px 0; font-weight: bold;">
+                                        ${globalIndex}. ${safeText(sketch.title)}
+                                    </p>
+                                    <img src="${sketch.imageData}" style="width: 120px; height: 90px; object-fit: cover; display: block; margin: 0 auto;" />
+                                    </div>
+                                `;
+                        }).join('')}
+                        ${sketchGroup.length < 3 ? '<div style="flex: 1;"></div>'.repeat(3 - sketchGroup.length) : ''}
+                    </div>
+                `;
+            }
+            
             sketchHTML = `
                 <div style="page-break-before: always;">
                     <h2>[별첨 2] 세미나 스케치</h2>
                     <div style="margin: 20px 0;">
-                        ${resultData.sketches.map((sketch, index) => {
-                            if (sketch.title && sketch.imageData) {
-                                return `
-                                    <div style="margin: 15px 0; border: 1px solid #ddd; padding: 10px;">
-                                        <p style="font-size: 11px; margin: 0 0 10px 0; font-weight: bold;">
-                                            ${index + 1}. ${safeText(sketch.title)}
-                                        </p>
-                                        <img src="${sketch.imageData}" style="max-width: 100%; height: auto; display: block; margin: 0 auto;" />
-                                    </div>
-                                `;
-                            }
-                            return '';
-                        }).join('')}
+                        ${sketchRows}
                     </div>
                 </div>
             `;
