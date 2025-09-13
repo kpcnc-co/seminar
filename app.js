@@ -2322,7 +2322,7 @@ class SeminarPlanningApp {
                     { text: '[별첨] 세미나 참석 명단', style: 'sectionHeader', margin: [0, 20, 0, 10] },
                     {
                         table: {
-                            widths: [20, 'auto', 'auto', 'auto', '*'],
+                            widths: ['auto', '*', '*', '*', '*'],
                             body: attendeeRows
                         }
                     }
@@ -2580,10 +2580,43 @@ class SeminarPlanningApp {
         }
         .attendee-table {
             width: 100%;
+            border-collapse: collapse;
         }
         .attendee-table th,
         .attendee-table td {
-            width: 20%;
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .attendee-table th:nth-child(1),
+        .attendee-table td:nth-child(1) {
+            width: 40px;
+            min-width: 40px;
+            max-width: 50px;
+        }
+        .attendee-table th:nth-child(2),
+        .attendee-table td:nth-child(2) {
+            width: 120px;
+            min-width: 120px;
+            max-width: 150px;
+        }
+        .attendee-table th:nth-child(3),
+        .attendee-table td:nth-child(3) {
+            width: 100px;
+            min-width: 100px;
+            max-width: 120px;
+        }
+        .attendee-table th:nth-child(4),
+        .attendee-table td:nth-child(4) {
+            width: 150px;
+            min-width: 150px;
+            max-width: 200px;
+        }
+        .attendee-table th:nth-child(5),
+        .attendee-table td:nth-child(5) {
+            width: auto;
+            min-width: 200px;
+            text-align: left;
         }
         .footer {
             text-align: center;
@@ -4469,10 +4502,43 @@ class SeminarPlanningApp {
                     }
                     .attendee-table {
                         width: 100%;
+                        border-collapse: collapse;
                     }
                     .attendee-table th,
                     .attendee-table td {
-                        width: 20%;
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: center;
+                    }
+                    .attendee-table th:nth-child(1),
+                    .attendee-table td:nth-child(1) {
+                        width: 40px;
+                        min-width: 40px;
+                        max-width: 50px;
+                    }
+                    .attendee-table th:nth-child(2),
+                    .attendee-table td:nth-child(2) {
+                        width: 120px;
+                        min-width: 120px;
+                        max-width: 150px;
+                    }
+                    .attendee-table th:nth-child(3),
+                    .attendee-table td:nth-child(3) {
+                        width: 100px;
+                        min-width: 100px;
+                        max-width: 120px;
+                    }
+                    .attendee-table th:nth-child(4),
+                    .attendee-table td:nth-child(4) {
+                        width: 150px;
+                        min-width: 150px;
+                        max-width: 200px;
+                    }
+                    .attendee-table th:nth-child(5),
+                    .attendee-table td:nth-child(5) {
+                        width: auto;
+                        min-width: 200px;
+                        text-align: left;
                     }
                     .footer {
                         text-align: center;

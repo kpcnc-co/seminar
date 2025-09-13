@@ -5,12 +5,12 @@
 const useLocalStorage = false; // 임시로 로컬 스토리지 사용 (Firebase 연결 문제 해결 전까지)
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDorTHDMuGf-Ghinx3-vYD-NVz_nXk-J6I",
-    authDomain: "plan-execution.firebaseapp.com",
-    projectId: "plan-execution",
-    storageBucket: "plan-execution.firebasestorage.app",
-    messagingSenderId: "319338577758",
-    appId: "1:319338577758:web:560bac477f293b16b199cf"
+    apiKey: "AIzaSyAAFgwDAIawPLZomL0et1mnFnxfczOFjXU",
+    authDomain: "seminar-402ee.firebaseapp.com",
+    projectId: "seminar-402ee",
+    storageBucket: "seminar-402ee.firebasestorage.app",
+    messagingSenderId: "474752615650",
+    appId: "1:474752615650:web:ec08ed3c3593ed5d7d4abb"
 };
 
 // Firebase 초기화
