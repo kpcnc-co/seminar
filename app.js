@@ -3525,7 +3525,7 @@ class SeminarPlanningApp {
                                 text: `${globalIndex}. ${sketch.title}`,
                                 fontSize: 10,
                                 bold: true,
-                                margin: [0, 2, 0, 1],
+                                margin: [0, 5, 0, 3],
                                 alignment: 'center'
                             },
                             {
@@ -3546,7 +3546,7 @@ class SeminarPlanningApp {
                                     }]]
                                 },
                                 layout: 'noBorders',
-                                margin: [20, 20, 20, 20] // 상하좌우 20px 여백
+                                margin: [15, 15, 15, 15] // 상하좌우 균일한 15px 여백
                             }
                         );
                     });
@@ -4502,8 +4502,8 @@ class SeminarPlanningApp {
                 sketchGroup.forEach((sketch, groupIndex) => {
                     const globalIndex = i + groupIndex + 1;
                     sketchItems += `
-                        <div style="margin: 8px 0; text-align: center;">
-                            <p style="font-size: 10px; margin: 0 0 2px 0; font-weight: bold;">
+                        <div style="margin: 15px 0; text-align: center;">
+                            <p style="font-size: 10px; margin: 0 0 5px 0; font-weight: bold;">
                                 ${globalIndex}. ${safeText(sketch.title)}
                             </p>
                             <div style="border: 1px solid #CCCCCC; padding: 1px; display: inline-block;">
