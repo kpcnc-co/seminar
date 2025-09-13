@@ -3546,7 +3546,7 @@ class SeminarPlanningApp {
                                     }]]
                                 },
                                 layout: 'noBorders',
-                                margin: [20, 20, 20, 8] // 상하좌우 20px 여백
+                                margin: [20, 20, 20, 20] // 상하좌우 20px 여백
                             }
                         );
                     });
@@ -4516,7 +4516,7 @@ class SeminarPlanningApp {
                 sketchPages += `
                     <div style="${pageBreak}">
                         <h2>[별첨 2] 세미나 스케치</h2>
-                        <div style="margin: 20px 0; padding: 20px;">
+                        <div style="padding: 20px;">
                             ${sketchItems}
                         </div>
                     </div>
