@@ -3523,30 +3523,30 @@ class SeminarPlanningApp {
                         docDefinition.content.push(
                             {
                                 text: `${globalIndex}. ${sketch.title}`,
-                                fontSize: 11,
+                                fontSize: 12,
                                 bold: true,
-                                margin: [0, 3, 0, 2],
+                                margin: [0, 5, 0, 3],
                                 alignment: 'center'
                             },
                             {
                                 table: {
-                                    widths: [270],
+                                    widths: [490],
                                     body: [[{
                                         border: [true, true, true, true],
                                         borderColor: '#CCCCCC',
                                         borderWidth: 1,
-                                        cellPadding: 4,
+                                        cellPadding: 3,
                                         stack: [{
                                             image: sketch.imageData,
-                                            width: 250,
-                                            height: 180,
-                                            fit: [250, 180],
+                                            width: 480,
+                                            height: 310,
+                                            fit: [480, 310],
                                             alignment: 'center'
                                         }]
                                     }]]
                                 },
                                 layout: 'noBorders',
-                                margin: [0, 0, 0, 5]
+                                margin: [0, 0, 0, 8]
                             }
                         );
                     });
@@ -4502,12 +4502,12 @@ class SeminarPlanningApp {
                 sketchGroup.forEach((sketch, groupIndex) => {
                     const globalIndex = i + groupIndex + 1;
                     sketchItems += `
-                        <div style="margin: 5px 0; text-align: center;">
-                            <p style="font-size: 11px; margin: 0 0 3px 0; font-weight: bold;">
+                        <div style="margin: 8px 0; text-align: center;">
+                            <p style="font-size: 12px; margin: 0 0 5px 0; font-weight: bold;">
                                 ${globalIndex}. ${safeText(sketch.title)}
                             </p>
-                            <div style="border: 1px solid #CCCCCC; padding: 4px; display: inline-block;">
-                                <img src="${sketch.imageData}" style="width: 250px; height: 180px; object-fit: contain; display: block;" />
+                            <div style="border: 1px solid #CCCCCC; padding: 3px; display: inline-block;">
+                                <img src="${sketch.imageData}" style="width: 480px; height: 310px; object-fit: contain; display: block;" />
                             </div>
                         </div>
                     `;
