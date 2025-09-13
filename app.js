@@ -29,40 +29,26 @@ class SeminarPlanningApp {
 
     
 
-    // 간단한 라이브러리 상태 확인
+    // 라이브러리 상태 확인
     async checkLibraries() {
-        console.log('🔍 내보내기 라이브러리 상태 확인 중...');
-        
-        // exportLibraries 객체가 준비될 때까지 대기
         let attempts = 0;
-        const maxAttempts = 30; // 최대 3초 대기
+        const maxAttempts = 30;
         
         while (attempts < maxAttempts) {
             if (window.exportLibraries) {
-                console.log('✅ 내보내기 라이브러리 상태 확인 완료');
                 break;
             }
             await new Promise(resolve => setTimeout(resolve, 100));
             attempts++;
         }
-        
-        if (attempts === maxAttempts) {
-            console.warn('⚠️ 내보내기 라이브러리 상태 확인 시간 초과');
-        }
-        
-        // 라이브러리 상태 출력
-        if (window.exportLibraries) {
-            console.log('📊 내보내기 라이브러리 상태:', window.exportLibraries);
-        }
     }
     
-    // 라이브러리 존재 여부 확인 (간단한 방식)
+    // 라이브러리 존재 여부 확인
     getLibrary(name) {
         if (window.exportLibraries && window.exportLibraries[name]) {
             return true;
         }
         
-        // 특별한 경우들 처리
         if (name === 'jsPDF' && (window.jsPDF || window.jspdf?.jsPDF)) {
             return true;
         }
@@ -73,32 +59,21 @@ class SeminarPlanningApp {
         return false;
     }
 
-    // 라이브러리 인스턴스 반환 (간단한 방식)
+    // 라이브러리 인스턴스 반환
     getLibraryInstance(name) {
-        // exportLibraries 상태 확인
         if (window.exportLibraries && !window.exportLibraries[name]) {
-            console.warn(`⚠️ ${name} 라이브러리가 로드되지 않았습니다.`);
             return null;
         }
         
-        // 특별한 경우들 처리
         if (name === 'jsPDF') {
-            if (window.jsPDF) {
-                console.log(`🎯 ${name} 라이브러리 (window.jsPDF) 접근 성공`);
-                return window.jsPDF;
-            }
-            if (window.jspdf?.jsPDF) {
-                console.log(`🎯 ${name} 라이브러리 (window.jspdf.jsPDF) 접근 성공`);
-                return window.jspdf.jsPDF;
-            }
+            if (window.jsPDF) return window.jsPDF;
+            if (window.jspdf?.jsPDF) return window.jspdf.jsPDF;
         }
         
         if (name === 'saveAs' && window.saveAs) {
-            console.log(`🎯 ${name} 라이브러리 (window.saveAs) 접근 성공`);
             return window.saveAs;
         }
         
-        console.error(`❌ ${name} 라이브러리를 찾을 수 없습니다.`);
         return null;
     }
 
@@ -162,7 +137,6 @@ class SeminarPlanningApp {
             if (e.target.closest('.removeSketchBtn')) {
                 const removeBtn = e.target.closest('.removeSketchBtn');
                 const sketchIndex = removeBtn.getAttribute('data-sketch-index');
-                console.log('삭제 버튼 클릭됨, data-sketch-index:', sketchIndex);
                 this.removeSketchUpload(parseInt(sketchIndex));
             }
             // 파일 업로드 영역 클릭
@@ -372,46 +346,18 @@ class SeminarPlanningApp {
 
     async loadInitialData() {
         try {
-            console.log('loadInitialData 시작');
-            
-            // loadData 함수가 정의되어 있는지 확인
             if (typeof window.loadData !== 'function') {
-                console.warn('loadData 함수가 정의되지 않았습니다. firebase-config.js가 로드되었는지 확인하세요.');
                 return;
             }
             
-            // Firebase에서 저장된 데이터 불러오기
-            console.log('Firebase에서 데이터 로드 시작...');
             const result = await window.loadData();
-            console.log('Firebase 로드 결과:', result);
             
             if (result.success) {
-                // Firebase에서 가져온 데이터에서 id 필드 제거
                 const { id, ...dataWithoutId } = result.data;
                 this.currentData = dataWithoutId;
-                this.currentDocumentId = result.id; // Firebase 문서 ID 저장
-                console.log('currentData 설정 완료:', this.currentData);
-                console.log('currentDocumentId:', this.currentDocumentId);
-                console.log('timeSchedule 원본 데이터:', this.currentData.timeSchedule);
-                console.log('attendeeList 원본 데이터:', this.currentData.attendeeList);
-                console.log('attendeeList 상세 데이터:');
-                this.currentData.attendeeList.forEach((item, index) => {
-                    console.log(`  [${index}] name: ${item.name}, attendance: ${item.attendance}`);
-                });
-                console.log('timeSchedule 타입:', typeof this.currentData.timeSchedule);
-                console.log('attendeeList 타입:', typeof this.currentData.attendeeList);
-                console.log('objective 값:', this.currentData.objective);
-                console.log('datetime 값:', this.currentData.datetime);
-                console.log('location 값:', this.currentData.location);
-                console.log('attendees 값:', this.currentData.attendees);
+                this.currentDocumentId = result.id;
                 
-                console.log('populateForm 호출 시작...');
                 await this.populateForm();
-                console.log('populateForm 호출 완료');
-                
-                console.log('Firebase에서 데이터를 성공적으로 불러왔습니다.');
-            } else {
-                console.log('저장된 데이터가 없습니다:', result.message);
             }
         } catch (error) {
             console.error('초기 데이터 로드 오류:', error);
@@ -419,35 +365,16 @@ class SeminarPlanningApp {
     }
 
     async populateForm() {
-        console.log('populateForm 시작 - currentData:', this.currentData);
-        console.log('currentData 타입:', typeof this.currentData);
-        console.log('currentData 키들:', Object.keys(this.currentData || {}));
-        console.log('attendeeList 존재 여부:', 'attendeeList' in (this.currentData || {}));
-        console.log('timeSchedule 존재 여부:', 'timeSchedule' in (this.currentData || {}));
-        console.log('populateForm에서 objective 값:', this.currentData.objective);
-        console.log('populateForm에서 datetime 값:', this.currentData.datetime);
-        console.log('populateForm에서 location 값:', this.currentData.location);
-        console.log('populateForm에서 attendees 값:', this.currentData.attendees);
-        
-        // currentData가 null이거나 undefined인 경우 처리
         if (!this.currentData) {
-            console.error('currentData가 null 또는 undefined입니다.');
             return;
         }
         
-        // 데이터 구조 정규화만 실행 (마이그레이션 제거)
         this.normalizeDataStructure();
         
-        // 기본 정보 채우기 (목표 포함)
-        console.log('기본 정보 채우기 시작...');
-        
-        // 회차 필드 특별 처리
         if (this.currentData.session) {
-            console.log('회차 필드 처리 중...');
             this.populateSessionField();
         }
         
-        // 각 필드별로 직접 매핑
         const fieldMappings = [
             { key: 'objective', id: 'objective' },
             { key: 'datetime', id: 'datetime' },
@@ -459,40 +386,18 @@ class SeminarPlanningApp {
             const value = this.currentData[mapping.key];
             const element = document.getElementById(mapping.id);
             
-            console.log(`필드 매핑: ${mapping.key} -> ${mapping.id}, 값: "${value}", 요소:`, element);
-            
-            if (element) {
-                if (value !== undefined && value !== null && value !== '') {
-                    element.value = value;
-                    console.log(`값 설정 완료: ${mapping.key} = "${value}"`);
-                } else {
-                    console.log(`값이 비어있어서 설정하지 않음: ${mapping.key} = "${value}"`);
-                }
-            } else {
-                console.log(`요소를 찾을 수 없음: ${mapping.key}`, element);
+            if (element && value !== undefined && value !== null && value !== '') {
+                element.value = value;
             }
         });
 
-        // 시간 계획 테이블 채우기
-        console.log('시간 계획 테이블 채우기 시작...');
         this.populateTimeTable();
-        console.log('시간 계획 테이블 채우기 완료');
-        
-        // 참석자 테이블 채우기
-        console.log('참석자 테이블 채우기 시작...');
         this.populateAttendeeTable();
-        console.log('참석자 테이블 채우기 완료');
         
-        // 실시결과 데이터도 함께 로드 (목표 포함)
         await this.loadMainResultData();
         
-        // PDF 실시결과 내보내기 버튼 상태 초기화
         this.toggleExportResultPDFButton();
-        
-        // 빠른 저장 버튼 상태 초기화
         this.toggleQuickSaveButtons();
-        
-        console.log('populateForm 완료');
     }
 
     addDefaultRows() {
@@ -719,7 +624,6 @@ class SeminarPlanningApp {
 
     // 참석전체 Y 처리 함수
     selectAllAttendees() {
-        console.log('참석전체 Y 처리 시작');
         
         const tbody = document.getElementById('attendeeTableBody');
         const rows = tbody.children;
@@ -2021,46 +1925,32 @@ class SeminarPlanningApp {
 
     // 회차 필드 데이터 채우기
     populateSessionField() {
-        console.log('populateSessionField 시작');
-        console.log('currentData.session:', this.currentData.session);
-        
         const selectElement = document.getElementById('sessionSelect');
         const inputElement = document.getElementById('sessionInput');
         
-        console.log('selectElement:', selectElement);
-        console.log('inputElement:', inputElement);
-        
         if (this.currentData.session) {
-            // HTML에서 정의된 모든 회차 옵션들
             const sessionOptions = [
                 '제 1회', '제 2회', '제 3회', '제 4회', '제 5회', '제 6회', '제 7회', '제 8회', '제 9회', '제10회',
                 '제11회', '제12회', '제13회', '제14회', '제15회', '제16회', '제17회', '제18회', '제19회', '제20회'
             ];
             
             if (sessionOptions.includes(this.currentData.session)) {
-                // 미리 정의된 옵션인 경우
-                console.log('미리 정의된 옵션으로 설정:', this.currentData.session);
                 selectElement.value = this.currentData.session;
                 selectElement.style.display = 'block';
                 inputElement.classList.add('hidden');
             } else {
-                // 직접 입력된 값인 경우
-                console.log('직접 입력된 값으로 설정:', this.currentData.session);
                 selectElement.value = '직접입력';
                 selectElement.style.display = 'none';
                 inputElement.value = this.currentData.session;
                 inputElement.classList.remove('hidden');
             }
         } else {
-            // 빈 값인 경우
-            console.log('빈 값으로 설정');
             selectElement.value = '';
             selectElement.style.display = 'block';
             inputElement.value = '';
             inputElement.classList.add('hidden');
         }
         
-        console.log('populateSessionField 완료');
     }
 
     // 폼 초기화 (사용자 요청)
@@ -2221,19 +2111,13 @@ class SeminarPlanningApp {
         try {
             this.showLoading(true);
             
-            // PDFMake 라이브러리 로딩 대기 및 확인
             this.waitForPDFMake().then(() => {
-                console.log('✅ PDFMake 라이브러리 사용');
                 this.exportToPDFWithPDFMake();
             }).catch(() => {
-                console.log('🔄 PDFMake 로딩 실패, HTML to PDF 방식 사용');
                 this.exportToPDFWithHTML();
-            }).finally(() => {
-                // 로딩 상태 해제는 각 함수에서 처리
             });
             
         } catch (error) {
-            console.error('PDF 내보내기 오류:', error);
             this.showErrorToast(`PDF 내보내기 실패: ${error.message}`);
             this.showLoading(false);
         }
@@ -2243,16 +2127,14 @@ class SeminarPlanningApp {
     waitForPDFMake() {
         return new Promise((resolve, reject) => {
             let attempts = 0;
-            const maxAttempts = 100; // 10초 대기 (100ms * 100)
+            const maxAttempts = 100;
             
             const checkPDFMake = () => {
                 attempts++;
                 
                 if (window.pdfMake && window.pdfMake.fonts) {
-                    console.log('✅ PDFMake 라이브러리 로딩 확인 완료');
                     resolve();
                 } else if (attempts >= maxAttempts) {
-                    console.warn('⚠️ PDFMake 로딩 시간 초과 (10초)');
                     reject(new Error('PDFMake 로딩 시간 초과'));
                 } else {
                     setTimeout(checkPDFMake, 100);
@@ -2263,25 +2145,18 @@ class SeminarPlanningApp {
         });
     }
 
-    // PDFMake를 사용한 PDF 생성 (한국어 완벽 지원)
+    // PDFMake를 사용한 PDF 생성
     exportToPDFWithPDFMake() {
         try {
-            // PDFMake 라이브러리 로딩 확인
             if (!window.pdfMake) {
-                console.warn('⚠️ PDFMake 라이브러리가 로드되지 않았습니다. HTML to PDF 방식으로 전환합니다.');
                 this.exportToPDFWithHTML();
                 return;
             }
             
-            // PDFMake 폰트 확인
             if (!window.pdfMake.fonts) {
-                console.warn('⚠️ PDFMake 폰트가 로드되지 않았습니다. HTML to PDF 방식으로 전환합니다.');
                 this.exportToPDFWithHTML();
                 return;
             }
-            
-            console.log('✅ PDFMake 라이브러리 로드 완료');
-            console.log('📋 사용 가능한 폰트:', Object.keys(window.pdfMake.fonts));
             
             // 안전한 텍스트 처리 함수
             const safeText = (text) => {
@@ -2481,12 +2356,9 @@ class SeminarPlanningApp {
         }
     }
 
-    // HTML to PDF 방식 (새 탭 열어 인쇄 대화상자)
+    // HTML to PDF 방식
     exportToPDFWithHTML() {
         try {
-            console.log('🔄 HTML to PDF 방식으로 실행계획 PDF 생성 (새 탭)');
-            
-            // HTML 콘텐츠 생성
             const htmlContent = this.generatePDFHTML();
             
             // 새 창에서 HTML 열기
@@ -2520,37 +2392,6 @@ class SeminarPlanningApp {
     }
 
     // 대체 PDF 내보내기 방법 (HTML to PDF)
-    exportToPDFAlternative() {
-        try {
-            console.log('🔄 대체 실행계획 내보내기 (새 탭)');
-            
-            const htmlContent = this.generatePDFHTML();
-            const newWindow = window.open('', '_blank');
-            if (!newWindow) {
-                this.showErrorToast('팝업이 차단되었습니다. 브라우저에서 팝업을 허용해주세요.');
-                this.showLoading(false);
-                return;
-            }
-            newWindow.document.write(htmlContent);
-            newWindow.document.close();
-            
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            newWindow.document.title = `${year}${month}${day} 전사 신기술 세미나 실행계획.pdf`;
-            
-            setTimeout(() => {
-                newWindow.print();
-                this.showSuccessToast('인쇄 대화상자가 열렸습니다. "PDF로 저장"을 선택하세요.');
-            }, 500);
-        } catch (error) {
-            console.error('대체 PDF 내보내기 오류:', error);
-            this.showErrorToast(`PDF 내보내기 실패: ${error.message}`);
-        } finally {
-            this.showLoading(false);
-        }
-    }
 
     // PDF용 HTML 콘텐츠 생성 (한국어 완벽 지원)
     generatePDFHTML() {
@@ -3301,23 +3142,15 @@ class SeminarPlanningApp {
             const session = sessionSelect || sessionInput;
             const datetime = document.getElementById('datetime').value;
             
-            console.log('🔍 세미나 정보 조회:', { session, datetime });
-            
             if (!session || !datetime) {
                 this.showErrorToast('먼저 세미나 정보를 입력해주세요.');
                 this.showLoading(false);
                 return;
             }
             
-            // 실시결과 데이터 조회
-            const resultData = await loadResultDataByKey(session, datetime);
-            console.log('📊 조회된 실시결과 데이터:', resultData);
+            let resultData = await loadResultDataByKey(session, datetime);
             
-            console.log('✅ 찾은 실시결과 데이터:', resultData);
-            
-            // 실시결과 데이터가 없어도 메인화면 데이터로 PDF 생성
             if (!resultData) {
-                console.log('⚠️ 실시결과 데이터가 없음. 메인화면 데이터로 PDF 생성');
                 const mainResultData = this.getMainResultData();
                 resultData = {
                     session: session,
@@ -3333,15 +3166,10 @@ class SeminarPlanningApp {
                 };
             }
             
-            // PDFMake 라이브러리 로딩 대기 및 확인
             this.waitForPDFMake().then(() => {
-                console.log('✅ PDFMake 라이브러리 사용 (실시결과)');
                 this.exportResultToPDFWithPDFMake(resultData);
             }).catch(() => {
-                console.log('🔄 PDFMake 로딩 실패, HTML to PDF 방식 사용 (실시결과)');
                 this.exportResultToPDFWithHTML(resultData);
-            }).finally(() => {
-                // 로딩 상태 해제는 각 함수에서 처리
             });
             
         } catch (error) {
@@ -3354,14 +3182,10 @@ class SeminarPlanningApp {
     // PDFMake를 사용한 실시결과 PDF 생성
     exportResultToPDFWithPDFMake(resultData) {
         try {
-            // PDFMake 라이브러리 로딩 확인
             if (!window.pdfMake) {
-                console.warn('⚠️ PDFMake 라이브러리가 로드되지 않았습니다. HTML to PDF 방식으로 전환합니다.');
                 this.exportResultToPDFWithHTML(resultData);
                 return;
             }
-            
-            console.log('✅ PDFMake 라이브러리 로드 완료 (실시결과)');
             
             // 현재 세미나 정보
             const session = resultData.session;
@@ -3569,12 +3393,9 @@ class SeminarPlanningApp {
         }
     }
 
-    // HTML to PDF 방식으로 실시결과 내보내기 (새 탭 열어 인쇄 대화상자)
+    // HTML to PDF 방식으로 실시결과 내보내기
     exportResultToPDFWithHTML(resultData) {
         try {
-            console.log('🔄 HTML to PDF 방식으로 실시결과 PDF 생성 (새 탭)');
-            
-            // HTML 콘텐츠 생성
             const htmlContent = this.generateResultPDFHTML(resultData);
             
             // 새 창에서 HTML 열기
