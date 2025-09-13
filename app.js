@@ -1122,14 +1122,14 @@ class SeminarPlanningApp {
             const isKeyChanged = sessionChanged || datetimeChanged;
             
             // console.log('🔍 회차/일시 변경 확인:', {
-                originalSession: this.originalSession,
-                currentSession: this.currentData.session,
-                originalDatetime: this.originalDatetime,
-                currentDatetime: this.currentData.datetime,
-                sessionChanged,
-                datetimeChanged,
-                isKeyChanged
-            });
+            //     originalSession: this.originalSession,
+            //     currentSession: this.currentData.session,
+            //     originalDatetime: this.originalDatetime,
+            //     currentDatetime: this.currentData.datetime,
+            //     sessionChanged,
+            //     datetimeChanged,
+            //     isKeyChanged
+            // });
             
             let result;
             
