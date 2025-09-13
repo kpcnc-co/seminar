@@ -3528,7 +3528,7 @@ class SeminarPlanningApp {
                                 widths: [500],
                                 body: [[{
                                     border: [true, true, true, true],
-                                    borderColor: '#000000',
+                                    borderColor: '#CCCCCC',
                                     borderWidth: 1,
                                     cellPadding: 15,
                                     stack: [{
@@ -4496,7 +4496,7 @@ class SeminarPlanningApp {
                         <p style="font-size: 12px; margin: 0 0 10px 0; font-weight: bold;">
                             ${i + 1}. ${safeText(sketch.title)}
                         </p>
-                        <div style="border: 1px solid #000; padding: 15px; display: inline-block;">
+                        <div style="border: 1px solid #CCCCCC; padding: 15px; display: inline-block;">
                             <img src="${sketch.imageData}" style="width: 450px; height: 300px; object-fit: contain; display: block;" />
                         </div>
                     </div>
