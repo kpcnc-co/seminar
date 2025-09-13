@@ -4412,8 +4412,23 @@ class SeminarPlanningApp {
         
         console.log('addSketchUpload 호출됨, 현재 개수:', currentCount);
         
-        // 다음 인덱스는 현재 개수 (연속된 인덱스 보장)
-        const nextIndex = currentCount;
+        // 기존 인덱스들을 확인하여 연속된 인덱스 찾기
+        const existingIndices = Array.from(existingSketches).map(sketch => 
+            parseInt(sketch.getAttribute('data-sketch-index'))
+        ).sort((a, b) => a - b);
+        
+        console.log('기존 인덱스들:', existingIndices);
+        
+        // 연속된 인덱스 중 가장 작은 빈 인덱스 찾기
+        let nextIndex = 0;
+        for (let i = 0; i < existingIndices.length; i++) {
+            if (existingIndices[i] !== i) {
+                nextIndex = i;
+                break;
+            }
+            nextIndex = i + 1;
+        }
+        
         console.log('다음 인덱스:', nextIndex);
         
         const sketchDiv = document.createElement('div');
