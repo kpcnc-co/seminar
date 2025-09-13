@@ -4823,8 +4823,12 @@ class SeminarPlanningApp {
                 const container = document.getElementById('sketchUploadContainer');
                 const sketchElements = container.querySelectorAll('[data-sketch-index]');
                 
-                // DOM 순서대로 스케치 데이터 설정
-                sketchElements.forEach((sketchElement, domIndex) => {
+                // DOM 인덱스 순서대로 스케치 데이터 설정
+                const sortedSketchElements = Array.from(sketchElements).sort((a, b) => {
+                    return parseInt(a.getAttribute('data-sketch-index')) - parseInt(b.getAttribute('data-sketch-index'));
+                });
+                
+                sortedSketchElements.forEach((sketchElement, domIndex) => {
                     const actualIndex = sketchElement.getAttribute('data-sketch-index');
                     const sketch = allSketches[domIndex];
                     
