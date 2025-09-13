@@ -3503,7 +3503,6 @@ class SeminarPlanningApp {
                 docDefinition.content.push(
                     { text: '', pageBreak: 'before' },
                     { text: '[별첨 2] 세미나 스케치', style: 'header' },
-                    { text: '', margin: [0, 20, 0, 0] }, // 상단 여백
                 );
                 
                 const validSketches = resultData.sketches.filter(sketch => sketch.title && sketch.imageData);
@@ -3547,7 +3546,7 @@ class SeminarPlanningApp {
                                     }]]
                                 },
                                 layout: 'noBorders',
-                                margin: [20, 0, 20, 8] // 좌우 20px 여백 추가
+                                margin: [20, 20, 20, 8] // 상하좌우 20px 여백
                             }
                         );
                     });
@@ -4517,7 +4516,7 @@ class SeminarPlanningApp {
                 sketchPages += `
                     <div style="${pageBreak}">
                         <h2>[별첨 2] 세미나 스케치</h2>
-                        <div style="margin: 20px 0; padding: 0 20px;">
+                        <div style="margin: 20px 0; padding: 20px;">
                             ${sketchItems}
                         </div>
                     </div>
