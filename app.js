@@ -646,7 +646,7 @@ class SeminarPlanningApp {
             }
         }
         
-        console.log(`참석전체 Y 처리 완료: ${updatedCount}명 업데이트`);
+        // console.log(`참석전체 Y 처리 완료: ${updatedCount}명 업데이트`);
         
         // 성공 메시지 표시
         this.showSuccessToast(`${updatedCount}명의 참석여부가 'Y'로 변경되었습니다.`);
@@ -661,8 +661,8 @@ class SeminarPlanningApp {
     updateAttendeeList(index, field, value) {
         if (this.currentData.attendeeList[index]) {
             this.currentData.attendeeList[index][field] = value;
-            console.log(`참석자 데이터 업데이트: index=${index}, field=${field}, value=${value}`);
-            console.log(`업데이트 후 참석자 데이터:`, this.currentData.attendeeList[index]);
+            // console.log(`참석자 데이터 업데이트: index=${index}, field=${field}, value=${value}`);
+            // console.log(`업데이트 후 참석자 데이터:`, this.currentData.attendeeList[index]);
             
             // 참석여부 변경 시 즉시 저장 (백그라운드)
             if (field === 'attendance') {
@@ -754,11 +754,11 @@ class SeminarPlanningApp {
         const tbody = document.getElementById('timeTableBody');
         tbody.innerHTML = '';
         
-        console.log('시간 계획 데이터:', this.currentData.timeSchedule);
-        console.log('시간 계획 데이터 타입:', typeof this.currentData.timeSchedule);
-        console.log('시간 계획 데이터 길이:', this.currentData.timeSchedule ? this.currentData.timeSchedule.length : 'undefined');
-        console.log('시간 계획 데이터가 배열인가?', Array.isArray(this.currentData.timeSchedule));
-        console.log('시간 계획 데이터 키들:', this.currentData.timeSchedule ? Object.keys(this.currentData.timeSchedule) : 'undefined');
+        // console.log('시간 계획 데이터:', this.currentData.timeSchedule);
+        // console.log('시간 계획 데이터 타입:', typeof this.currentData.timeSchedule);
+        // console.log('시간 계획 데이터 길이:', this.currentData.timeSchedule ? this.currentData.timeSchedule.length : 'undefined');
+        // console.log('시간 계획 데이터가 배열인가?', Array.isArray(this.currentData.timeSchedule));
+        // console.log('시간 계획 데이터 키들:', this.currentData.timeSchedule ? Object.keys(this.currentData.timeSchedule) : 'undefined');
         
         if (!this.currentData.timeSchedule) {
             console.error('시간 계획 데이터가 undefined입니다.');
@@ -766,14 +766,14 @@ class SeminarPlanningApp {
         }
         
         if (this.currentData.timeSchedule.length === 0) {
-            console.log('시간 계획 데이터가 비어있습니다.');
+            // console.log('시간 계획 데이터가 비어있습니다.');
             return;
         }
         
-        console.log('시간 계획 테이블 렌더링 시작...');
+        // console.log('시간 계획 테이블 렌더링 시작...');
         
         this.currentData.timeSchedule.forEach((item, index) => {
-            console.log(`시간 계획 아이템 처리 중: index=${index}, item=`, item);
+            // console.log(`시간 계획 아이템 처리 중: index=${index}, item=`, item);
             
             // 직접 행 생성 (addTimeRow() 호출하지 않음)
             const row = document.createElement('tr');
@@ -813,17 +813,17 @@ class SeminarPlanningApp {
             `;
             
             tbody.appendChild(row);
-            console.log(`시간 계획 행 추가됨: index=${index}, type=${item.type}`);
+            // console.log(`시간 계획 행 추가됨: index=${index}, type=${item.type}`);
             
             // 데이터 채우기 (모바일 환경 고려)
             const inputs = row.querySelectorAll('input, select, textarea');
-            console.log(`시간 계획 입력 요소들:`, inputs);
+            // console.log(`시간 계획 입력 요소들:`, inputs);
             
             // select 요소 (type)
             const typeSelect = row.querySelector('select[data-field="type"]');
             if (typeSelect && item.type !== undefined && item.type !== null) {
                 typeSelect.value = item.type;
-                console.log(`시간 계획 select 값 설정: ${item.type}`);
+                // console.log(`시간 계획 select 값 설정: ${item.type}`);
                 // 모바일에서 select 값이 제대로 설정되도록 강제 업데이트
                 setTimeout(() => {
                     typeSelect.value = item.type;
@@ -835,7 +835,7 @@ class SeminarPlanningApp {
             if (contentTextarea && item.content !== undefined && item.content !== null) {
                 contentTextarea.value = item.content;
                 contentTextarea.textContent = item.content;
-                console.log(`시간 계획 textarea 값 설정: ${item.content}`);
+                // console.log(`시간 계획 textarea 값 설정: ${item.content}`);
             }
             
             // input 요소 (time)
@@ -843,7 +843,7 @@ class SeminarPlanningApp {
             if (timeInput && item.time !== undefined && item.time !== null) {
                 timeInput.value = item.time;
                 timeInput.setAttribute('value', item.time);
-                console.log(`시간 계획 time 값 설정: ${item.time}`);
+                // console.log(`시간 계획 time 값 설정: ${item.time}`);
             }
             
             // input 요소 (responsible)
@@ -851,18 +851,18 @@ class SeminarPlanningApp {
             if (responsibleInput && item.responsible !== undefined && item.responsible !== null) {
                 responsibleInput.value = item.responsible;
                 responsibleInput.setAttribute('value', item.responsible);
-                console.log(`시간 계획 responsible 값 설정: ${item.responsible}`);
+                // console.log(`시간 계획 responsible 값 설정: ${item.responsible}`);
             }
             
             // 이벤트 리스너 추가 (모바일 환경 고려)
             this.bindTimeRowEvents(row, index);
             
-            console.log(`시간 계획 행 추가됨: index=${index}, type=${item.type}`);
-            console.log(`시간 계획 행 DOM 요소:`, row);
+            // console.log(`시간 계획 행 추가됨: index=${index}, type=${item.type}`);
+            // console.log(`시간 계획 행 DOM 요소:`, row);
         });
         
-        console.log('시간 계획 테이블 렌더링 완료. 총 행 수:', tbody.children.length);
-        console.log('tbody 자식 요소들:', tbody.children);
+        // console.log('시간 계획 테이블 렌더링 완료. 총 행 수:', tbody.children.length);
+        // console.log('tbody 자식 요소들:', tbody.children);
     }
     
     // 시간 계획 행 이벤트 바인딩 (모바일 환경 고려)
@@ -902,46 +902,46 @@ class SeminarPlanningApp {
 
     // 데이터 구조 정규화 (Firebase 데이터 호환성)
     normalizeDataStructure() {
-        console.log('데이터 구조 정규화 시작');
+        // console.log('데이터 구조 정규화 시작');
         
         // timeSchedule 정규화
         if (this.currentData.timeSchedule) {
             if (typeof this.currentData.timeSchedule === 'object' && !Array.isArray(this.currentData.timeSchedule)) {
-                console.log('timeSchedule을 객체에서 배열로 변환');
+                // console.log('timeSchedule을 객체에서 배열로 변환');
                 // Object.values() 대신 키 순서대로 배열 생성
                 const keys = Object.keys(this.currentData.timeSchedule).sort((a, b) => parseInt(a) - parseInt(b));
                 this.currentData.timeSchedule = keys.map(key => this.currentData.timeSchedule[key]);
-                console.log('변환된 timeSchedule:', this.currentData.timeSchedule);
+                // console.log('변환된 timeSchedule:', this.currentData.timeSchedule);
             } else if (Array.isArray(this.currentData.timeSchedule)) {
-                console.log('timeSchedule은 이미 배열입니다:', this.currentData.timeSchedule.length, '개 항목');
+                // console.log('timeSchedule은 이미 배열입니다:', this.currentData.timeSchedule.length, '개 항목');
             }
         } else {
-            console.log('timeSchedule이 없습니다. 빈 배열로 초기화');
+            // console.log('timeSchedule이 없습니다. 빈 배열로 초기화');
             this.currentData.timeSchedule = [];
         }
         
         // attendeeList 정규화
         if (this.currentData.attendeeList) {
             if (typeof this.currentData.attendeeList === 'object' && !Array.isArray(this.currentData.attendeeList)) {
-                console.log('attendeeList를 객체에서 배열로 변환');
+                // console.log('attendeeList를 객체에서 배열로 변환');
                 // Object.values() 대신 키 순서대로 배열 생성
                 const keys = Object.keys(this.currentData.attendeeList).sort((a, b) => parseInt(a) - parseInt(b));
                 this.currentData.attendeeList = keys.map(key => this.currentData.attendeeList[key]);
-                console.log('변환된 attendeeList:', this.currentData.attendeeList);
+                // console.log('변환된 attendeeList:', this.currentData.attendeeList);
             } else if (Array.isArray(this.currentData.attendeeList)) {
-                console.log('attendeeList는 이미 배열입니다:', this.currentData.attendeeList.length, '개 항목');
+                // console.log('attendeeList는 이미 배열입니다:', this.currentData.attendeeList.length, '개 항목');
             }
         } else {
-            console.log('attendeeList가 없습니다. 빈 배열로 초기화');
+            // console.log('attendeeList가 없습니다. 빈 배열로 초기화');
             this.currentData.attendeeList = [];
         }
         
-        console.log('데이터 구조 정규화 완료');
-        console.log('정규화 후 timeSchedule:', this.currentData.timeSchedule);
-        console.log('정규화 후 attendeeList:', this.currentData.attendeeList);
-        console.log('정규화 후 attendeeList 상세:');
+        // console.log('데이터 구조 정규화 완료');
+        // console.log('정규화 후 timeSchedule:', this.currentData.timeSchedule);
+        // console.log('정규화 후 attendeeList:', this.currentData.attendeeList);
+        // console.log('정규화 후 attendeeList 상세:');
         this.currentData.attendeeList.forEach((item, index) => {
-            console.log(`  [${index}] name: ${item.name}, attendance: ${item.attendance}`);
+            // console.log(`  [${index}] name: ${item.name}, attendance: ${item.attendance}`);
         });
     }
 
@@ -951,11 +951,11 @@ class SeminarPlanningApp {
         tbody.innerHTML = '';
         
         
-        console.log('참석자 데이터 전체:', this.currentData.attendeeList);
-        console.log('참석자 데이터 타입:', typeof this.currentData.attendeeList);
-        console.log('참석자 데이터 길이:', this.currentData.attendeeList ? this.currentData.attendeeList.length : 'undefined');
-        console.log('참석자 데이터가 배열인가?', Array.isArray(this.currentData.attendeeList));
-        console.log('참석자 데이터 키들:', this.currentData.attendeeList ? Object.keys(this.currentData.attendeeList) : 'undefined');
+        // console.log('참석자 데이터 전체:', this.currentData.attendeeList);
+        // console.log('참석자 데이터 타입:', typeof this.currentData.attendeeList);
+        // console.log('참석자 데이터 길이:', this.currentData.attendeeList ? this.currentData.attendeeList.length : 'undefined');
+        // console.log('참석자 데이터가 배열인가?', Array.isArray(this.currentData.attendeeList));
+        // console.log('참석자 데이터 키들:', this.currentData.attendeeList ? Object.keys(this.currentData.attendeeList) : 'undefined');
         
         if (!this.currentData.attendeeList) {
             console.error('참석자 데이터가 undefined입니다.');
@@ -963,15 +963,15 @@ class SeminarPlanningApp {
         }
         
         if (this.currentData.attendeeList.length === 0) {
-            console.log('참석자 데이터가 비어있습니다.');
+            // console.log('참석자 데이터가 비어있습니다.');
             return;
         }
         
-        console.log('참석자 테이블 렌더링 시작...');
+        // console.log('참석자 테이블 렌더링 시작...');
         
         this.currentData.attendeeList.forEach((item, index) => {
-            console.log(`참석자 아이템 처리 중: index=${index}, item=`, item);
-            console.log(`참석여부 확인: index=${index}, name=${item.name}, attendance=${item.attendance}`);
+            // console.log(`참석자 아이템 처리 중: index=${index}, item=`, item);
+            // console.log(`참석여부 확인: index=${index}, name=${item.name}, attendance=${item.attendance}`);
             
             // 직접 행 생성 (addAttendeeRow() 호출하지 않음)
             const row = document.createElement('tr');
@@ -1023,7 +1023,7 @@ class SeminarPlanningApp {
             if (nameInput && item.name !== undefined && item.name !== null) {
                 nameInput.value = item.name;
                 nameInput.setAttribute('value', item.name);
-                console.log(`참석자 name 값 설정: ${item.name}`);
+                // console.log(`참석자 name 값 설정: ${item.name}`);
             }
             
             // 직급 필드 처리 (텍스트 입력)
@@ -1052,7 +1052,7 @@ class SeminarPlanningApp {
             if (attendanceSelect) {
                 // 참석여부 값이 있으면 해당 값으로 설정, 없으면 기본값 'N'으로 설정
                 const attendanceValue = (item.attendance !== undefined && item.attendance !== null && item.attendance !== '') ? item.attendance : 'N';
-                console.log(`참석여부 값 설정: index=${index}, attendanceValue=${attendanceValue}, item.attendance=${item.attendance}`);
+                // console.log(`참석여부 값 설정: index=${index}, attendanceValue=${attendanceValue}, item.attendance=${item.attendance}`);
                 
                 // 강제로 value 설정
                 attendanceSelect.value = attendanceValue;
@@ -1074,11 +1074,11 @@ class SeminarPlanningApp {
                 // 다시 한번 value 설정
                 attendanceSelect.value = attendanceValue;
                 
-                console.log(`참석여부 설정: index=${index}, value=${attendanceValue}, item.attendance=${item.attendance}`);
+                // console.log(`참석여부 설정: index=${index}, value=${attendanceValue}, item.attendance=${item.attendance}`);
                 
                 // 참석여부 값이 제대로 설정되었는지 확인
                 setTimeout(() => {
-                    console.log(`참석여부 확인: index=${index}, 실제값=${attendanceSelect.value}, 예상값=${attendanceValue}`);
+                    // console.log(`참석여부 확인: index=${index}, 실제값=${attendanceSelect.value}, 예상값=${attendanceValue}`);
                 }, 100);
             }
             
@@ -1089,12 +1089,12 @@ class SeminarPlanningApp {
             
             // 행을 tbody에 추가
             tbody.appendChild(row);
-            console.log(`참석자 행 추가됨: index=${index}, name=${item.name}`);
-            console.log(`참석자 행 DOM 요소:`, row);
+            // console.log(`참석자 행 추가됨: index=${index}, name=${item.name}`);
+            // console.log(`참석자 행 DOM 요소:`, row);
         });
         
-        console.log('참석자 테이블 렌더링 완료. 총 행 수:', tbody.children.length);
-        console.log('tbody 자식 요소들:', tbody.children);
+        // console.log('참석자 테이블 렌더링 완료. 총 행 수:', tbody.children.length);
+        // console.log('tbody 자식 요소들:', tbody.children);
     }
 
     async saveData() {
@@ -1121,7 +1121,7 @@ class SeminarPlanningApp {
             const datetimeChanged = this.originalDatetime && this.originalDatetime !== this.currentData.datetime;
             const isKeyChanged = sessionChanged || datetimeChanged;
             
-            console.log('🔍 회차/일시 변경 확인:', {
+            // console.log('🔍 회차/일시 변경 확인:', {
                 originalSession: this.originalSession,
                 currentSession: this.currentData.session,
                 originalDatetime: this.originalDatetime,
@@ -1135,7 +1135,7 @@ class SeminarPlanningApp {
             
             if (isKeyChanged) {
                 // 회차나 일시가 변경된 경우 신규 등록
-                console.log('🆕 회차/일시 변경 감지, 신규 등록 처리');
+                // console.log('🆕 회차/일시 변경 감지, 신규 등록 처리');
                 
                 if (useLocalStorage) {
                     result = this.saveToLocalStorage(this.currentData);
@@ -1160,7 +1160,7 @@ class SeminarPlanningApp {
             
             if (existingData) {
                 // 기존 데이터가 있으면 수정
-                console.log('기존 데이터 발견, 수정 처리:', existingData.id);
+                // console.log('기존 데이터 발견, 수정 처리:', existingData.id);
                 
                 if (useLocalStorage) {
                     result = this.saveToLocalStorage(this.currentData, existingData.id);
@@ -1174,7 +1174,7 @@ class SeminarPlanningApp {
                 }
             } else {
                 // 기존 데이터가 없으면 새로 등록
-                console.log('새 데이터 등록 처리');
+                // console.log('새 데이터 등록 처리');
                 
                 if (useLocalStorage) {
                     result = this.saveToLocalStorage(this.currentData);
@@ -1197,11 +1197,11 @@ class SeminarPlanningApp {
                 this.showErrorToast(result.message);
             } else {
                 // 기본 데이터 저장 성공 시 실시결과 데이터도 저장
-                console.log('📝 기본 데이터 저장 완료, 실시결과 데이터 저장 시작');
+                // console.log('📝 기본 데이터 저장 완료, 실시결과 데이터 저장 시작');
                 await this.saveMainResultData(true); // skipLoading = true
                 
                 // 스케치 정보도 함께 저장
-                console.log('🖼️ 스케치 정보 저장 시작');
+                // console.log('🖼️ 스케치 정보 저장 시작');
                 await this.saveSketchData(true); // skipLoading = true
             }
             
@@ -1241,7 +1241,7 @@ class SeminarPlanningApp {
             
             if (existingData) {
                 // 기존 데이터가 있으면 수정
-                console.log('참석여부 변경 - 기존 데이터 수정:', existingData.id);
+                // console.log('참석여부 변경 - 기존 데이터 수정:', existingData.id);
                 
                 if (useLocalStorage) {
                     result = this.saveToLocalStorage(this.currentData, existingData.id);
@@ -1251,11 +1251,11 @@ class SeminarPlanningApp {
                 
                 if (result.success) {
                     this.currentDocumentId = existingData.id;
-                    console.log('참석여부 변경 저장 완료');
+                    // console.log('참석여부 변경 저장 완료');
                 }
             } else {
                 // 기존 데이터가 없으면 새로 등록
-                console.log('참석여부 변경 - 새 데이터 등록');
+                // console.log('참석여부 변경 - 새 데이터 등록');
                 
                 if (useLocalStorage) {
                     result = this.saveToLocalStorage(this.currentData);
@@ -1265,7 +1265,7 @@ class SeminarPlanningApp {
                 
                 if (result.success && result.id) {
                     this.currentDocumentId = result.id;
-                    console.log('참석여부 변경 저장 완료');
+                    // console.log('참석여부 변경 저장 완료');
                 }
             }
             
@@ -1382,8 +1382,8 @@ class SeminarPlanningApp {
                 this.currentData = dataWithoutId;
                 this.currentDocumentId = result.id; // Firebase 문서 ID 저장
                 
-                console.log('📋 loadData로 로드된 데이터:', this.currentData);
-                console.log('📋 스케치 정보:', this.currentData.sketches);
+                // console.log('📋 loadData로 로드된 데이터:', this.currentData);
+                // console.log('📋 스케치 정보:', this.currentData.sketches);
                 
                 await this.populateForm();
                 
@@ -1438,7 +1438,7 @@ class SeminarPlanningApp {
             const work = workInput ? workInput.value : '';
             const attendance = attendanceSelect?.value || 'N';
             
-            console.log(`참석자 데이터 수집: index=${index}, name=${nameInput?.value}, attendance=${attendance}`);
+            // console.log(`참석자 데이터 수집: index=${index}, name=${nameInput?.value}, attendance=${attendance}`);
             
             this.currentData.attendeeList.push({
                 name: nameInput?.value || '',
@@ -1562,7 +1562,7 @@ class SeminarPlanningApp {
                     return dateB - dateA; // 내림차순 (최신 날짜가 먼저)
                 });
                 
-                console.log('📊 조회된 데이터:', sortedData);
+                // console.log('📊 조회된 데이터:', sortedData);
                 this.displaySearchResults(sortedData);
             } else {
                 this.showErrorToast(result.message);
@@ -1656,14 +1656,14 @@ class SeminarPlanningApp {
     async loadSeminarDetailByKey(session, datetime) {
         try {
             this.showLoading(true);
-            console.log('🔍 세미나 상세 정보 로드 시작, 회차:', session, '일시:', datetime);
+            // console.log('🔍 세미나 상세 정보 로드 시작, 회차:', session, '일시:', datetime);
             
             // 회차_일시 키값 생성
             const keyValue = `${session}_${datetime}`;
             
             // 키값으로 기존 데이터 찾기
             const existingData = await this.findExistingDataByKey(keyValue);
-            console.log('📊 조회 결과:', existingData);
+            // console.log('📊 조회 결과:', existingData);
             
             if (existingData) {
                 // 모달 닫기
@@ -1693,16 +1693,16 @@ class SeminarPlanningApp {
                     sketches: existingData.data.sketches || [] // 스케치 정보 추가
                 };
                 
-                console.log('📋 정규화된 세미나 데이터:', normalizedData);
-                console.log('📋 시간 계획 데이터:', normalizedData.timeSchedule);
-                console.log('📋 참석자 데이터:', normalizedData.attendeeList);
-                console.log('📋 스케치 데이터:', normalizedData.sketches);
+                // console.log('📋 정규화된 세미나 데이터:', normalizedData);
+                // console.log('📋 시간 계획 데이터:', normalizedData.timeSchedule);
+                // console.log('📋 참석자 데이터:', normalizedData.attendeeList);
+                // console.log('📋 스케치 데이터:', normalizedData.sketches);
                 
                 // 참석여부 상세 로그
                 if (normalizedData.attendeeList && normalizedData.attendeeList.length > 0) {
-                    console.log('📋 참석여부 상세 확인:');
+                    // console.log('📋 참석여부 상세 확인:');
                     normalizedData.attendeeList.forEach((attendee, idx) => {
-                        console.log(`  [${idx}] ${attendee.name}: attendance=${attendee.attendance}`);
+                        // console.log(`  [${idx}] ${attendee.name}: attendance=${attendee.attendance}`);
                     });
                 }
                 
@@ -1713,12 +1713,12 @@ class SeminarPlanningApp {
                 // 원본 회차와 일시 저장 (변경 감지용)
                 this.originalSession = normalizedData.session;
                 this.originalDatetime = normalizedData.datetime;
-                console.log('📋 원본 회차/일시 저장:', this.originalSession, this.originalDatetime);
+                // console.log('📋 원본 회차/일시 저장:', this.originalSession, this.originalDatetime);
                 
-                console.log('📋 currentData 설정 완료:', this.currentData);
+                // console.log('📋 currentData 설정 완료:', this.currentData);
                 
                 await this.populateForm();
-                console.log('📋 폼 채우기 완료');
+                // console.log('📋 폼 채우기 완료');
                 
                 // 스케치 버튼 상태 확인
                 setTimeout(() => {
@@ -1742,11 +1742,11 @@ class SeminarPlanningApp {
     async loadSeminarDetail(id) {
         try {
             this.showLoading(true);
-            console.log('🔍 세미나 상세 정보 로드 시작, ID:', id);
+            // console.log('🔍 세미나 상세 정보 로드 시작, ID:', id);
             
             // Firebase에서 해당 문서 조회
             const result = await this.getSeminarById(id);
-            console.log('📊 조회 결과:', result);
+            // console.log('📊 조회 결과:', result);
             
             if (result.success) {
                 // 모달 닫기
@@ -1775,17 +1775,17 @@ class SeminarPlanningApp {
                     })) : []
                 };
                 
-                console.log('📋 정규화된 세미나 데이터:', normalizedData);
-                console.log('📋 시간 계획 데이터:', normalizedData.timeSchedule);
-                console.log('📋 참석자 데이터:', normalizedData.attendeeList);
+                // console.log('📋 정규화된 세미나 데이터:', normalizedData);
+                // console.log('📋 시간 계획 데이터:', normalizedData.timeSchedule);
+                // console.log('📋 참석자 데이터:', normalizedData.attendeeList);
                 
                 // 메인 화면에 데이터 로드
                 this.currentData = normalizedData;
                 this.currentDocumentId = id; // 매개변수로 받은 id 사용
-                console.log('📋 currentData 설정 완료:', this.currentData);
+                // console.log('📋 currentData 설정 완료:', this.currentData);
                 
                 await this.populateForm();
-                console.log('📋 폼 채우기 완료');
+                // console.log('📋 폼 채우기 완료');
                 
                 this.showSuccessToast('세미나 계획을 불러왔습니다.');
             } else {
@@ -1808,7 +1808,7 @@ class SeminarPlanningApp {
                 const seminar = allData.find(item => item.id === id);
                 
                 if (seminar) {
-                    console.log('📁 로컬 스토리지에서 로드된 데이터:', seminar.data);
+                    // console.log('📁 로컬 스토리지에서 로드된 데이터:', seminar.data);
                     return { success: true, data: seminar.data, id: seminar.id };
                 } else {
                     return { success: false, message: '해당 세미나 계획을 찾을 수 없습니다.' };
@@ -1818,7 +1818,7 @@ class SeminarPlanningApp {
                 const doc = await db.collection('seminarPlans').doc(id).get();
                 if (doc.exists) {
                     const docData = doc.data();
-                    console.log('🔥 Firebase에서 로드된 데이터:', docData);
+                    // console.log('🔥 Firebase에서 로드된 데이터:', docData);
                     return { success: true, data: docData, id: doc.id };
                 } else {
                     return { success: false, message: '해당 세미나 계획을 찾을 수 없습니다.' };
@@ -2350,7 +2350,7 @@ class SeminarPlanningApp {
             
         } catch (error) {
             console.error('PDFMake PDF 생성 오류:', error);
-            console.log('🔄 HTML to PDF 방식으로 대체');
+            // console.log('🔄 HTML to PDF 방식으로 대체');
             this.showLoading(false); // 오류 시 로딩 해제
             this.exportToPDFWithHTML();
         }
@@ -3057,7 +3057,7 @@ class SeminarPlanningApp {
                 // 실시결과 데이터도 삭제
                 if (this.currentData.session && this.currentData.datetime) {
                     const keyValue = `${this.currentData.session}_${this.currentData.datetime}`;
-                    console.log('🗑️ 실시결과 데이터 삭제 시도:', keyValue);
+                    // console.log('🗑️ 실시결과 데이터 삭제 시도:', keyValue);
                     
                     try {
                         if (useLocalStorage) {
@@ -3065,11 +3065,11 @@ class SeminarPlanningApp {
                             const existingResults = JSON.parse(localStorage.getItem('seminarResults') || '{}');
                             delete existingResults[keyValue];
                             localStorage.setItem('seminarResults', JSON.stringify(existingResults));
-                            console.log('✅ 로컬 스토리지에서 실시결과 데이터 삭제 완료');
+                            // console.log('✅ 로컬 스토리지에서 실시결과 데이터 삭제 완료');
                         } else {
                             // Firebase에서 실시결과 데이터 삭제
                             await db.collection('seminarResults').doc(keyValue).delete();
-                            console.log('✅ Firebase에서 실시결과 데이터 삭제 완료');
+                            // console.log('✅ Firebase에서 실시결과 데이터 삭제 완료');
                         }
                     } catch (error) {
                         console.error('실시결과 데이터 삭제 오류:', error);
@@ -3111,13 +3111,13 @@ class SeminarPlanningApp {
                 // 실시결과 데이터도 삭제
                 if (this.currentData.session && this.currentData.datetime) {
                     const keyValue = `${this.currentData.session}_${this.currentData.datetime}`;
-                    console.log('🗑️ 로컬 스토리지에서 실시결과 데이터 삭제 시도:', keyValue);
+                    // console.log('🗑️ 로컬 스토리지에서 실시결과 데이터 삭제 시도:', keyValue);
                     
                     try {
                         const existingResults = JSON.parse(localStorage.getItem('seminarResults') || '{}');
                         delete existingResults[keyValue];
                         localStorage.setItem('seminarResults', JSON.stringify(existingResults));
-                        console.log('✅ 로컬 스토리지에서 실시결과 데이터 삭제 완료');
+                        // console.log('✅ 로컬 스토리지에서 실시결과 데이터 삭제 완료');
                     } catch (error) {
                         console.error('실시결과 데이터 삭제 오류:', error);
                     }
@@ -3466,7 +3466,7 @@ class SeminarPlanningApp {
     parseMainContent(text) {
         if (!text) return '미입력';
         
-        console.log('원본 텍스트:', text);
+        // console.log('원본 텍스트:', text);
         
         // 텍스트를 줄바꿈으로 분리
         const lines = text.split('\n');
@@ -3502,7 +3502,7 @@ class SeminarPlanningApp {
             }
         }
         
-        console.log('파싱 결과:', result);
+        // console.log('파싱 결과:', result);
         return result.join('\n');
     }
 
@@ -3586,14 +3586,14 @@ class SeminarPlanningApp {
         const existingSketches = container.querySelectorAll('div[data-sketch-index]');
         const currentCount = existingSketches.length;
         
-        console.log('addSketchUpload 호출됨, 현재 개수:', currentCount);
+        // console.log('addSketchUpload 호출됨, 현재 개수:', currentCount);
         
         // 기존 인덱스들을 확인하여 연속된 인덱스 찾기
         const existingIndices = Array.from(existingSketches).map(sketch => 
             parseInt(sketch.getAttribute('data-sketch-index'))
         ).sort((a, b) => a - b);
         
-        console.log('기존 인덱스들:', existingIndices);
+        // console.log('기존 인덱스들:', existingIndices);
         
         // 연속된 인덱스 중 가장 작은 빈 인덱스 찾기
         let nextIndex = 0;
@@ -3605,7 +3605,7 @@ class SeminarPlanningApp {
             nextIndex = i + 1;
         }
         
-        console.log('다음 인덱스:', nextIndex);
+        // console.log('다음 인덱스:', nextIndex);
         
         const sketchDiv = document.createElement('div');
         sketchDiv.className = 'border border-gray-200 rounded-lg p-4';
@@ -3661,11 +3661,11 @@ class SeminarPlanningApp {
         `;
         
         container.appendChild(sketchDiv);
-        console.log('스케치 DOM 추가 완료, 인덱스:', nextIndex);
+        // console.log('스케치 DOM 추가 완료, 인덱스:', nextIndex);
         
         // 추가 후 스케치 개수 확인
         const afterSketches = container.querySelectorAll('[data-sketch-index]');
-        console.log('추가 후 스케치 개수:', afterSketches.length);
+        // console.log('추가 후 스케치 개수:', afterSketches.length);
         
         // currentData.sketches는 데이터 로드 시에만 설정 (여기서는 설정하지 않음)
         
@@ -3674,13 +3674,13 @@ class SeminarPlanningApp {
     
     // 스케치 업로드 삭제 (제약사항 없이 모든 스케치 삭제 가능)
     removeSketchUpload(sketchIndex) {
-        console.log('🗑️ removeSketchUpload 호출됨, sketchIndex:', sketchIndex);
+        // console.log('🗑️ removeSketchUpload 호출됨, sketchIndex:', sketchIndex);
         
         const container = document.getElementById('sketchUploadContainer');
         const existingSketches = container.querySelectorAll('[data-sketch-index]');
         const currentCount = existingSketches.length;
         
-        console.log(`📊 삭제 전 스케치 개수: ${currentCount}`);
+        // console.log(`📊 삭제 전 스케치 개수: ${currentCount}`);
         
         // 삭제 확인 메시지
         if (!confirm('스케치 업로드를 삭제하시겠습니까?')) {
@@ -3689,11 +3689,11 @@ class SeminarPlanningApp {
         
         const sketchDiv = container.querySelector(`div[data-sketch-index="${sketchIndex}"]`);
             if (sketchDiv) {
-                console.log(`🗑️ 스케치 인덱스 ${sketchIndex} 삭제 시작`);
+                // console.log(`🗑️ 스케치 인덱스 ${sketchIndex} 삭제 시작`);
                 
                 // DOM에서 완전히 제거
                 sketchDiv.remove();
-                console.log(`✅ 스케치 ${sketchIndex} DOM에서 제거됨`);
+                // console.log(`✅ 스케치 ${sketchIndex} DOM에서 제거됨`);
                 
             // currentData.sketches는 데이터 로드 시에만 관리 (여기서는 제거하지 않음)
                 
@@ -3703,17 +3703,17 @@ class SeminarPlanningApp {
                 // 삭제 후 현재 스케치 개수 확인
             const remainingSketches = container.querySelectorAll('div[data-sketch-index]');
                 const remainingCount = remainingSketches.length;
-                console.log(`📊 삭제 후 남은 스케치 개수: ${remainingCount}`);
-                console.log(`📊 삭제 후 남은 스케치 인덱스:`, Array.from(remainingSketches).map(s => s.getAttribute('data-sketch-index')));
+                // console.log(`📊 삭제 후 남은 스케치 개수: ${remainingCount}`);
+                // console.log(`📊 삭제 후 남은 스케치 인덱스:`, Array.from(remainingSketches).map(s => s.getAttribute('data-sketch-index')));
             
             // 스케치가 없으면 빈 상태 유지 (자동 추가하지 않음)
             if (remainingCount === 0) {
-                console.log('ℹ️ 모든 스케치가 삭제됨, 빈 상태 유지');
+                // console.log('ℹ️ 모든 스케치가 삭제됨, 빈 상태 유지');
             }
                 
                 this.showSuccessToast('스케치 업로드가 삭제되었습니다.');
             } else {
-                console.log(`❌ 스케치 인덱스 ${sketchIndex}을 찾을 수 없음`);
+                // console.log(`❌ 스케치 인덱스 ${sketchIndex}을 찾을 수 없음`);
         }
     }
     
@@ -3722,10 +3722,10 @@ class SeminarPlanningApp {
         const container = document.getElementById('sketchUploadContainer');
         const sketches = Array.from(container.querySelectorAll('div[data-sketch-index]'));
         
-        console.log(`🔄 간단한 스케치 재정렬 시작, 총 ${sketches.length}개 스케치`);
+        // console.log(`🔄 간단한 스케치 재정렬 시작, 총 ${sketches.length}개 스케치`);
         
         if (sketches.length === 0) {
-            console.log('⚠️ 재정렬할 스케치가 없음');
+            // console.log('⚠️ 재정렬할 스케치가 없음');
             return;
         }
         
@@ -3738,7 +3738,7 @@ class SeminarPlanningApp {
                 return;
             }
             
-            console.log(`🔄 스케치 인덱스 ${oldIndex} -> ${newIndex}로 재정렬`);
+            // console.log(`🔄 스케치 인덱스 ${oldIndex} -> ${newIndex}로 재정렬`);
             
             // data-sketch-index 속성 업데이트
             sketch.setAttribute('data-sketch-index', newIndex);
@@ -3766,7 +3766,7 @@ class SeminarPlanningApp {
         
         // currentData.sketches는 데이터 로드 시에만 관리 (여기서는 재정렬하지 않음)
         
-        console.log(`✅ 간단한 스케치 재정렬 완료, 총 ${sketches.length}개 스케치`);
+        // console.log(`✅ 간단한 스케치 재정렬 완료, 총 ${sketches.length}개 스케치`);
     }
     
     
@@ -3877,7 +3877,7 @@ class SeminarPlanningApp {
         // 실제로 DOM에 존재하는 스케치 요소만 찾기 (메인 컨테이너만)
         const sketchElements = container.querySelectorAll('div[data-sketch-index]');
         
-        console.log('🔍 DOM에서 찾은 스케치 요소 개수:', sketchElements.length);
+        // console.log('🔍 DOM에서 찾은 스케치 요소 개수:', sketchElements.length);
         
         // DOM 순서대로 스케치 데이터 수집
         sketchElements.forEach((sketchElement, domIndex) => {
@@ -3897,10 +3897,10 @@ class SeminarPlanningApp {
                 fileName: fileName
             };
             
-            console.log(`✅ 스케치 DOM순서 ${domIndex} (인덱스 ${sketchIndex}) 추가:`, { title, hasImageData: !!imageData, fileName });
+            // console.log(`✅ 스케치 DOM순서 ${domIndex} (인덱스 ${sketchIndex}) 추가:`, { title, hasImageData: !!imageData, fileName });
         });
         
-        console.log('📊 getMainSketchData 최종 결과 (모든 스케치 포함):', sketches);
+        // console.log('📊 getMainSketchData 최종 결과 (모든 스케치 포함):', sketches);
         return sketches;
     }
 
@@ -3910,41 +3910,41 @@ class SeminarPlanningApp {
             const session = document.getElementById('sessionSelect').value || document.getElementById('sessionInput').value;
             const datetime = document.getElementById('datetime').value;
             
-            console.log('🔍 메인화면 실시결과 데이터 로드 시도:', { session, datetime });
+            // console.log('🔍 메인화면 실시결과 데이터 로드 시도:', { session, datetime });
             
             // 세미나 정보가 없어도 currentData에서 스케치 정보를 확인
             if (!session || !datetime) {
-                console.log('⚠️ 세미나 정보가 없지만 currentData에서 스케치 정보 확인');
+                // console.log('⚠️ 세미나 정보가 없지만 currentData에서 스케치 정보 확인');
                 
                 // currentData에 스케치 정보가 있으면 표시
                 if (this.currentData && this.currentData.sketches && this.currentData.sketches.length > 0) {
-                    console.log('✅ currentData에서 스케치 정보 발견:', this.currentData.sketches);
+                    // console.log('✅ currentData에서 스케치 정보 발견:', this.currentData.sketches);
                     this.populateMainResultForm({ sketches: this.currentData.sketches });
                     return;
                 }
                 
-                console.log('ℹ️ currentData에도 스케치 정보가 없음, 기존 상태 유지');
+                // console.log('ℹ️ currentData에도 스케치 정보가 없음, 기존 상태 유지');
                 // this.clearMainResultForm(); // 주석 처리하여 기존 스케치 유지
                 return;
             }
             
             // 특정 회차_일시의 실시결과 데이터 조회
             const resultData = await loadResultDataByKey(session, datetime);
-            console.log('📊 조회된 실시결과 데이터:', resultData);
-            console.log('📊 resultData.objective:', resultData ? resultData.objective : 'null');
+            // console.log('📊 조회된 실시결과 데이터:', resultData);
+            // console.log('📊 resultData.objective:', resultData ? resultData.objective : 'null');
             
             if (resultData) {
-                console.log('✅ 기존 실시결과 데이터 발견, 메인화면에 로드:', resultData);
+                // console.log('✅ 기존 실시결과 데이터 발견, 메인화면에 로드:', resultData);
                 this.populateMainResultForm(resultData);
             } else {
-                console.log('ℹ️ 기존 실시결과 데이터가 없음, currentData에서 스케치 정보 확인');
+                // console.log('ℹ️ 기존 실시결과 데이터가 없음, currentData에서 스케치 정보 확인');
                 
                 // currentData에 스케치 정보가 있으면 표시
                 if (this.currentData && this.currentData.sketches && this.currentData.sketches.length > 0) {
-                    console.log('✅ currentData에서 스케치 정보 발견:', this.currentData.sketches);
+                    // console.log('✅ currentData에서 스케치 정보 발견:', this.currentData.sketches);
                     this.populateMainResultForm({ sketches: this.currentData.sketches });
                 } else {
-                    console.log('ℹ️ currentData에도 스케치 정보가 없음, 기존 상태 유지');
+                    // console.log('ℹ️ currentData에도 스케치 정보가 없음, 기존 상태 유지');
                 }
             }
             
@@ -3955,7 +3955,7 @@ class SeminarPlanningApp {
 
     // 메인화면 실시결과 폼에 데이터 채우기
     populateMainResultForm(resultData) {
-        console.log('📝 메인화면 폼에 데이터 채우기:', resultData);
+        // console.log('📝 메인화면 폼에 데이터 채우기:', resultData);
         
         try {
             // 주요 내용, 향후 계획 채우기
@@ -3967,13 +3967,13 @@ class SeminarPlanningApp {
                     // 값이 존재(빈 문자열 포함)하면 해당 값 반영
                     mainContentEl.value = resultData.mainContent || '';
                     if (resultData.mainContent) {
-                        console.log('✅ 주요 내용 설정 (실시결과 데이터):', resultData.mainContent);
+                        // console.log('✅ 주요 내용 설정 (실시결과 데이터):', resultData.mainContent);
                     } else {
-                        console.log('ℹ️ 실시결과 데이터에 주요 내용이 비어있음, 빈 값 반영');
+                        // console.log('ℹ️ 실시결과 데이터에 주요 내용이 비어있음, 빈 값 반영');
                     }
                 } else {
                     // partial 업데이트 시 기존 값 유지
-                    console.log('↩️ 주요 내용 키가 없어 기존 값 유지');
+                    // console.log('↩️ 주요 내용 키가 없어 기존 값 유지');
                 }
                 // PDF 실시결과 내보내기 버튼 상태 업데이트
                 this.toggleExportResultPDFButton();
@@ -3984,23 +3984,23 @@ class SeminarPlanningApp {
                     // 값이 존재(빈 문자열 포함)하면 해당 값 반영
                     futurePlanEl.value = resultData.futurePlan || '';
                     if (resultData.futurePlan) {
-                        console.log('✅ 향후 계획 설정 (실시결과 데이터):', resultData.futurePlan);
+                        // console.log('✅ 향후 계획 설정 (실시결과 데이터):', resultData.futurePlan);
                     } else {
-                        console.log('ℹ️ 실시결과 데이터에 향후 계획이 비어있음, 빈 값 반영');
+                        // console.log('ℹ️ 실시결과 데이터에 향후 계획이 비어있음, 빈 값 반영');
                     }
                 } else {
                     // partial 업데이트 시 기존 값 유지
-                    console.log('↩️ 향후 계획 키가 없어 기존 값 유지');
+                    // console.log('↩️ 향후 계획 키가 없어 기존 값 유지');
                 }
             }
             
             // 스케치 데이터 처리 (제약사항 없이 모든 스케치 처리)
             if (resultData.sketches && Array.isArray(resultData.sketches)) {
-                console.log('🖼️ 스케치 데이터 처리:', resultData.sketches);
+                // console.log('🖼️ 스케치 데이터 처리:', resultData.sketches);
                 
                 // 모든 스케치 데이터 처리 (제약사항 없음, 빈 스케치도 포함)
                 const allSketches = resultData.sketches || [];
-                console.log('📊 처리할 스케치 데이터:', allSketches);
+                // console.log('📊 처리할 스케치 데이터:', allSketches);
                 
                 // 스케치 초기화 먼저 실행 (기본 스케치 추가하지 않음)
                 this.resetSketchesWithoutDefault();
@@ -4024,13 +4024,13 @@ class SeminarPlanningApp {
                     const sketch = allSketches[domIndex];
                     
                     if (sketch) {
-                        console.log(`스케치 데이터 ${domIndex}를 DOM 인덱스 ${actualIndex}에 설정`);
+                        // console.log(`스케치 데이터 ${domIndex}를 DOM 인덱스 ${actualIndex}에 설정`);
                         
                         // 제목 설정
                         const titleEl = document.getElementById(`mainSketchTitle${actualIndex}`);
                         if (titleEl) {
                             titleEl.value = sketch.title || '';
-                            console.log(`✅ 스케치 ${actualIndex} 제목 설정:`, sketch.title);
+                            // console.log(`✅ 스케치 ${actualIndex} 제목 설정:`, sketch.title);
                         }
                         
                         // 이미지 데이터 설정 (있으면 표시, 없으면 빈 상태 유지)
@@ -4045,26 +4045,26 @@ class SeminarPlanningApp {
                             if (fileName) fileName.textContent = sketch.fileName || '업로드된 이미지';
                             if (preview) preview.classList.remove('hidden');
                             if (uploadArea) uploadArea.classList.add('hidden');
-                            console.log(`✅ 스케치 ${actualIndex} 이미지 표시`);
+                            // console.log(`✅ 스케치 ${actualIndex} 이미지 표시`);
                         } else {
                             // 이미지가 없으면 업로드 영역 표시
                             if (preview) preview.classList.add('hidden');
                             if (uploadArea) uploadArea.classList.remove('hidden');
-                            console.log(`ℹ️ 스케치 ${actualIndex} 이미지 없음, 업로드 영역 표시`);
+                            // console.log(`ℹ️ 스케치 ${actualIndex} 이미지 없음, 업로드 영역 표시`);
                         }
                     }
                 });
                 
                 // currentData.sketches 설정 (데이터 로드 시에만)
                 this.currentData.sketches = allSketches;
-                console.log('✅ currentData.sketches 설정 완료:', this.currentData.sketches);
+                // console.log('✅ currentData.sketches 설정 완료:', this.currentData.sketches);
             } else {
                 // 스케치 데이터가 없으면 빈 상태 유지 (자동 추가하지 않음)
-                console.log('ℹ️ 스케치 데이터가 없음, 빈 상태 유지');
+                // console.log('ℹ️ 스케치 데이터가 없음, 빈 상태 유지');
                 this.resetSketchesWithoutDefault();
             }
             
-            console.log('✅ 메인화면 폼 데이터 채우기 완료');
+            // console.log('✅ 메인화면 폼 데이터 채우기 완료');
             
             // 스케치 버튼 상태 확인
             setTimeout(() => {
@@ -4095,7 +4095,7 @@ class SeminarPlanningApp {
         
         // 스케치가 없으면 빈 상태 유지 (자동 추가하지 않음)
         if (sketchElements.length === 0) {
-            console.log('ℹ️ 스케치가 없음, 빈 상태 유지');
+            // console.log('ℹ️ 스케치가 없음, 빈 상태 유지');
             return;
         }
         
@@ -4127,13 +4127,13 @@ class SeminarPlanningApp {
             const uploadArea = document.getElementById(`mainFileUploadArea${sketchIndex}`);
             if (uploadArea) uploadArea.classList.remove('hidden');
             
-            console.log(`✅ 스케치 ${sketchIndex} 필드 초기화 완료`);
+            // console.log(`✅ 스케치 ${sketchIndex} 필드 초기화 완료`);
         });
         
         // currentData의 스케치 데이터도 초기화
         if (this.currentData.sketches) {
             this.currentData.sketches = [];
-            console.log('✅ currentData 스케치 데이터 초기화 완료');
+            // console.log('✅ currentData 스케치 데이터 초기화 완료');
         }
     }
 
@@ -4142,11 +4142,11 @@ class SeminarPlanningApp {
         const container = document.getElementById('sketchUploadContainer');
         const existingSketches = container.querySelectorAll('[data-sketch-index]');
         
-        console.log(`🔍 초기화 전 스케치 개수: ${existingSketches.length}`);
+        // console.log(`🔍 초기화 전 스케치 개수: ${existingSketches.length}`);
         
         // 모든 스케치를 먼저 제거
         existingSketches.forEach(sketch => {
-            console.log(`🗑️ 스케치 ${sketch.getAttribute('data-sketch-index')} 제거`);
+            // console.log(`🗑️ 스케치 ${sketch.getAttribute('data-sketch-index')} 제거`);
             sketch.remove();
         });
         
@@ -4154,9 +4154,9 @@ class SeminarPlanningApp {
         
         // 초기화 후 스케치 개수 확인
         const remainingSketches = container.querySelectorAll('[data-sketch-index]');
-        console.log(`🔍 초기화 후 스케치 개수: ${remainingSketches.length}`);
+        // console.log(`🔍 초기화 후 스케치 개수: ${remainingSketches.length}`);
         
-        console.log('✅ 스케치 초기화 완료: 모든 스케치 제거');
+        // console.log('✅ 스케치 초기화 완료: 모든 스케치 제거');
     }
 
     // 스케치 초기화 (모든 스케치 제거, 기본 스케치 추가하지 않음)
@@ -4164,11 +4164,11 @@ class SeminarPlanningApp {
         const container = document.getElementById('sketchUploadContainer');
         const existingSketches = container.querySelectorAll('[data-sketch-index]');
         
-        console.log(`🔍 초기화 전 스케치 개수: ${existingSketches.length}`);
+        // console.log(`🔍 초기화 전 스케치 개수: ${existingSketches.length}`);
         
         // 모든 스케치를 먼저 제거
         existingSketches.forEach(sketch => {
-            console.log(`🗑️ 스케치 ${sketch.getAttribute('data-sketch-index')} 제거`);
+            // console.log(`🗑️ 스케치 ${sketch.getAttribute('data-sketch-index')} 제거`);
             sketch.remove();
         });
         
@@ -4176,9 +4176,9 @@ class SeminarPlanningApp {
         
         // 초기화 후 스케치 개수 확인
         const remainingSketches = container.querySelectorAll('[data-sketch-index]');
-        console.log(`🔍 초기화 후 스케치 개수: ${remainingSketches.length}`);
+        // console.log(`🔍 초기화 후 스케치 개수: ${remainingSketches.length}`);
         
-        console.log('✅ 스케치 초기화 완료: 모든 스케치 제거 (기본 스케치 추가하지 않음)');
+        // console.log('✅ 스케치 초기화 완료: 모든 스케치 제거 (기본 스케치 추가하지 않음)');
     }
 
 
@@ -4206,7 +4206,7 @@ class SeminarPlanningApp {
             
             // 현재 UI의 모든 스케치 데이터 가져오기 (제약사항 없음)
             const currentSketches = this.getMainSketchData();
-            console.log('💾 저장할 스케치 데이터:', currentSketches);
+            // console.log('💾 저장할 스케치 데이터:', currentSketches);
             
             // 기존 실시결과 데이터 조회
             const existingResult = await loadResultDataByKey(session, datetime);
@@ -4256,7 +4256,7 @@ class SeminarPlanningApp {
             
             // 현재 UI의 모든 스케치 데이터 가져오기 (제약사항 없음)
             const currentSketches = this.getMainSketchData();
-            console.log('💾 저장할 스케치 데이터:', currentSketches);
+            // console.log('💾 저장할 스케치 데이터:', currentSketches);
             
             // 기존 실시결과 데이터 조회
             const existingResult = await loadResultDataByKey(session, datetime);

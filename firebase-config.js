@@ -20,7 +20,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // Firebase 설정 상태 확인
-console.log('Firebase initialized successfully');
+// console.log('Firebase initialized successfully');
 
 // 이미지 처리 함수들 (Base64 방식)
 async function processImageToBase64(file) {
@@ -206,8 +206,8 @@ async function loadData() {
                 const plans = [];
                 snapshot.forEach(doc => {
                     const docData = doc.data();
-                    console.log(`🔥 Firebase 문서 ${doc.id} 데이터:`, docData);
-                    console.log(`🔥 참석자 데이터:`, docData.attendeeList);
+                    // console.log(`🔥 Firebase 문서 ${doc.id} 데이터:`, docData);
+                    // console.log(`🔥 참석자 데이터:`, docData.attendeeList);
                     plans.push({
                         id: doc.id,
                         ...docData
@@ -215,14 +215,14 @@ async function loadData() {
                 });
                 
                 // JavaScript에서 정렬: 세미나 개최 회차 내림차순, 일시 내림차순
-                console.log('🔍 정렬 전 데이터:', plans.map(p => ({ session: p.session, datetime: p.datetime })));
+                // console.log('🔍 정렬 전 데이터:', plans.map(p => ({ session: p.session, datetime: p.datetime })));
                 
                 plans.sort((a, b) => {
                     // 세미나 개최 회차 비교 (숫자로 변환하여 비교)
                     const sessionA = extractSessionNumber(a.session);
                     const sessionB = extractSessionNumber(b.session);
                     
-                    console.log(`🔍 정렬 비교: "${a.session}"(${sessionA}) vs "${b.session}"(${sessionB})`);
+                    // console.log(`🔍 정렬 비교: "${a.session}"(${sessionA}) vs "${b.session}"(${sessionB})`);
                     
                     if (sessionA !== sessionB) {
                         return sessionB - sessionA; // 내림차순
@@ -234,11 +234,11 @@ async function loadData() {
                     return dateB - dateA; // 내림차순
                 });
                 
-                console.log('🔍 정렬 후 데이터:', plans.map(p => ({ session: p.session, datetime: p.datetime })));
+                // console.log('🔍 정렬 후 데이터:', plans.map(p => ({ session: p.session, datetime: p.datetime })));
                 
                 // 가장 최신 데이터 반환
                 const latestPlan = plans[0];
-                console.log('🔍 선택된 최신 데이터:', { session: latestPlan.session, datetime: latestPlan.datetime });
+                // console.log('🔍 선택된 최신 데이터:', { session: latestPlan.session, datetime: latestPlan.datetime });
                 return { success: true, data: latestPlan, id: latestPlan.id };
             } else {
                 return { success: false, message: '저장된 데이터가 없습니다.' };
@@ -329,10 +329,10 @@ async function loadAllPlans() {
                     return dateB - dateA; // 내림차순
                 });
                 
-                console.log(`📁 로컬 스토리지에서 ${plans.length}개의 계획을 로드했습니다.`);
+                // console.log(`📁 로컬 스토리지에서 ${plans.length}개의 계획을 로드했습니다.`);
                 return { success: true, data: plans };
             } else {
-                console.log('📁 로컬 스토리지에 저장된 계획이 없습니다.');
+                // console.log('📁 로컬 스토리지에 저장된 계획이 없습니다.');
                 return { success: true, data: [] };
             }
         } else {
@@ -342,8 +342,8 @@ async function loadAllPlans() {
             const plans = [];
             snapshot.forEach(doc => {
                 const docData = doc.data();
-                console.log(`🔥 Firebase 문서 ${doc.id}:`, docData);
-                console.log(`🔥 참석자 데이터 (loadAllPlans):`, docData.attendeeList);
+                // console.log(`🔥 Firebase 문서 ${doc.id}:`, docData);
+                // console.log(`🔥 참석자 데이터 (loadAllPlans):`, docData.attendeeList);
                 plans.push({
                     id: doc.id,
                     ...docData
@@ -366,7 +366,7 @@ async function loadAllPlans() {
                 return dateB - dateA; // 내림차순
             });
             
-            console.log(`🔥 Firebase에서 총 ${plans.length}개의 계획을 로드했습니다.`);
+            // console.log(`🔥 Firebase에서 총 ${plans.length}개의 계획을 로드했습니다.`);
             return { success: true, data: plans };
         }
     } catch (error) {
@@ -387,21 +387,21 @@ function extractSessionNumber(session) {
 // Firebase 설정 확인
 function checkFirebaseStatus() {
     if (useLocalStorage) {
-        console.log('로컬 스토리지 모드로 실행 중');
+        // console.log('로컬 스토리지 모드로 실행 중');
         return true;
     } else {
         try {
             const app = firebase.app();
-            console.log('Firebase 앱이 정상적으로 초기화되었습니다:', app.name);
+            // console.log('Firebase 앱이 정상적으로 초기화되었습니다:', app.name);
             
             // Firestore 연결 상태 확인
             const db = firebase.firestore();
-            console.log('Firestore 데이터베이스 참조 생성됨');
+            // console.log('Firestore 데이터베이스 참조 생성됨');
             
             // 연결 테스트
             db.collection('test').limit(1).get()
                 .then(() => {
-                    console.log('✅ Firestore 연결 테스트 성공');
+                    // console.log('✅ Firestore 연결 테스트 성공');
                 })
                 .catch((error) => {
                     console.error('❌ Firestore 연결 테스트 실패:', error);

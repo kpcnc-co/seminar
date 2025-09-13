@@ -22,23 +22,23 @@
 
         // 라이브러리 로딩 완료 체크
         function checkExportLibraries() {
-            console.log('🔍 내보내기 라이브러리 상태 확인 중...');
+            // console.log('🔍 내보내기 라이브러리 상태 확인 중...');
             
             // jsPDF 확인
             if (window.jspdf && window.jspdf.jsPDF) {
                 window.exportLibraries.jsPDF = true;
-                console.log('✅ jsPDF 로드 완료');
+                // console.log('✅ jsPDF 로드 완료');
                 updateLibraryStatus('jsPDFStatus', true);
             }
             
             // saveAs 확인
             if (window.saveAs) {
                 window.exportLibraries.saveAs = true;
-                console.log('✅ saveAs 로드 완료');
+                // console.log('✅ saveAs 로드 완료');
                 updateLibraryStatus('saveAsStatus', true);
             }
             
-            console.log('📊 최종 라이브러리 상태:', window.exportLibraries);
+            // console.log('📊 최종 라이브러리 상태:', window.exportLibraries);
         }
 
         // 라이브러리 상태 업데이트
