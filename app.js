@@ -3498,57 +3498,41 @@ class SeminarPlanningApp {
                 );
             }
             
-            // 스케치 추가 (새 페이지, 첨부형식) - 3건씩 배치
+            // 스케치 추가 (새 페이지, 첨부형식) - 한 줄에 1개, 한 페이지에 최대 3개
             if (resultData.sketches && resultData.sketches.length > 0) {
                 docDefinition.content.push(
                     { text: '', pageBreak: 'before' },
                     { text: '[별첨 2] 세미나 스케치', style: 'header' },
                 );
                 
-                // 스케치를 3개씩 그룹으로 나누어 처리
                 const validSketches = resultData.sketches.filter(sketch => sketch.title && sketch.imageData);
                 
-                for (let i = 0; i < validSketches.length; i += 3) {
-                    const sketchGroup = validSketches.slice(i, i + 3);
+                for (let i = 0; i < validSketches.length; i++) {
+                    const sketch = validSketches[i];
                     
-                    // 3개씩 한 줄에 배치
-                    const columns = sketchGroup.map((sketch, groupIndex) => {
-                        const globalIndex = i + groupIndex + 1;
-                        return {
-                            width: '33%',
-                            stack: [
-                                {
-                                    text: `${globalIndex}. ${sketch.title}`,
-                                    fontSize: 10,
+                    // 3개마다 새 페이지 (첫 번째는 제외)
+                    if (i > 0 && i % 3 === 0) {
+                        docDefinition.content.push({ text: '', pageBreak: 'before' });
+                    }
+                    
+                        docDefinition.content.push(
+                            {
+                            text: `${i + 1}. ${sketch.title}`,
+                            fontSize: 12,
                                 bold: true,
-                                    margin: [0, 5, 0, 3],
-                                    alignment: 'center'
+                            margin: [0, 10, 0, 5],
+                            alignment: 'left'
                             },
                             {
                                 image: sketch.imageData,
-                                    width: 120,
-                                    height: 90,
-                                    fit: [120, 90],
+                            width: 500,
+                            height: 350,
+                            fit: [500, 350],
                                 alignment: 'center',
-                                    margin: [0, 0, 0, 10]
-                                }
-                            ]
-                        };
-                    });
-                    
-                    // 빈 공간 채우기 (3개 미만인 경우)
-                    while (columns.length < 3) {
-                        columns.push({
-                            width: '33%',
-                            stack: []
-                        });
+                                margin: [0, 0, 0, 20]
+                            }
+                        );
                     }
-                    
-                    docDefinition.content.push({
-                        columns: columns,
-                        margin: [0, 0, 0, 15]
-                    });
-                }
             }
             
             // PDF 생성 및 다운로드
@@ -4483,29 +4467,24 @@ class SeminarPlanningApp {
             `;
         }
         
-        // 스케치 HTML 생성 (첨부형식) - 3건씩 배치
+        // 스케치 HTML 생성 (첨부형식) - 한 줄에 1개, 한 페이지에 최대 3개
         let sketchHTML = '';
         if (resultData.sketches && resultData.sketches.length > 0) {
             const validSketches = resultData.sketches.filter(sketch => sketch.title && sketch.imageData);
             
-            let sketchRows = '';
-            for (let i = 0; i < validSketches.length; i += 3) {
-                const sketchGroup = validSketches.slice(i, i + 3);
+            let sketchItems = '';
+            for (let i = 0; i < validSketches.length; i++) {
+                const sketch = validSketches[i];
                 
-                sketchRows += `
-                    <div style="display: flex; margin: 15px 0; gap: 10px;">
-                        ${sketchGroup.map((sketch, groupIndex) => {
-                            const globalIndex = i + groupIndex + 1;
-                                return `
-                                <div style="flex: 1; border: 1px solid #ddd; padding: 8px; text-align: center;">
-                                    <p style="font-size: 10px; margin: 0 0 8px 0; font-weight: bold;">
-                                        ${globalIndex}. ${safeText(sketch.title)}
-                                    </p>
-                                    <img src="${sketch.imageData}" style="width: 120px; height: 90px; object-fit: cover; display: block; margin: 0 auto;" />
-                                    </div>
-                                `;
-                        }).join('')}
-                        ${sketchGroup.length < 3 ? '<div style="flex: 1;"></div>'.repeat(3 - sketchGroup.length) : ''}
+                // 3개마다 새 페이지 (첫 번째는 제외)
+                const pageBreak = i > 0 && i % 3 === 0 ? 'page-break-before: always;' : '';
+                
+                sketchItems += `
+                    <div style="${pageBreak} margin: 20px 0;">
+                        <p style="font-size: 12px; margin: 0 0 10px 0; font-weight: bold;">
+                            ${i + 1}. ${safeText(sketch.title)}
+                        </p>
+                        <img src="${sketch.imageData}" style="width: 100%; max-width: 500px; height: 350px; object-fit: contain; display: block; margin: 0 auto;" />
                     </div>
                 `;
             }
@@ -4514,7 +4493,7 @@ class SeminarPlanningApp {
                 <div style="page-break-before: always;">
                     <h2>[별첨 2] 세미나 스케치</h2>
                     <div style="margin: 20px 0;">
-                        ${sketchRows}
+                        ${sketchItems}
                     </div>
                 </div>
             `;
