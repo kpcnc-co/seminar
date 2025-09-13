@@ -3498,7 +3498,7 @@ class SeminarPlanningApp {
                 );
             }
             
-            // 스케치 추가 (새 페이지, 첨부형식) - 한 줄에 1개, 한 페이지에 최대 3개
+            // 스케치 추가 (새 페이지, 첨부형식) - 한 페이지에 3개, 테두리 포함
             if (resultData.sketches && resultData.sketches.length > 0) {
                 docDefinition.content.push(
                     { text: '', pageBreak: 'before' },
@@ -3507,32 +3507,59 @@ class SeminarPlanningApp {
                 
                 const validSketches = resultData.sketches.filter(sketch => sketch.title && sketch.imageData);
                 
-                for (let i = 0; i < validSketches.length; i++) {
-                    const sketch = validSketches[i];
+                for (let i = 0; i < validSketches.length; i += 3) {
+                    const sketchGroup = validSketches.slice(i, i + 3);
                     
-                    // 3개마다 새 페이지 (첫 번째는 제외)
-                    if (i > 0 && i % 3 === 0) {
-                        docDefinition.content.push({ text: '', pageBreak: 'before' });
+                    // 3개씩 한 페이지에 배치
+                    const columns = sketchGroup.map((sketch, groupIndex) => {
+                        const globalIndex = i + groupIndex + 1;
+                        return {
+                            width: '33%',
+                            stack: [
+                                {
+                                    text: `${globalIndex}. ${sketch.title}`,
+                                    fontSize: 11,
+                                    bold: true,
+                                    margin: [0, 5, 0, 5],
+                                    alignment: 'center'
+                                },
+                                {
+                                    table: {
+                                        widths: [150],
+                                        body: [[{
+                                            border: [true, true, true, true],
+                                            borderColor: '#000000',
+                                            borderWidth: 1,
+                                            cellPadding: 8,
+                                            stack: [{
+                                                image: sketch.imageData,
+                                                width: 130,
+                                                height: 100,
+                                                fit: [130, 100],
+                                                alignment: 'center'
+                                            }]
+                                        }]]
+                                    },
+                                    layout: 'noBorders',
+                                    margin: [0, 0, 0, 15]
+                                }
+                            ]
+                        };
+                    });
+                    
+                    // 빈 공간 채우기 (3개 미만인 경우)
+                    while (columns.length < 3) {
+                        columns.push({
+                            width: '33%',
+                            stack: []
+                        });
                     }
                     
-                        docDefinition.content.push(
-                            {
-                            text: `${i + 1}. ${sketch.title}`,
-                            fontSize: 12,
-                                bold: true,
-                            margin: [0, 10, 0, 5],
-                            alignment: 'left'
-                            },
-                            {
-                                image: sketch.imageData,
-                            width: 500,
-                            height: 350,
-                            fit: [500, 350],
-                                alignment: 'center',
-                                margin: [0, 0, 0, 20]
-                            }
-                        );
-                    }
+                    docDefinition.content.push({
+                        columns: columns,
+                        margin: [0, 0, 0, 10]
+                    });
+                }
             }
             
             // PDF 생성 및 다운로드
@@ -4467,24 +4494,31 @@ class SeminarPlanningApp {
             `;
         }
         
-        // 스케치 HTML 생성 (첨부형식) - 한 줄에 1개, 한 페이지에 최대 3개
+        // 스케치 HTML 생성 (첨부형식) - 한 페이지에 3개, 테두리 포함
         let sketchHTML = '';
         if (resultData.sketches && resultData.sketches.length > 0) {
             const validSketches = resultData.sketches.filter(sketch => sketch.title && sketch.imageData);
             
-            let sketchItems = '';
-            for (let i = 0; i < validSketches.length; i++) {
-                const sketch = validSketches[i];
+            let sketchRows = '';
+            for (let i = 0; i < validSketches.length; i += 3) {
+                const sketchGroup = validSketches.slice(i, i + 3);
                 
-                // 3개마다 새 페이지 (첫 번째는 제외)
-                const pageBreak = i > 0 && i % 3 === 0 ? 'page-break-before: always;' : '';
-                
-                sketchItems += `
-                    <div style="${pageBreak} margin: 20px 0;">
-                        <p style="font-size: 12px; margin: 0 0 10px 0; font-weight: bold;">
-                            ${i + 1}. ${safeText(sketch.title)}
-                        </p>
-                        <img src="${sketch.imageData}" style="width: 100%; max-width: 500px; height: 350px; object-fit: contain; display: block; margin: 0 auto;" />
+                sketchRows += `
+                    <div style="display: flex; margin: 15px 0; gap: 15px; justify-content: space-between;">
+                        ${sketchGroup.map((sketch, groupIndex) => {
+                            const globalIndex = i + groupIndex + 1;
+                            return `
+                                <div style="flex: 1; text-align: center;">
+                                    <p style="font-size: 11px; margin: 0 0 8px 0; font-weight: bold;">
+                                        ${globalIndex}. ${safeText(sketch.title)}
+                                    </p>
+                                    <div style="border: 1px solid #000; padding: 8px; display: inline-block;">
+                                        <img src="${sketch.imageData}" style="width: 130px; height: 100px; object-fit: contain; display: block;" />
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                        ${sketchGroup.length < 3 ? '<div style="flex: 1;"></div>'.repeat(3 - sketchGroup.length) : ''}
                     </div>
                 `;
             }
@@ -4493,7 +4527,7 @@ class SeminarPlanningApp {
                 <div style="page-break-before: always;">
                     <h2>[별첨 2] 세미나 스케치</h2>
                     <div style="margin: 20px 0;">
-                        ${sketchItems}
+                        ${sketchRows}
                     </div>
                 </div>
             `;
