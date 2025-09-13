@@ -3507,43 +3507,49 @@ class SeminarPlanningApp {
                 
                 const validSketches = resultData.sketches.filter(sketch => sketch.title && sketch.imageData);
                 
-                for (let i = 0; i < validSketches.length; i++) {
-                    const sketch = validSketches[i];
+                // 3개씩 그룹으로 나누어 처리
+                for (let i = 0; i < validSketches.length; i += 3) {
+                    const sketchGroup = validSketches.slice(i, i + 3);
                     
-                    // 3개마다 새 페이지 (첫 번째는 제외)
-                    if (i > 0 && i % 3 === 0) {
+                    // 첫 번째 그룹이 아니면 새 페이지
+                    if (i > 0) {
                         docDefinition.content.push({ text: '', pageBreak: 'before' });
                     }
                     
-                    docDefinition.content.push(
-                        {
-                            text: `${i + 1}. ${sketch.title}`,
-                            fontSize: 12,
-                            bold: true,
-                            margin: [0, 10, 0, 5],
-                            alignment: 'center'
-                        },
-                        {
-                            table: {
-                                widths: [500],
-                                body: [[{
-                                    border: [true, true, true, true],
-                                    borderColor: '#CCCCCC',
-                                    borderWidth: 1,
-                                    cellPadding: 15,
-                                    stack: [{
-                                        image: sketch.imageData,
-                                        width: 450,
-                                        height: 300,
-                                        fit: [450, 300],
-                                        alignment: 'center'
-                                    }]
-                                }]]
+                    // 각 그룹의 스케치들을 세로로 배치
+                    sketchGroup.forEach((sketch, groupIndex) => {
+                        const globalIndex = i + groupIndex + 1;
+                        
+                        docDefinition.content.push(
+                            {
+                                text: `${globalIndex}. ${sketch.title}`,
+                                fontSize: 12,
+                                bold: true,
+                                margin: [0, 10, 0, 5],
+                                alignment: 'center'
                             },
-                            layout: 'noBorders',
-                            margin: [0, 0, 0, 20]
-                        }
-                    );
+                            {
+                                table: {
+                                    widths: [500],
+                                    body: [[{
+                                        border: [true, true, true, true],
+                                        borderColor: '#CCCCCC',
+                                        borderWidth: 1,
+                                        cellPadding: 15,
+                                        stack: [{
+                                            image: sketch.imageData,
+                                            width: 450,
+                                            height: 300,
+                                            fit: [450, 300],
+                                            alignment: 'center'
+                                        }]
+                                    }]]
+                                },
+                                layout: 'noBorders',
+                                margin: [0, 0, 0, 20]
+                            }
+                        );
+                    });
                 }
             }
             
@@ -4484,33 +4490,40 @@ class SeminarPlanningApp {
         if (resultData.sketches && resultData.sketches.length > 0) {
             const validSketches = resultData.sketches.filter(sketch => sketch.title && sketch.imageData);
             
-            let sketchItems = '';
-            for (let i = 0; i < validSketches.length; i++) {
-                const sketch = validSketches[i];
+            let sketchPages = '';
+            // 3개씩 그룹으로 나누어 처리
+            for (let i = 0; i < validSketches.length; i += 3) {
+                const sketchGroup = validSketches.slice(i, i + 3);
                 
-                // 3개마다 새 페이지 (첫 번째는 제외)
-                const pageBreak = i > 0 && i % 3 === 0 ? 'page-break-before: always;' : '';
+                // 첫 번째 그룹이 아니면 새 페이지
+                const pageBreak = i > 0 ? 'page-break-before: always;' : '';
                 
-                sketchItems += `
-                    <div style="${pageBreak} margin: 20px 0; text-align: center;">
-                        <p style="font-size: 12px; margin: 0 0 10px 0; font-weight: bold;">
-                            ${i + 1}. ${safeText(sketch.title)}
-                        </p>
-                        <div style="border: 1px solid #CCCCCC; padding: 15px; display: inline-block;">
-                            <img src="${sketch.imageData}" style="width: 450px; height: 300px; object-fit: contain; display: block;" />
+                let sketchItems = '';
+                sketchGroup.forEach((sketch, groupIndex) => {
+                    const globalIndex = i + groupIndex + 1;
+                    sketchItems += `
+                        <div style="margin: 20px 0; text-align: center;">
+                            <p style="font-size: 12px; margin: 0 0 10px 0; font-weight: bold;">
+                                ${globalIndex}. ${safeText(sketch.title)}
+                            </p>
+                            <div style="border: 1px solid #CCCCCC; padding: 15px; display: inline-block;">
+                                <img src="${sketch.imageData}" style="width: 450px; height: 300px; object-fit: contain; display: block;" />
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                sketchPages += `
+                    <div style="${pageBreak}">
+                        <h2>[별첨 2] 세미나 스케치</h2>
+                        <div style="margin: 20px 0;">
+                            ${sketchItems}
                         </div>
                     </div>
                 `;
             }
             
-            sketchHTML = `
-                <div style="page-break-before: always;">
-                    <h2>[별첨 2] 세미나 스케치</h2>
-                    <div style="margin: 20px 0;">
-                        ${sketchItems}
-                    </div>
-                </div>
-            `;
+            sketchHTML = sketchPages;
         }
         
         return `
