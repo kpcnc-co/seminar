@@ -4495,8 +4495,8 @@ class SeminarPlanningApp {
             for (let i = 0; i < validSketches.length; i += 3) {
                 const sketchGroup = validSketches.slice(i, i + 3);
                 
-                // 첫 번째 그룹이 아니면 새 페이지
-                const pageBreak = i > 0 ? 'page-break-before: always;' : '';
+                // 모든 그룹에 새 페이지 적용 (첫 번째 그룹도 별첨 2이므로 새 페이지)
+                const pageBreak = 'page-break-before: always;';
                 
                 let sketchItems = '';
                 sketchGroup.forEach((sketch, groupIndex) => {
