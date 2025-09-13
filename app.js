@@ -3525,28 +3525,28 @@ class SeminarPlanningApp {
                                 text: `${globalIndex}. ${sketch.title}`,
                                 fontSize: 11,
                                 bold: true,
-                                margin: [0, 5, 0, 3],
+                                margin: [0, 3, 0, 2],
                                 alignment: 'center'
                             },
                             {
                                 table: {
-                                    widths: [220],
+                                    widths: [270],
                                     body: [[{
                                         border: [true, true, true, true],
                                         borderColor: '#CCCCCC',
                                         borderWidth: 1,
-                                        cellPadding: 8,
+                                        cellPadding: 4,
                                         stack: [{
                                             image: sketch.imageData,
-                                            width: 200,
-                                            height: 150,
-                                            fit: [200, 150],
+                                            width: 250,
+                                            height: 180,
+                                            fit: [250, 180],
                                             alignment: 'center'
                                         }]
                                     }]]
                                 },
                                 layout: 'noBorders',
-                                margin: [0, 0, 0, 10]
+                                margin: [0, 0, 0, 5]
                             }
                         );
                     });
@@ -4502,12 +4502,12 @@ class SeminarPlanningApp {
                 sketchGroup.forEach((sketch, groupIndex) => {
                     const globalIndex = i + groupIndex + 1;
                     sketchItems += `
-                        <div style="margin: 8px 0; text-align: center;">
-                            <p style="font-size: 10px; margin: 0 0 4px 0; font-weight: bold;">
+                        <div style="margin: 5px 0; text-align: center;">
+                            <p style="font-size: 11px; margin: 0 0 3px 0; font-weight: bold;">
                                 ${globalIndex}. ${safeText(sketch.title)}
                             </p>
-                            <div style="border: 1px solid #CCCCCC; padding: 6px; display: inline-block;">
-                                <img src="${sketch.imageData}" style="width: 180px; height: 135px; object-fit: contain; display: block;" />
+                            <div style="border: 1px solid #CCCCCC; padding: 4px; display: inline-block;">
+                                <img src="${sketch.imageData}" style="width: 250px; height: 180px; object-fit: contain; display: block;" />
                             </div>
                         </div>
                     `;
