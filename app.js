@@ -4476,15 +4476,7 @@ class SeminarPlanningApp {
         const afterSketches = container.querySelectorAll('[data-sketch-index]');
         console.log('추가 후 스케치 개수:', afterSketches.length);
         
-        // 데이터 구조에 추가 (push로 연속된 배열 보장)
-        if (!this.currentData.sketches) {
-            this.currentData.sketches = [];
-        }
-        this.currentData.sketches.push({
-            title: '',
-            imageData: '',
-            fileName: ''
-        });
+        // currentData.sketches는 데이터 로드 시에만 설정 (여기서는 설정하지 않음)
         
         this.showSuccessToast('스케치 업로드가 추가되었습니다.');
     }
@@ -4512,22 +4504,7 @@ class SeminarPlanningApp {
             sketchDiv.remove();
             console.log(`✅ 스케치 ${sketchIndex} DOM에서 제거됨`);
             
-            // 데이터에서도 제거 (DOM 인덱스를 배열 인덱스로 변환)
-            if (this.currentData.sketches && this.currentData.sketches.length > 0) {
-                // DOM 인덱스를 배열 인덱스로 변환
-                const allSketches = container.querySelectorAll('[data-sketch-index]');
-                const sketchArray = Array.from(allSketches);
-                const arrayIndex = sketchArray.findIndex(sketch => 
-                    parseInt(sketch.getAttribute('data-sketch-index')) === parseInt(sketchIndex)
-                );
-                
-                if (arrayIndex !== -1) {
-                    this.currentData.sketches.splice(arrayIndex, 1);
-                    console.log(`✅ 스케치 DOM 인덱스 ${sketchIndex} (배열 인덱스 ${arrayIndex}) 데이터에서 제거됨`);
-                } else {
-                    console.log(`⚠️ 스케치 DOM 인덱스 ${sketchIndex}에 해당하는 배열 인덱스를 찾을 수 없음`);
-                }
-            }
+            // currentData.sketches는 데이터 로드 시에만 관리 (여기서는 제거하지 않음)
             
             // 간단한 인덱스 재정렬
             this.reindexSketchesSimple();
@@ -4596,26 +4573,7 @@ class SeminarPlanningApp {
             }
         });
         
-        // 배열 데이터도 재정렬 (DOM 순서대로, 제약사항 없음)
-        if (this.currentData.sketches && this.currentData.sketches.length > 0) {
-            const reorderedSketches = [];
-            sketches.forEach(sketch => {
-                const oldIndex = parseInt(sketch.getAttribute('data-sketch-index'));
-                // 모든 스케치 데이터 포함 (제약사항 없음)
-                if (this.currentData.sketches[oldIndex]) {
-                    reorderedSketches.push(this.currentData.sketches[oldIndex]);
-                } else {
-                    // 데이터가 없는 경우 빈 스케치 추가
-                    reorderedSketches.push({
-                        title: '',
-                        imageData: '',
-                        fileName: ''
-                    });
-                }
-            });
-            this.currentData.sketches = reorderedSketches;
-            console.log(`✅ 스케치 배열 데이터도 재정렬 완료, 총 ${reorderedSketches.length}개`);
-        }
+        // currentData.sketches는 데이터 로드 시에만 관리 (여기서는 재정렬하지 않음)
         
         console.log(`✅ 간단한 스케치 재정렬 완료, 총 ${sketches.length}개 스케치`);
     }
@@ -4730,7 +4688,8 @@ class SeminarPlanningApp {
         
         console.log('🔍 DOM에서 찾은 스케치 요소 개수:', sketchElements.length);
         
-        sketchElements.forEach((sketchElement) => {
+        // DOM 순서대로 스케치 데이터 수집
+        sketchElements.forEach((sketchElement, domIndex) => {
             const sketchIndex = sketchElement.getAttribute('data-sketch-index');
             const title = document.getElementById(`mainSketchTitle${sketchIndex}`)?.value?.trim() || '';
             const file = document.getElementById(`mainSketchFile${sketchIndex}`)?.files[0];
@@ -4740,14 +4699,14 @@ class SeminarPlanningApp {
             const imageData = previewImg?.src || '';
             const fileName = file?.name || document.getElementById(`mainFileName${sketchIndex}`)?.textContent?.trim() || '';
             
-            // 빈 스케치도 포함하여 저장
-            sketches.push({
+            // DOM 순서대로 스케치 데이터 저장
+            sketches[domIndex] = {
                 title: title,
                 imageData: imageData,
                 fileName: fileName
-            });
+            };
             
-            console.log(`✅ 스케치 ${sketchIndex} 추가:`, { title, hasImageData: !!imageData, fileName });
+            console.log(`✅ 스케치 DOM순서 ${domIndex} (인덱스 ${sketchIndex}) 추가:`, { title, hasImageData: !!imageData, fileName });
         });
         
         console.log('📊 getMainSketchData 최종 결과 (모든 스케치 포함):', sketches);
@@ -4864,12 +4823,13 @@ class SeminarPlanningApp {
                 const container = document.getElementById('sketchUploadContainer');
                 const sketchElements = container.querySelectorAll('[data-sketch-index]');
                 
-                allSketches.forEach((sketch, index) => {
-                    // DOM 순서대로 스케치 요소 가져오기
-                    if (index < sketchElements.length) {
-                        const sketchElement = sketchElements[index];
-                        const actualIndex = sketchElement.getAttribute('data-sketch-index');
-                        console.log(`스케치 데이터 ${index}를 DOM 인덱스 ${actualIndex}에 설정`);
+                // DOM 순서대로 스케치 데이터 설정
+                sketchElements.forEach((sketchElement, domIndex) => {
+                    const actualIndex = sketchElement.getAttribute('data-sketch-index');
+                    const sketch = allSketches[domIndex];
+                    
+                    if (sketch) {
+                        console.log(`스케치 데이터 ${domIndex}를 DOM 인덱스 ${actualIndex}에 설정`);
                         
                         // 제목 설정
                         const titleEl = document.getElementById(`mainSketchTitle${actualIndex}`);
@@ -4899,6 +4859,10 @@ class SeminarPlanningApp {
                         }
                     }
                 });
+                
+                // currentData.sketches 설정 (데이터 로드 시에만)
+                this.currentData.sketches = allSketches;
+                console.log('✅ currentData.sketches 설정 완료:', this.currentData.sketches);
             } else {
                 // 스케치 데이터가 없으면 빈 상태 유지 (자동 추가하지 않음)
                 console.log('ℹ️ 스케치 데이터가 없음, 빈 상태 유지');
