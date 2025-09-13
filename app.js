@@ -3546,7 +3546,7 @@ class SeminarPlanningApp {
                                     }]]
                                 },
                                 layout: 'noBorders',
-                                margin: [0, 0, 0, 3]
+                                margin: [0, 0, 0, 8]
                             }
                         );
                     });
@@ -4502,7 +4502,7 @@ class SeminarPlanningApp {
                 sketchGroup.forEach((sketch, groupIndex) => {
                     const globalIndex = i + groupIndex + 1;
                     sketchItems += `
-                        <div style="margin: 3px 0; text-align: center;">
+                        <div style="margin: 8px 0; text-align: center;">
                             <p style="font-size: 10px; margin: 0 0 2px 0; font-weight: bold;">
                                 ${globalIndex}. ${safeText(sketch.title)}
                             </p>
