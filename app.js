@@ -213,16 +213,11 @@ class SeminarPlanningApp {
             }
         });
         
-        // 일시 필드에 대한 특별한 처리
+        // 일시 필드에 대한 처리
         const datetimeElement = document.getElementById('datetime');
         if (datetimeElement) {
             datetimeElement.addEventListener('input', (e) => {
                 this.currentData.datetime = e.target.value;
-                this.validateDateTimeFormat(e.target);
-            });
-            
-            datetimeElement.addEventListener('blur', (e) => {
-                this.validateDateTimeFormat(e.target);
             });
         }
         
@@ -311,35 +306,6 @@ class SeminarPlanningApp {
         return hasCurrentChanges || hasExistingSketchData;
     }
     
-    // 일시 형식 검증
-    validateDateTimeFormat(element) {
-        const value = element.value.trim();
-        if (!value) {
-            element.classList.remove('border-red-500', 'border-green-500');
-            element.classList.add('border-gray-300');
-            return;
-        }
-        
-        // 다양한 날짜 형식 지원
-        const datePatterns = [
-            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/,  // 2025-08-10T14:00
-            /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/,  // 2025-08-10 14:00
-            /^\d{4}-\d{2}-\d{2}$/,              // 2025-08-10
-            /^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}$/, // 2025/08/10 14:00
-            /^\d{4}\/\d{2}\/\d{2}$/             // 2025/08/10
-        ];
-        
-        const isValidFormat = datePatterns.some(pattern => pattern.test(value));
-        const isValidDate = !isNaN(new Date(value).getTime());
-        
-        if (isValidFormat && isValidDate) {
-            element.classList.remove('border-red-500');
-            element.classList.add('border-green-500');
-        } else {
-            element.classList.remove('border-green-500');
-            element.classList.add('border-red-500');
-        }
-    }
 
     async loadInitialData() {
         try {
