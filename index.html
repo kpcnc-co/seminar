@@ -477,6 +477,19 @@
 
 
     <script src="firebase-config.js"></script>
-    <script src="app.js"></script>
+    <script src="base.js"></script>
+    <script src="reset.js"></script>
+    <script src="save.js"></script>
+    <script src="delete.js"></script>
+    <script src="load.js"></script>
+    <script src="table.js"></script>
+    <script src="export.js"></script>
+    <script src="sketch.js"></script>
+    <script>
+        // 앱 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            window.seminarApp = new SeminarPlanningApp();
+        });
+    </script>
 </body>
 </html>
