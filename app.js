@@ -12,6 +12,12 @@ class SeminarPlanningApp {
             attendeeList: []
         };
         
+        // 직원명부 데이터
+        this.employeeList = [];
+        this.filteredEmployeeList = [];
+        this.selectedEmployeeIndex = -1;
+        this.isSearchMode = false;
+        
         this.currentDocumentId = null; // Firebase 문서 ID 저장
         this.originalSession = null; // 원본 회차 저장
         this.originalDatetime = null; // 원본 일시 저장
@@ -81,6 +87,7 @@ class SeminarPlanningApp {
         this.bindEvents();
         await this.loadInitialData();
         this.addDefaultRows();
+        await this.loadEmployeeData();
         
         // 초기화 시 스케치 버튼 상태 확인
         setTimeout(() => {
@@ -106,7 +113,7 @@ class SeminarPlanningApp {
         document.getElementById('addTimeRow').addEventListener('click', () => this.addTimeRow());
         
         // 참석자 행 추가
-        document.getElementById('addAttendeeRow').addEventListener('click', () => this.addAttendeeRow());
+        document.getElementById('addAttendeeRow').addEventListener('click', () => this.showEmployeeModal());
         
         // 참석자 전체 삭제
         const deleteAllBtn = document.getElementById('deleteAllAttendees');
@@ -127,6 +134,21 @@ class SeminarPlanningApp {
         
         // 스케치 업로드 추가 버튼
         document.getElementById('addSketchUpload').addEventListener('click', () => this.addSketchUpload());
+        
+        // 직원명부 모달 이벤트
+        document.getElementById('closeEmployeeModal').addEventListener('click', () => this.hideEmployeeModal());
+        document.getElementById('resetEmployeeForm').addEventListener('click', () => this.resetEmployeeForm());
+        document.getElementById('addEmployee').addEventListener('click', () => this.addEmployee());
+        document.getElementById('updateEmployee').addEventListener('click', () => this.updateEmployee());
+        document.getElementById('deleteEmployee').addEventListener('click', () => this.deleteEmployee());
+        document.getElementById('searchEmployeeBtn').addEventListener('click', () => this.searchEmployees());
+        document.getElementById('clearSearchBtn').addEventListener('click', () => this.clearEmployeeSearch());
+        
+        
+        
+        // 직원명부 입력 필드 한글 토글 이벤트
+        this.setupKoreanInputToggle();
+        
         
         // 스케치 관련 이벤트 위임
         document.addEventListener('click', (e) => {
@@ -4476,6 +4498,482 @@ class SeminarPlanningApp {
             </html>
         `;
     }
+    
+    // ==================== 직원명부 모달 관련 메서드 ====================
+    
+    // 직원명부 모달 표시
+    async showEmployeeModal() {
+        const modal = document.getElementById('employeeModal');
+        modal.classList.remove('hidden');
+        
+        // 배경 스크롤 막기
+        this.disableBodyScroll();
+        
+        await this.loadEmployeeData();
+        this.resetEmployeeForm();
+    }
+    
+    // 직원명부 모달 숨기기
+    hideEmployeeModal() {
+        const modal = document.getElementById('employeeModal');
+        modal.classList.add('hidden');
+        
+        // 배경 스크롤 다시 활성화
+        this.enableBodyScroll();
+        
+        this.resetEmployeeForm();
+    }
+    
+    // 배경 스크롤 비활성화
+    disableBodyScroll() {
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = '0px';
+    }
+    
+    // 배경 스크롤 활성화
+    enableBodyScroll() {
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+    
+    // 직원 데이터 로드
+    async loadEmployeeData() {
+        try {
+            const result = await window.loadAllEmployees();
+            if (result.success) {
+                this.employeeList = result.data;
+            } else {
+                this.employeeList = [];
+                console.error('직원 데이터 로드 실패:', result.message);
+            }
+        } catch (error) {
+            console.error('직원 데이터 로드 오류:', error);
+            this.employeeList = [];
+        }
+        this.renderEmployeeTable();
+    }
+    
+    // 직원 데이터 저장 (개별 직원 저장)
+    async saveEmployeeData(employeeData) {
+        try {
+            const result = await window.saveEmployeeData(employeeData);
+            if (result.success) {
+                return { success: true, message: result.message };
+            } else {
+                return { success: false, message: result.message };
+            }
+        } catch (error) {
+            console.error('직원 데이터 저장 오류:', error);
+            return { success: false, message: '직원 저장 중 오류가 발생했습니다.' };
+        }
+    }
+    
+    // 직원 테이블 렌더링
+    renderEmployeeTable() {
+        const tbody = document.getElementById('employeeTableBody');
+        tbody.innerHTML = '';
+        
+        const displayList = this.isSearchMode ? this.filteredEmployeeList : this.employeeList;
+        
+        // 성명 가나다순으로 정렬
+        const sortedList = [...displayList].sort((a, b) => {
+            return a.name.localeCompare(b.name, 'ko');
+        });
+        
+        sortedList.forEach((employee, index) => {
+            const row = document.createElement('tr');
+            row.className = 'employee-table-row';
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${index + 1}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.name}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.position}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${employee.department}</td>
+                <td class="px-6 py-4 text-sm text-gray-900">${employee.work}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">${employee.email}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                    <button class="employee-action-btn bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded" onclick="app.editEmployee(${index})">
+                        <i class="fas fa-edit text-xs"></i>
+                    </button>
+                </td>
+            `;
+            
+            // 행 클릭 시 참석자로 추가
+            row.addEventListener('click', (e) => {
+                if (!e.target.closest('button')) {
+                    this.addEmployeeToAttendeeList(employee);
+                }
+            });
+            
+            tbody.appendChild(row);
+        });
+    }
+    
+    // 직원 폼 초기화
+    resetEmployeeForm() {
+        document.getElementById('employeeName').value = '';
+        document.getElementById('employeePosition').value = '';
+        document.getElementById('employeeDepartment').value = '';
+        document.getElementById('employeeWork').value = '';
+        document.getElementById('employeeEmail').value = '';
+        
+        // 버튼 상태 초기화
+        document.getElementById('addEmployee').style.display = 'inline-flex';
+        document.getElementById('updateEmployee').style.display = 'none';
+        document.getElementById('deleteEmployee').style.display = 'none';
+        
+        this.selectedEmployeeIndex = -1;
+        this.clearEmployeeFormValidation();
+        
+        // 검색 모드 초기화
+        this.clearEmployeeSearch();
+    }
+    
+    // 직원 추가
+    async addEmployee() {
+        const employee = this.getEmployeeFormData();
+        
+        if (!this.validateEmployeeForm(employee)) {
+            return;
+        }
+        
+        // 이메일 중복 확인
+        if (this.employeeList.some(emp => emp.email === employee.email)) {
+            this.showEmployeeError('이미 등록된 이메일입니다.');
+            return;
+        }
+        
+        try {
+            const result = await this.saveEmployeeData(employee);
+            if (result.success) {
+                // 로컬 리스트에 추가
+                this.employeeList.push(employee);
+                this.renderEmployeeTable();
+                this.resetEmployeeForm();
+                this.showEmployeeSuccess('직원이 성공적으로 등록되었습니다.');
+            } else {
+                this.showEmployeeError(result.message);
+            }
+        } catch (error) {
+            console.error('직원 추가 오류:', error);
+            this.showEmployeeError('직원 추가 중 오류가 발생했습니다.');
+        }
+    }
+    
+    // 직원 수정
+    async updateEmployee() {
+        if (this.selectedEmployeeIndex === -1) return;
+        
+        const employee = this.getEmployeeFormData();
+        const originalEmployee = this.employeeList[this.selectedEmployeeIndex];
+        
+        if (!this.validateEmployeeForm(employee)) {
+            return;
+        }
+        
+        // 이메일 중복 확인 (자신 제외)
+        if (this.employeeList.some((emp, index) => emp.email === employee.email && index !== this.selectedEmployeeIndex)) {
+            this.showEmployeeError('이미 등록된 이메일입니다.');
+            return;
+        }
+        
+        try {
+            const result = await window.updateEmployeeData(originalEmployee.email, employee);
+            if (result.success) {
+                // 로컬 리스트 업데이트
+                this.employeeList[this.selectedEmployeeIndex] = employee;
+                this.renderEmployeeTable();
+                this.resetEmployeeForm();
+                this.showEmployeeSuccess('직원 정보가 성공적으로 수정되었습니다.');
+            } else {
+                this.showEmployeeError(result.message);
+            }
+        } catch (error) {
+            console.error('직원 수정 오류:', error);
+            this.showEmployeeError('직원 수정 중 오류가 발생했습니다.');
+        }
+    }
+    
+    // 직원 삭제
+    async deleteEmployee() {
+        if (this.selectedEmployeeIndex === -1) return;
+        
+        const employee = this.employeeList[this.selectedEmployeeIndex];
+        
+        if (confirm('정말로 이 직원을 삭제하시겠습니까?')) {
+            try {
+                const result = await window.deleteEmployeeData(employee.email);
+                if (result.success) {
+                    // 로컬 리스트에서 삭제
+                    this.employeeList.splice(this.selectedEmployeeIndex, 1);
+                    this.renderEmployeeTable();
+                    this.resetEmployeeForm();
+                    this.showEmployeeSuccess('직원이 성공적으로 삭제되었습니다.');
+                } else {
+                    this.showEmployeeError(result.message);
+                }
+            } catch (error) {
+                console.error('직원 삭제 오류:', error);
+                this.showEmployeeError('직원 삭제 중 오류가 발생했습니다.');
+            }
+        }
+    }
+    
+    // 직원 편집
+    editEmployee(index) {
+        const employee = this.employeeList[index];
+        
+        document.getElementById('employeeName').value = employee.name;
+        document.getElementById('employeePosition').value = employee.position;
+        document.getElementById('employeeDepartment').value = employee.department;
+        document.getElementById('employeeWork').value = employee.work;
+        document.getElementById('employeeEmail').value = employee.email;
+        
+        // 버튼 상태 변경
+        document.getElementById('addEmployee').style.display = 'none';
+        document.getElementById('updateEmployee').style.display = 'inline-flex';
+        document.getElementById('deleteEmployee').style.display = 'inline-flex';
+        
+        this.selectedEmployeeIndex = index;
+        this.clearEmployeeFormValidation();
+    }
+    
+    // 직원 폼 데이터 가져오기
+    getEmployeeFormData() {
+        return {
+            name: document.getElementById('employeeName').value.trim(),
+            position: document.getElementById('employeePosition').value.trim(),
+            department: document.getElementById('employeeDepartment').value.trim(),
+            work: document.getElementById('employeeWork').value.trim(),
+            email: document.getElementById('employeeEmail').value.trim()
+        };
+    }
+    
+    // 직원 폼 유효성 검사
+    validateEmployeeForm(employee) {
+        this.clearEmployeeFormValidation();
+        
+        let isValid = true;
+        
+        // 성명과 이메일만 필수 체크
+        if (!employee.name) {
+            alert('성명을 입력해주세요.');
+            isValid = false;
+        } else if (!employee.email) {
+            alert('이메일을 입력해주세요.');
+            isValid = false;
+        } else if (!this.isValidEmail(employee.email)) {
+            alert('올바른 이메일 형식을 입력해주세요.');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    // 이메일 유효성 검사
+    isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    
+    // 직원 필드 에러 표시
+    showEmployeeFieldError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        field.classList.add('error');
+        
+        // 기존 에러 메시지 제거
+        const existingError = field.parentNode.querySelector('.error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        // 새 에러 메시지 추가
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message text-red-500 text-xs mt-1';
+        errorDiv.textContent = message;
+        field.parentNode.appendChild(errorDiv);
+    }
+    
+    // 직원 폼 유효성 검사 초기화
+    clearEmployeeFormValidation() {
+        const fields = ['employeeName', 'employeePosition', 'employeeDepartment', 'employeeWork', 'employeeEmail'];
+        fields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            field.classList.remove('error', 'success');
+            
+            const errorMessage = field.parentNode.querySelector('.error-message');
+            if (errorMessage) {
+                errorMessage.remove();
+            }
+        });
+    }
+    
+    // 토스트 메시지 표시 (성공/에러 통합)
+    showToast(message, type) {
+        if (type === 'success') {
+            this.showSuccessToast(message);
+        } else if (type === 'error') {
+            this.showErrorToast(message);
+        }
+    }
+    
+    // 직원 성공 메시지
+    showEmployeeSuccess(message) {
+        alert(message);
+    }
+    
+    // 직원 에러 메시지
+    showEmployeeError(message) {
+        alert(message);
+    }
+    
+    // 직원을 참석자 명단에 추가
+    addEmployeeToAttendeeList(employee) {
+        // 참석자 명단 초기화 확인
+        if (!this.currentData.attendeeList) {
+            this.currentData.attendeeList = [];
+        }
+        
+        console.log('현재 참석자 명단:', this.currentData.attendeeList);
+        console.log('추가하려는 직원:', employee);
+        
+        // 중복 확인 (공백 제거 및 대소문자 무시)
+        const existingAttendee = this.currentData.attendeeList.find(attendee => 
+            attendee.name === employee.name && attendee.position === employee.position
+        );
+        
+        if (existingAttendee) {
+            console.log('중복된 직원 발견:', existingAttendee);
+            alert('이미 참석자 명단에 등록된 직원입니다.');
+            return;
+        }
+        
+        // 참석자 명단에 추가
+        const newAttendee = {
+            name: employee.name,
+            position: employee.position,
+            department: employee.department,
+            work: employee.work,
+            attendance: 'N'
+        };
+        
+        this.currentData.attendeeList.push(newAttendee);
+        this.populateAttendeeTable();
+        //
+        // alert(`${employee.name}님이 참석자 명단에 추가되었습니다.`);
+        
+        // 모달 닫기
+        this.hideEmployeeModal();
+    }
+    
+    // 직원 검색
+    searchEmployees() {
+        const searchTerm = document.getElementById('employeeSearchInput').value.trim();
+        
+        if (!searchTerm) {
+            alert('검색할 성명을 입력해주세요.');
+            return;
+        }
+        
+        // 성명으로 검색 (대소문자 무시, 부분 일치)
+        this.filteredEmployeeList = this.employeeList.filter(employee => 
+            employee.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        
+        this.isSearchMode = true;
+        this.renderEmployeeTable();
+        
+        if (this.filteredEmployeeList.length === 0) {
+            alert(`'${searchTerm}'에 해당하는 직원을 찾을 수 없습니다.`);
+        } else {
+            alert(`'${searchTerm}' 검색 결과: ${this.filteredEmployeeList.length}명의 직원을 찾았습니다.`);
+        }
+    }
+    
+    // 직원 검색 초기화
+    clearEmployeeSearch() {
+        document.getElementById('employeeSearchInput').value = '';
+        this.isSearchMode = false;
+        this.filteredEmployeeList = [];
+        this.renderEmployeeTable();
+    }
+    
+    
+    
+    // 한글 입력 토글 설정
+    setupKoreanInputToggle() {
+        const koreanInputFields = [
+            'employeeName',
+            'employeePosition', 
+            'employeeDepartment',
+            'employeeWork',
+            'employeeSearchInput'
+        ];
+        
+        koreanInputFields.forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            if (input) {
+                // 포커스 시 한글 모드로 설정
+                input.addEventListener('focus', () => {
+                    this.setKoreanInputMode(input);
+                });
+                
+                // 키 입력 시 한글 모드 유지
+                input.addEventListener('keydown', (e) => {
+                    this.handleKoreanInput(e, input);
+                });
+                
+                // 입력 완료 시 한글 모드 해제
+                input.addEventListener('blur', () => {
+                    this.clearKoreanInputMode(input);
+                });
+            }
+        });
+    }
+    
+    // 한글 입력 모드 설정
+    setKoreanInputMode(input) {
+        // IME 상태를 한글로 설정
+        input.setAttribute('lang', 'ko');
+        input.setAttribute('inputmode', 'text');
+        input.style.imeMode = 'active';
+        input.style.fontFamily = "'Malgun Gothic', '맑은 고딕', sans-serif";
+        
+        // 한글 입력을 위한 추가 속성 설정
+        input.setAttribute('data-korean-mode', 'true');
+    }
+    
+    
+    // 한글 입력 처리
+    handleKoreanInput(e, input) {
+        // 한글 입력 중인지 확인
+        if (e.isComposing || e.keyCode === 229) {
+            // IME 입력 중
+            input.setAttribute('data-composing', 'true');
+            return;
+        }
+        
+        // 특수 키는 무시
+        if (e.ctrlKey || e.altKey || e.metaKey) {
+            return;
+        }
+        
+        // 한글 자모음 범위 확인
+        const keyCode = e.keyCode;
+        if ((keyCode >= 12593 && keyCode <= 12622) || // 한글 자모
+            (keyCode >= 44032 && keyCode <= 55203)) { // 한글 완성형
+            // 한글 입력이 감지되면 IME 모드 활성화
+            input.style.imeMode = 'active';
+            input.setAttribute('data-composing', 'true');
+        }
+    }
+    
+    // 한글 입력 모드 해제
+    clearKoreanInputMode(input) {
+        input.style.imeMode = 'auto';
+        input.removeAttribute('data-korean-mode');
+        input.removeAttribute('data-composing');
+    }
+    
 } 
 
 // 앱 초기화
