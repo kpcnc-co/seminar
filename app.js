@@ -98,9 +98,6 @@ class SeminarPlanningApp {
         // 삭제 버튼
         document.getElementById('deleteBtn').addEventListener('click', () => this.deleteData());
         
-        // 일괄삭제 버튼
-        //document.getElementById('bulkDeleteBtn').addEventListener('click', () => this.bulkDeleteData());
-        
         // 조회 버튼
         document.getElementById('loadBtn').addEventListener('click', () => this.showSearchModal());
         
@@ -2955,23 +2952,7 @@ class SeminarPlanningApp {
         
         return lines.length > 0 ? lines : [''];
     }
-
-    
-    
-    
-
-
-
-    // 엑셀 데이터 파싱 (단일 세미나) - 제거됨
-    parseExcelData(data) {
-        return null; // 엑셀 기능 제거됨
-    }
-    
-    // 엑셀 데이터 파싱 (여러 세미나 - 업로드용) - 제거됨
-    parseMultipleExcelData(data) {
-        return []; // 엑셀 기능 제거됨
-    }
-
+ 
     // 여러 세미나 데이터 일괄 저장 - 제거됨
     async saveMultipleSeminars(seminars) {
         return; // 엑셀 기능 제거됨
@@ -2980,57 +2961,6 @@ class SeminarPlanningApp {
     // 엑셀 데이터를 폼에 로드 - 제거됨
     async loadDataFromExcel(data) {
         return; // 엑셀 기능 제거됨
-    }
-
-    // 일괄삭제 메서드 (모든 데이터 삭제)
-    async bulkDeleteData() {
-        try {
-            // 사용자에게 일괄삭제 확인
-            if (!confirm('정말로 모든 세미나 데이터를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
-                return;
-            }
-
-            this.showLoading(true);
-
-            // Firebase에서 모든 데이터 삭제
-            if (useLocalStorage) {
-                // 로컬 스토리지에서 모든 데이터 삭제
-                localStorage.removeItem('seminarPlans');
-                this.showSuccessToast('모든 데이터가 성공적으로 삭제되었습니다.');
-            } else {
-                // Firebase에서 모든 문서 삭제
-                const snapshot = await db.collection('seminarPlans').get();
-                const batch = db.batch();
-                
-                snapshot.docs.forEach(doc => {
-                    batch.delete(doc.ref);
-                });
-                
-                await batch.commit();
-                this.showSuccessToast(`총 ${snapshot.docs.length}개의 세미나 데이터가 성공적으로 삭제되었습니다.`);
-            }
-            
-            // 현재 데이터 초기화
-            this.currentData = {
-                session: '',
-                objective: '',
-                datetime: '',
-                location: '',
-                attendees: '',
-                timeSchedule: [],
-                attendeeList: []
-            };
-            this.currentDocumentId = null;
-            
-            // 폼 초기화
-            this.initializeMainForm();
-            
-        } catch (error) {
-            console.error('일괄삭제 오류:', error);
-            this.showErrorToast('일괄삭제 중 오류가 발생했습니다.');
-        } finally {
-            this.showLoading(false);
-        }
     }
 
     // 데이터 삭제 메서드
