@@ -315,45 +315,68 @@ class SeminarPlanningApp {
         this.populateAttendeeTable();
     }
 
+    // 현재 데이터 업데이트
+    updateCurrentData(field, value) {
+        if (this.currentData && field) {
+            this.currentData[field] = value;
+        }
+    }
+
     // 공통 유틸리티 메서드들
     showLoading(show) {
-        const loadingElement = document.getElementById('loading');
-        if (show) {
-            loadingElement.style.display = 'block';
-        } else {
-            loadingElement.style.display = 'none';
+        const spinner = document.getElementById('loadingSpinner');
+        if (spinner) {
+            if (show) {
+                spinner.classList.remove('hidden');
+            } else {
+                spinner.classList.add('hidden');
+            }
         }
     }
 
     showSuccessToast(message) {
-        // 성공 토스트 메시지 표시
-        const toast = document.createElement('div');
-        toast.className = 'toast success';
-        toast.textContent = message;
-        document.body.appendChild(toast);
+        const toast = document.getElementById('successToast');
+        const messageSpan = toast.querySelector('span');
+        messageSpan.textContent = message;
+        
+        toast.classList.remove('translate-x-full');
+        toast.classList.add('slide-in-right');
         
         setTimeout(() => {
-            toast.remove();
+            toast.classList.add('translate-x-full');
         }, 3000);
     }
 
     showErrorToast(message) {
-        // 오류 토스트 메시지 표시
-        const toast = document.createElement('div');
-        toast.className = 'toast error';
-        toast.textContent = message;
-        document.body.appendChild(toast);
+        // 에러 토스트는 성공 토스트를 재사용하여 표시
+        const toast = document.getElementById('successToast');
+        const messageSpan = toast.querySelector('span');
+        const icon = toast.querySelector('i');
+        
+        messageSpan.textContent = message;
+        icon.className = 'fas fa-exclamation-circle mr-2';
+        toast.classList.remove('bg-green-500');
+        toast.classList.add('bg-red-500');
+        
+        toast.classList.remove('translate-x-full');
+        toast.classList.add('slide-in-right');
         
         setTimeout(() => {
-            toast.remove();
-        }, 5000);
+            toast.classList.add('translate-x-full');
+            // 원래 스타일로 복원
+            icon.className = 'fas fa-check-circle mr-2';
+            toast.classList.remove('bg-red-500');
+            toast.classList.add('bg-green-500');
+        }, 3000);
     }
 
     ensureStringValue(value) {
-        // 값이 문자열인지 확인하고 변환
-        if (value === null || value === undefined) {
-            return '';
-        }
+        if (value === null || value === undefined) return '';
+        if (typeof value === 'string') return value.trim();
+        if (typeof value === 'number') return value.toString();
+        if (typeof value === 'boolean') return value.toString();
+        if (Array.isArray(value)) return value.join(', ');
+        if (typeof value === 'object') return JSON.stringify(value);
         return String(value);
     }
 

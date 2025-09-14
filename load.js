@@ -340,6 +340,54 @@ Object.assign(SeminarPlanningApp.prototype, {
         }
         
         return normalizedData;
+    },
+
+    // 회차 필드 업데이트
+    updateSessionField(value) {
+        const selectElement = document.getElementById('sessionSelect');
+        const inputElement = document.getElementById('sessionInput');
+        
+        if (value === '직접입력') {
+            selectElement.style.display = 'none';
+            inputElement.classList.remove('hidden');
+            inputElement.focus();
+            this.currentData.session = '';
+        } else if (value) {
+            selectElement.style.display = 'block';
+            inputElement.classList.add('hidden');
+            this.currentData.session = value;
+        }
+    },
+
+    // 회차 값 업데이트
+    updateSessionValue(value) {
+        this.currentData.session = value;
+    },
+
+    // 회차 필드 데이터 채우기
+    populateSessionField() {
+        const selectElement = document.getElementById('sessionSelect');
+        const inputElement = document.getElementById('sessionInput');
+        
+        if (this.currentData.session) {
+            const sessionOptions = [
+                '제 1회', '제 2회', '제 3회', '제 4회', '제 5회', '제 6회', '제 7회', '제 8회', '제 9회', '제10회',
+                '제11회', '제12회', '제13회', '제14회', '제15회', '제16회', '제17회', '제18회', '제19회', '제20회'
+            ];
+            
+            if (sessionOptions.includes(this.currentData.session)) {
+                // 선택 옵션에 있는 경우
+                selectElement.value = this.currentData.session;
+                selectElement.style.display = 'block';
+                inputElement.classList.add('hidden');
+            } else {
+                // 직접 입력된 경우
+                selectElement.value = '직접입력';
+                selectElement.style.display = 'none';
+                inputElement.classList.remove('hidden');
+                inputElement.value = this.currentData.session;
+            }
+        }
     }
 });
 
